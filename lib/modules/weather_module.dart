@@ -92,7 +92,7 @@ class _WeatherModuleState extends State<WeatherModule> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Alertas de clima', style: TextStyle(fontSize: 20.0)),
+        title: Text('Alertas de Clima', style: TextStyle(fontSize: 20.0)),
         centerTitle: true,
       ),
       body: _isLoading

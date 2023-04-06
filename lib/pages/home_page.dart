@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:wisensor_app_6/modules/biomass_module.dart';
+import 'package:wisensor_app_6/modules/energy_module.dart';
+import 'package:wisensor_app_6/modules/iot_module.dart';
+import 'package:wisensor_app_6/modules/network_module.dart';
+import 'package:wisensor_app_6/modules/security_module.dart';
 import 'package:wisensor_app_6/pages/weather_page.dart';
 import 'dart:convert';
 import '../global_data.dart';
@@ -115,7 +120,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => WeatherModule()),
+                  MaterialPageRoute(builder: (context) => BiomassModule()),
                 );
               },
             ),
@@ -141,7 +146,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => WeatherModule()),
+                  MaterialPageRoute(builder: (context) => SecurityModule()),
                 );
               },
             ),
@@ -154,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => WeatherModule()),
+                  MaterialPageRoute(builder: (context) => IotModule()),
                 );
               },
             ),
@@ -167,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => WeatherModule()),
+                  MaterialPageRoute(builder: (context) => EnergyModule()),
                 );
               },
             ),
@@ -180,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => WeatherModule()),
+                  MaterialPageRoute(builder: (context) => NetworkModule()),
                 );
               },
             ),
