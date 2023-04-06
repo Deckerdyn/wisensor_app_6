@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Centros', style: TextStyle(fontSize: 20.0)),
+        title: Text('Alertas Generales', style: TextStyle(fontSize: 20.0)),
         centerTitle: true,
       ),
       drawer: Drawer(
