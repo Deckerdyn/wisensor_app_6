@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:wisensor_app_6/pages/iot_page.dart';
 import 'package:wisensor_app_6/pages/weather_page.dart';
 import 'dart:convert';
 import '../global_data.dart';
@@ -139,7 +140,7 @@ class _IotModuleState extends State<IotModule> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => WeatherPage(
+                                builder: (context) => IotPage(
                                   idu: _centros[index]["idu"],
                                   idc: _centros[index]["idc"],
                                 ),
