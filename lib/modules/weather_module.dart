@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:Wisensor/pages/weather_page.dart';
+import 'package:wisensor_app_6/pages/weather_page.dart';
 import 'dart:convert';
 import '../global_data.dart';
 import '../pages/login_page.dart';
