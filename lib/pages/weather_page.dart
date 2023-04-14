@@ -20,22 +20,7 @@ class _WeatherPageState extends State<WeatherPage> {
   bool _isLoading = true;
   String _message = "";
 
-  IconData getIcon(String iconStr) {
-    switch (iconStr) {
-      case "<i class=\"fas fa-compass\"></i>":
-        return Icons.compass_calibration;
-      case "<i class=\"fas fa-thermometer-quarter\"></i>":
-        return Icons.thermostat;
-      case "<i class=\"fas fa-arrows-alt-h\"></i>":
-        return Icons.swap_horizontal_circle;
-      case "<i class=\"fab fa-creative-commons-sa\"></i>":
-        return Icons.directions_boat;
-      case "<i class=\"fas fa-map-marked-alt\"></i>":
-        return Icons.location_on;
-      default:
-        return Icons.error;
-    }
-  }
+
 
   IconData parseIconData(String icon) {
     switch (icon) {
