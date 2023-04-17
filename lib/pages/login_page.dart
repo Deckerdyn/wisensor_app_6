@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../global_data.dart';
 import 'home_page.dart';
+import 'package:connectivity/connectivity.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -20,6 +21,16 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
       _errorMessage = "";
     });
+
+    // Verifica la conectividad a internet
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "No hay conexión a internet";
+      });
+      return;
+    }
 
     String email = _emailController.text;
     String password = _passwordController.text;
