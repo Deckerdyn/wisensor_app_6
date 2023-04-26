@@ -1,3 +1,4 @@
+import 'package:Wisensor/modules/windy_module.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -186,6 +187,19 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => NetworkModule()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.travel_explore,
+              ),
+              title: const Text('Estación metereologica'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WindyModule()),
                 );
               },
             ),

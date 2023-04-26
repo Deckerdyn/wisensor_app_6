@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
 
+  flutter_map: ^0.13.0
   flutter_widget_from_html_core: ^0.6.1
   html_unescape: ^2.0.0
   http: ^0.13.3
