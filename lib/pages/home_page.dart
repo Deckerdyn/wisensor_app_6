@@ -1,4 +1,4 @@
-import 'package:Wisensor/modules/windy_module.dart';
+import 'package:Wisensor/pages/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -199,7 +199,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => WindyModule()),
+                  MaterialPageRoute(builder: (context) => MapPage()),
                 );
               },
             ),
