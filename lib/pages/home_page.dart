@@ -11,6 +11,7 @@ import 'package:Wisensor/pages/weather_page.dart';
 import 'dart:convert';
 import '../global_data.dart';
 import '../modules/weather_module.dart';
+import 'custom_page_route.dart';
 import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -121,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => BiomassModule()),
+                  CustomPageRoute(child: BiomassModule()),
                 );
               },
             ),
@@ -134,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => WeatherModule()),
+                  CustomPageRoute(child: WeatherModule()),
                 );
               },
             ),
@@ -147,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SecurityModule()),
+                  CustomPageRoute(child: SecurityModule()),
                 );
               },
             ),
@@ -160,7 +161,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => IotModule()),
+                  CustomPageRoute(child: IotModule()),
                 );
               },
             ),
@@ -173,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EnergyModule()),
+                  CustomPageRoute(child: EnergyModule()),
                 );
               },
             ),
@@ -186,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NetworkModule()),
+                  CustomPageRoute(child: NetworkModule()),
                 );
               },
             ),
@@ -199,7 +200,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MapPage()),
+                  CustomPageRoute(child: MapPage()),
                 );
               },
             ),
@@ -294,8 +295,9 @@ class _HomePageState extends State<HomePage> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => WeatherPage(
+
+                              CustomPageRoute(
+                                child: WeatherPage(
                                   idu: _centros[index]["idu"],
                                   idc: _centros[index]["idc"],
                                 ),
