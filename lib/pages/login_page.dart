@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../global_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'package:connectivity/connectivity.dart';
 
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     Map<String, String> body = {"email": email, "password": password};
 
     http.Response response = await http.post(
-      Uri.parse(GlobalData.apiUrl),
+      Uri.parse("https://wisensor.cl/api/app/login"),
       headers: headers,
       body: jsonEncode(body),
     );
@@ -55,7 +55,8 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
       String token = jsonResponse["data"]["token"];
-      GlobalData.token = token;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString("token", token);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),

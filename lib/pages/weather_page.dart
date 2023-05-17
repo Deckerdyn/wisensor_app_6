@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../global_data.dart';
 import 'login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WeatherPage extends StatefulWidget {
   final int idu;
@@ -46,10 +47,13 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   Future<void> _fetchAlerts() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept": "application/json",
-      "Authorization": "Bearer ${GlobalData.token}"
+      "Authorization": "Bearer $token"
     };
     Future<void> _showNotification(Map<String, dynamic> alert) async {
       var androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -102,7 +106,7 @@ class _WeatherPageState extends State<WeatherPage> {
       if (errorResponse.containsKey("message")) {
         var errorMessage = errorResponse["message"];
         if (errorMessage == "Unauthenticated.") {
-          GlobalData.token = "";
+          prefs.remove("token");
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => LoginPage()),

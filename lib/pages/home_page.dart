@@ -25,11 +25,33 @@ class _HomePageState extends State<HomePage> {
   bool _isLoading = true;
   String _message = "";
 
+  // Método que maneja la acción de retroceso del botón físico o virtual de Android
+  Future<bool> _onWillPop() async {
+    // Verificar si hay una página anterior en la ruta del Navigator
+    if (Navigator.of(context).canPop()) {
+      return true; // Permitir retroceder si hay una página anterior
+    } else {
+      return false; // Deshabilitar el retroceso si no hay una página anterior
+    }
+  }
+
   Future<void> _fetchCentros() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+
+    if (token == null) {
+      // El token no existe, el usuario no está autenticado
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+      return;
+    }
+
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept": "application/json",
-      "Authorization": "Bearer ${GlobalData.token}"
+      "Authorization": "Bearer $token"
     };
 
     http.Response response = await http.get(
@@ -49,7 +71,7 @@ class _HomePageState extends State<HomePage> {
       if (errorResponse.containsKey("message")) {
         var errorMessage = errorResponse["message"];
         if (errorMessage == "Unauthenticated.") {
-          GlobalData.token = "";
+          prefs.remove("token");
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => LoginPage()),
@@ -60,10 +82,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+
+    if (token == null) {
+      // El token no existe, el usuario no está autenticado
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+      return;
+    }
+
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept": "application/json",
-      "Authorization": "Bearer ${GlobalData.token}"
+      "Authorization": "Bearer $token"
     };
 
     http.Response response = await http.post(
@@ -72,7 +106,7 @@ class _HomePageState extends State<HomePage> {
     );
 
     if (response.statusCode == 200) {
-      GlobalData.token = "";
+      prefs.remove("token");
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),
@@ -82,7 +116,7 @@ class _HomePageState extends State<HomePage> {
       if (errorResponse.containsKey("message")) {
         var errorMessage = errorResponse["message"];
         if (errorMessage == "Unauthenticated.") {
-          GlobalData.token = "";
+          prefs.remove("token");
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => LoginPage()),
@@ -100,7 +134,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: _onWillPop, // Asignar el método _onWillPop como el controlador de retroceso
+      child: Scaffold(
       appBar: AppBar(
         title: Text('Alertas Generales', style: TextStyle(fontSize: 20.0)),
         centerTitle: true,
@@ -115,7 +151,7 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
               leading: const Icon(
-                  FontAwesomeIcons.fish,
+                FontAwesomeIcons.fish,
               ),
               title: const Text('Biomasa'),
               onTap: () {
@@ -195,7 +231,7 @@ class _HomePageState extends State<HomePage> {
               leading: const Icon(
                 Icons.travel_explore,
               ),
-              title: const Text('Estación metereologica'),
+              title: const Text('Estación metereológica'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -360,6 +396,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    ),
     );
   }
 }
