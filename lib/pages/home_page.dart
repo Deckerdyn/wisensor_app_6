@@ -1,4 +1,5 @@
 import 'package:Wisensor/pages/map_page.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -128,8 +129,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    init();
     super.initState();
     _fetchCentros();
+  }
+
+  init() async{
+    String deviceToken = await getDeviceToken();
+    print("##### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFICATION #####");
+    print(deviceToken);
+    print("###########################################################");
   }
 
   @override
@@ -398,5 +407,12 @@ class _HomePageState extends State<HomePage> {
       ),
     ),
     );
+  }
+
+  //get device token to use for push notification
+  Future getDeviceToken() async {
+    FirebaseMessaging _firebaseMessage = FirebaseMessaging.instance;
+    String? deviceToken = await _firebaseMessage.getToken();
+    return (deviceToken == null) ? "" : deviceToken;
   }
 }

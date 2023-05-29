@@ -28,6 +28,9 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  firebase_core: ^2.13.0
+  firebase_messaging: ^14.6.1
+  cloud_firestore: ^4.7.1
   google_maps_flutter: ^2.1.1
   flutter_local_notifications: ^14.0.0+1
   flutter_widget_from_html_core: ^0.6.1

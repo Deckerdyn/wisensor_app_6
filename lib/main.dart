@@ -3,16 +3,57 @@ import 'package:flutter/material.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
-void main() async {
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  print("Handling a background message: ${message.messageId}");
+}
+
+Future<void> main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
+  //initialize firebase from firebase core plugin
   final prefs = await SharedPreferences.getInstance();
   await initNotifications();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+  print('User granted permission: ${settings.authorizationStatus}');
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Got a message whilst in the foreground!');
+    print('Message data: ${message.data}');
+
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+      print('Notification Title: ${message.notification?.title}');
+      print('Notification Body: ${message.notification?.body}');
+    }
+  });
   prefs.setString('apiUrl', 'https://wisensor.cl/api/app/login');
   prefs.setString('token', '');
 
   mostrarNotificacion();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(MyApp());
 }
 Future<String?> getToken() async {

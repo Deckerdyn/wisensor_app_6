@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1053940310558",
+    "project_id": "wisensor-app-6",
+    "storage_bucket": "wisensor-app-6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053940310558:android:7de10a15cffc0b2958c40f",
+        "android_client_info": {
+          "package_name": "com.example.wisensor_app_6"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1053940310558-ifbf2f7tq9aslc42bdlm153huiqa61lo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKofKXiAUzYXCyQ4s0xQNSckXp4Sozhvc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1053940310558-ifbf2f7tq9aslc42bdlm153huiqa61lo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1053940310558-l07is87cubmh7rotptfipuuodlcr031f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.wisensorApp6.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
