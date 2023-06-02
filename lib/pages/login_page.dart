@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'package:connectivity/connectivity.dart';
+import 'dart:async';
+import 'package:connectivity/connectivity.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -15,25 +17,88 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String _errorMessage = "";
+  bool _isTimeout = false;
+  bool _isPasswordVisible = false;
+
+  Future<bool> _checkConnectivity() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
+  }
+
+  bool _isEmailValid(String email) {
+    // Utiliza una expresión regular para validar el formato del correo electrónico
+    final emailRegExp = RegExp(r'^[\w-]+(\.[\w-]+)*@[a-zA-Z\d-]+(\.[a-zA-Z\d-]+)*\.[a-zA-Z\d-]+$');
+    return emailRegExp.hasMatch(email);
+  }
+
+  bool _isPasswordValid(String password) {
+    // Agrega tus propios requisitos para la contraseña, por ejemplo, longitud mínima, caracteres especiales, etc.
+    return password.length >= 6;
+  }
+
 
   Future<void> _submit() async {
     setState(() {
       _isLoading = true;
       _errorMessage = "";
     });
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
 
-    // Verifica la conectividad a internet
-    var connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
+    bool isConnected = await _checkConnectivity();
+    if (!isConnected) {
       setState(() {
         _isLoading = false;
-        _errorMessage = "No hay conexión a internet";
+        _errorMessage = "No hay conexión a Internet";
       });
       return;
     }
 
-    String email = _emailController.text;
-    String password = _passwordController.text;
+
+    if (email.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "Por favor, ingresa tu correo electrónico";
+      });
+      return;
+    }
+
+    if (password.isEmpty) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "Por favor, ingresa tu contraseña";
+      });
+      return;
+    }
+    if (!_isEmailValid(email)) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Correo electrónico no válido';
+      });
+      return;
+    }
+
+    if (!_isPasswordValid(password)) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'La contraseña debe tener al menos 6 caracteres';
+      });
+      return;
+    }
+    const Duration timeoutDuration = Duration(seconds: 5); // Establece el tiempo de espera en segundos
+
+    Timer timeoutTimer = Timer(timeoutDuration, () {
+      // Se agotó el tiempo de espera, cancela la solicitud y muestra un mensaje de error
+      http.Client().close(); // Cancela la solicitud HTTP actual
+      setState(() {
+        _isLoading = false;
+        _isTimeout = true;
+        _errorMessage = "No se pudo conectar con el servidor.";
+      });
+    });
+
+
+
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -61,6 +126,7 @@ class _LoginPageState extends State<LoginPage> {
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
       );
+      timeoutTimer.cancel();
     } else {
       var errorResponse = jsonDecode(response.body);
       var errorMessage = "";
@@ -150,6 +216,12 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 8.0),
                       TextField(
                         controller: _emailController,
+                        onChanged: (value) {
+                          setState(() {
+                            // Realiza la validación del correo electrónico a medida que el usuario escribe
+                            _errorMessage = !_isEmailValid(value) ? 'Correo electrónico no válido' : '';
+                          });
+                        },
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           hintText: 'Ingrese su correo',
@@ -168,17 +240,32 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 8.0),
-                      TextField(
+                      TextFormField(
                         controller: _passwordController,
-                        style: const TextStyle(color: Colors.white),
-                        obscureText: true,
+                        onChanged: (value) {
+                          setState(() {
+                            _errorMessage = !_isPasswordValid(value) ? 'La contraseña debe tener al menos 6 caracteres' : '';
+                          });
+                        },
+                        obscureText: !_isPasswordVisible, // Muestra los caracteres ocultos si _isPasswordVisible es false
                         decoration: InputDecoration(
                           hintText: 'Ingrese su contraseña',
-                          hintStyle: TextStyle(
-                              fontSize: 18.0, color: Colors.grey[400]),
-                          border: const OutlineInputBorder(),
+                          hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
+                          border: OutlineInputBorder(),
+                          suffixIcon: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible; // Cambia el estado de la visibilidad de la contraseña
+                              });
+                            },
+                            child: Icon(
+                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       ),
+
                       const SizedBox(height: 25.0),
                       SizedBox(
                         width: double.infinity,
@@ -206,6 +293,7 @@ class _LoginPageState extends State<LoginPage> {
                               )
                             : Container(),
                       ),
+
                     ],
                   ),
                 ),
