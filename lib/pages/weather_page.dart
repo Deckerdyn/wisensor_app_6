@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -23,8 +22,6 @@ class _WeatherPageState extends State<WeatherPage> {
   bool _isLoading = true;
   String _message = "";
 
-  FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
 
   Timer? _timer;
 
@@ -55,34 +52,6 @@ class _WeatherPageState extends State<WeatherPage> {
       "Accept": "application/json",
       "Authorization": "Bearer $token"
     };
-    Future<void> _showNotification(Map<String, dynamic> alert) async {
-      var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'channel_id',
-        'channel_name',
-        //'channel_description',
-        importance: Importance.max,
-        priority: Priority.high,
-        ticker: 'ticker',
-        styleInformation: BigTextStyleInformation(
-          alert['valor_encontrado'],
-          htmlFormatContent: true,
-          htmlFormatTitle: true,
-          summaryText: alert['centro'],
-        ),
-      );
-      //var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-      var platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-        //iOS: iOSPlatformChannelSpecifics,
-      );
-      await _flutterLocalNotificationsPlugin.show(
-        0,
-        alert['variable'],
-        alert['valor_encontrado'],
-        platformChannelSpecifics,
-        payload: alert['fecha'],
-      );
-    }
 
     http.Response response = await http.get(
       Uri.parse(
@@ -98,9 +67,6 @@ class _WeatherPageState extends State<WeatherPage> {
         _isLoading = false;
         _message = jsonResponse["message"];
       });
-      for (var alert in _alerts) {
-        _showNotification(alert);
-      }
     } else {
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
@@ -120,14 +86,6 @@ class _WeatherPageState extends State<WeatherPage> {
   void initState() {
     super.initState();
     _fetchAlerts();
-    var initializationSettingsAndroid =
-    AndroidInitializationSettings('app_icon');
-    var initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
-    _flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
 
     // Configure the timer to fetch alerts every msecondsinute
     _timer = Timer.periodic(Duration(minutes: 1), (timer) {
