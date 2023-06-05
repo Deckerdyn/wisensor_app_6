@@ -5,7 +5,7 @@ class NetworkModule extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Alertas de Iot', style: TextStyle(fontSize: 20.0)),
+        title: Text('Alertas de Red', style: TextStyle(fontSize: 20.0)),
         centerTitle: true,
       ),
       body: Stack(
