@@ -178,10 +178,6 @@ class _HomePageState extends State<HomePage> {
               title: const Text('Clima'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  CustomPageRoute(child: WeatherModule()),
-                );
               },
             ),
             ListTile(
