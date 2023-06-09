@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'package:connectivity/connectivity.dart';
 import 'dart:async';
-import 'package:connectivity/connectivity.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -230,7 +229,9 @@ class _LoginPageState extends State<LoginPage> {
                           border: const OutlineInputBorder(),
                         ),
                       ),
+
                       const SizedBox(height: 16.0),
+
                       const Text(
                         'Contraseña',
                         style: TextStyle(
@@ -239,7 +240,9 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.white,
                         ),
                       ),
+
                       const SizedBox(height: 8.0),
+
                       TextFormField(
                         controller: _passwordController,
                         onChanged: (value) {
@@ -267,6 +270,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
 
                       const SizedBox(height: 25.0),
+
                       SizedBox(
                         width: double.infinity,
                         height: 50.0,
@@ -283,7 +287,9 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 3.0),
+
                       Center(
                         child: _errorMessage.isNotEmpty
                             ? Text(

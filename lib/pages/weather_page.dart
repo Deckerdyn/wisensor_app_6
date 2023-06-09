@@ -22,7 +22,6 @@ class _WeatherPageState extends State<WeatherPage> {
   bool _isLoading = true;
   String _message = "";
 
-
   Timer? _timer;
 
 
@@ -160,35 +159,53 @@ class _WeatherPageState extends State<WeatherPage> {
                           ),
                           subtitle: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: RichText(
-                              text: TextSpan(
-                                style: TextStyle(
-                                    fontSize: 20.0, color: Colors.white),
-                                children: [
-                                  TextSpan(
-                                    text: 'Valor: ',
+                            child: Row( // Utilizar Row en lugar de Column
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                RichText(
+                                  text: TextSpan(
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18
+                                      fontSize: 20.0,
+                                      color: Colors.white,
                                     ),
+                                    children: [
+                                      TextSpan(
+
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      TextSpan(
+
+                                        text: '${_alerts[index]["fecha"]}',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
                                   ),
-                                  TextSpan(
-                                      text: '${_alerts[index]["valor_encontrado"]}\n',
-                                      style: TextStyle(fontSize: 16)
-                                  ),
-                                  TextSpan(
-                                    text: 'Fecha: ',
+                                ),
+                                SizedBox(width: 16), // Espacio entre el valor y la fecha
+                                RichText(
+                                  text: TextSpan(
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18
+                                      fontSize: 20.0,
+                                      color: Colors.white,
                                     ),
+                                    children: [
+                                      TextSpan(
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: '${_alerts[index]["valor_encontrado"]}',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
                                   ),
-                                  TextSpan(
-                                      text: '${_alerts[index]["fecha"]}',
-                                      style: TextStyle(fontSize: 16)
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                           trailing: Padding(
