@@ -45,20 +45,17 @@ class _WeatherPageState extends State<WeatherPage> {
   Future<void> _fetchAlerts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
-
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept": "application/json",
       "Authorization": "Bearer $token"
     };
-
     http.Response response = await http.get(
       Uri.parse(
           "https://wisensor.cl/api/app/centro/alertas/clima?idu=${widget
               .idu}&idc=${widget.idc}"),
       headers: headers,
     );
-
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
       setState(() {

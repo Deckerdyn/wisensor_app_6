@@ -84,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
       });
       return;
     }
-    const Duration timeoutDuration = Duration(seconds: 5); // Establece el tiempo de espera en segundos
+    const Duration timeoutDuration = Duration(seconds: 10); // Establece el tiempo de espera en segundos
 
     Timer timeoutTimer = Timer(timeoutDuration, () {
       // Se agotó el tiempo de espera, cancela la solicitud y muestra un mensaje de error
@@ -129,7 +129,6 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       var errorResponse = jsonDecode(response.body);
       var errorMessage = "";
-
       if (errorResponse.containsKey("errors")) {
         var errors = errorResponse["errors"];
         if (errors.containsKey("email")) {
@@ -147,7 +146,6 @@ class _LoginPageState extends State<LoginPage> {
           errorMessage = "Email no es valido";
         }
       }
-
       setState(() {
         _errorMessage = errorMessage;
       });

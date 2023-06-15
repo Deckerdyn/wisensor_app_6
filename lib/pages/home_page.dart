@@ -10,6 +10,7 @@ import 'package:Wisensor/modules/network_module.dart';
 import 'package:Wisensor/modules/security_module.dart';
 import 'package:Wisensor/pages/weather_page.dart';
 import 'dart:convert';
+import '../modules/setting_module.dart';
 import '../modules/weather_module.dart';
 import 'custom_page_route.dart';
 import 'login_page.dart';
@@ -84,7 +85,6 @@ class _HomePageState extends State<HomePage> {
   Future<void> _logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
-
     if (token == null) {
       // El token no existe, el usuario no está autenticado
       Navigator.pushReplacement(
@@ -93,18 +93,15 @@ class _HomePageState extends State<HomePage> {
       );
       return;
     }
-
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept": "application/json",
       "Authorization": "Bearer $token"
     };
-
     http.Response response = await http.post(
       Uri.parse("https://wisensor.cl/api/app/logout"),
       headers: headers,
     );
-
     if (response.statusCode == 200) {
       prefs.remove("token");
       Navigator.pushReplacement(
@@ -176,10 +173,13 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: const Text('Clima'),
                 onTap: () {
+                  Navigator.pop(context);
+                  /*
                   Navigator.push(
                     context,
                     CustomPageRoute(child: WeatherModule()),
                   );
+                   */
                 },
               ),
               ListTile(
@@ -255,6 +255,10 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Configuraciones'),
                 onTap: () {
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    CustomPageRoute(child: SettingModule()),
+                  );
                 },
               ),
               ListTile(

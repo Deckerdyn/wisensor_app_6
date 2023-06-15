@@ -52,7 +52,7 @@ Future<void> main() async {
   prefs.setString('apiUrl', 'https://wisensor.cl/api/app/login');
   prefs.setString('token', '');
 
-  mostrarNotificacion();
+  //mostrarNotificacion();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(MyApp());
 }
