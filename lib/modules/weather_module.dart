@@ -10,8 +10,6 @@ import 'package:Wisensor/modules/network_module.dart';
 import 'package:Wisensor/modules/security_module.dart';
 import 'package:Wisensor/pages/weather_page.dart';
 import 'dart:convert';
-import '../global_data.dart';
-import '../modules/weather_module.dart';
 import '../pages/custom_page_route.dart';
 import '../pages/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
