@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'weather_page.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -14,6 +15,41 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   late GoogleMapController mapController;
   Set<Marker> markers = {};
+  late int idu;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCentros().then((centros) {
+      setState(() {
+        markers = centros.map((centro) {
+          final markerId = MarkerId(centro['idc'].toString());
+          final position = LatLng(
+            centro['latitud'] as double,
+            centro['longitud'] as double,
+          );
+          final infoWindow = InfoWindow(
+            title: centro['nombre'].toString(),
+            onTap: () {
+              // Redirigir a las alertas del centro
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WeatherPage(
+                    idu: idu,
+                    idc: centro['idc'] as int,
+                  ),
+                ),
+              );
+            },
+          );
+          return Marker(markerId: markerId, position: position, infoWindow: infoWindow);
+        }).toSet();
+      });
+    }).catchError((error) {
+      print('Error al cargar los centros: $error');
+    });
+  }
 
   Future<List<Map<String, dynamic>>> fetchCentros() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -35,30 +71,11 @@ class _MapPageState extends State<MapPage> {
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       final centrosData = jsonResponse['data'] as List<dynamic>;
+      idu = centrosData[0]['idu'] as int;
       return centrosData.map((centro) => centro as Map<String, dynamic>).toList();
     } else {
       throw Exception('Error al cargar los centros');
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchCentros().then((centros) {
-      setState(() {
-        markers = centros.map((centro) {
-          final markerId = MarkerId(centro['idc'].toString());
-          final position = LatLng(
-            centro['latitud'] as double,
-            centro['longitud'] as double,
-          );
-          final infoWindow = InfoWindow(title: centro['nombre'].toString());
-          return Marker(markerId: markerId, position: position, infoWindow: infoWindow);
-        }).toSet();
-      });
-    }).catchError((error) {
-      print('Error al cargar los centros: $error');
-    });
   }
 
   @override
