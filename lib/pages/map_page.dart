@@ -87,7 +87,7 @@ class _MapPageState extends State<MapPage> {
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
           target: LatLng(-41.681928, -72.676070),
-          zoom: 13,
+          zoom: 8,
         ),
         markers: markers,
         onMapCreated: (GoogleMapController controller) {

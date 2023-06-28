@@ -335,67 +335,76 @@ class _HomePageState extends State<HomePage> {
                   child: ListView.builder(
                     itemCount: _centros.length,
                     itemBuilder: (BuildContext context, int index) {
+                      bool isRed = 0 == 0; //cambia el color dependiendo de la severidad de la alerta
                       return Column(
                         children: [
-                          ListTile(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                CustomPageRoute(
-                                  child: WeatherPage(
-                                    idu: _centros[index]["idu"],
-                                    idc: _centros[index]["idc"],
-                                  ),
-                                ),
-                              );
-                            },
-                            title: Text(
-                              _centros[index]["nombre"],
-                              style: TextStyle(
-                                fontSize: 21.0,
-                                fontWeight: FontWeight.bold,
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: isRed ? Colors.red : Colors.yellow, // Cambia el color del contorno a rojo si es true
+                                width: 2.0, // Ajusta el ancho del contorno según tus preferencias
                               ),
                             ),
-                            subtitle: Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: RichText(
-                                text: TextSpan(
-                                  style: TextStyle(
-                                    fontSize: 20.0,
-                                    color: Colors.white,
+                            child: ListTile(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  CustomPageRoute(
+                                    child: WeatherPage(
+                                      idu: _centros[index]["idu"],
+                                      idc: _centros[index]["idc"],
+                                    ),
                                   ),
-                                  children: [
-                                    TextSpan(
-                                      text: 'Latitud: ',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
-                                    ),
-                                    TextSpan(text: '${_centros[index]["latitud"]}\n',style: TextStyle(fontSize: 17)),
-                                    TextSpan(
-                                      text: 'Longitud: ',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
-                                    ),
-                                    TextSpan(text: '${_centros[index]["longitud"]}\n', style: TextStyle(fontSize: 17)),
-                                  ],
+                                );
+                              },
+                              title: Text(
+                                _centros[index]["nombre"],
+                                style: TextStyle(
+                                  fontSize: 21.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: isRed ? Colors.red : Colors.yellow, // Cambia el color a rojo si es true
                                 ),
                               ),
-                            ),
-
-                            trailing: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: 40.0,
-                                height: 40.0,
-
-                                child: Icon(
-                                  Icons.keyboard_arrow_right,
-                                  color: Colors.white,
-                                  size: 60.0,
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      fontSize: 20.0,
+                                      color: isRed ? Colors.red : Colors.yellow, // Cambia el color a rojo si es true
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: '09/06/2023 ',
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+                                      ),
+                                      TextSpan(text: '4.5°',style: TextStyle(fontSize: 17)),
+                                      WidgetSpan(
+                                        child: Icon(
+                                          Icons.thermostat,
+                                          size: 19,
+                                          color: isRed ? Colors.red : Colors.yellow, // Cambia el color a rojo si es true
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              trailing: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SizedBox(
+                                  width: 40.0,
+                                  height: 40.0,
+                                  child: Icon(
+                                    Icons.keyboard_arrow_right,
+                                    color: isRed ? Colors.red : Colors.yellow, // Cambia el color a rojo si es true
+                                    size: 60.0,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                           Divider(height: 1, color: Colors.grey),
-
                         ],
                       );
                     },
