@@ -230,6 +230,7 @@ class _WeatherModuleState extends State<WeatherModule> {
                   );
                 },
               ),
+              /*
               ListTile(
                 leading: const Icon(
                   Icons.travel_explore,
@@ -244,6 +245,8 @@ class _WeatherModuleState extends State<WeatherModule> {
                 },
               ),
               Divider(),
+              */
+
               ListTile(
                 leading: const Icon(
                   Icons.settings,
@@ -332,16 +335,7 @@ class _WeatherModuleState extends State<WeatherModule> {
                         children: [
                           ListTile(
                             onTap: () {
-                              Navigator.push(
-                                context,
 
-                                CustomPageRoute(
-                                  child: WeatherPage(
-                                    idu: _centros[index]["idu"],
-                                    idc: _centros[index]["idc"],
-                                  ),
-                                ),
-                              );
                             },
                             title: Text(
                               _centros[index]["nombre"],

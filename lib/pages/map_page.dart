@@ -36,8 +36,10 @@ class _MapPageState extends State<MapPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => WeatherPage(
+                    ide: centro['ide'] as int,
                     idu: idu,
                     idc: centro['idc'] as int,
+                    nombreCentro: centro['nombre'],
                   ),
                 ),
               );
@@ -87,7 +89,7 @@ class _MapPageState extends State<MapPage> {
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
           target: LatLng(-41.681928, -72.676070),
-          zoom: 13,
+          zoom: 8,
         ),
         markers: markers,
         onMapCreated: (GoogleMapController controller) {

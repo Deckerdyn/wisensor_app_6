@@ -16,12 +16,17 @@ import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
+  final int idu;
+
+  HomePage({required this.idu});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   List<dynamic> _centros = [];
+  List<int> _alertCounts = [];
   bool _isLoading = true;
   String _message = "";
 
@@ -38,8 +43,9 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchCentros() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
+    int? idu = prefs.getInt("idu");
 
-    if (token == null) {
+    if (token == null || idu == null) {
       // El token no existe, el usuario no está autenticado
       Navigator.pushReplacement(
         context,
@@ -55,7 +61,7 @@ class _HomePageState extends State<HomePage> {
     };
 
     http.Response response = await http.get(
-      Uri.parse("https://wisensor.cl/api/app/user/centros"),
+      Uri.parse("http://201.220.112.247:1880/wisensor/api/centros?idu=${widget.idu}"),
       headers: headers,
     );
 
@@ -63,10 +69,16 @@ class _HomePageState extends State<HomePage> {
       var jsonResponse = jsonDecode(response.body);
       setState(() {
         _centros = jsonResponse["data"];
-        _isLoading = false;
+        //_isLoading = false;
         _message = jsonResponse["message"];
+        //print(_centros);
       });
+
+      // Obtener la cantidad de alertas para cada centro
+      await _fetchAlertCounts();
     } else {
+      var jsonResponse = jsonDecode(response.body);
+      print(jsonResponse["message"]);
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
         var errorMessage = errorResponse["message"];
@@ -81,55 +93,71 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _logout(BuildContext context) async {
+  Future<void> _fetchAlertCounts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
-    if (token == null) {
-      // El token no existe, el usuario no está autenticado
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-      return;
-    }
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept": "application/json",
       "Authorization": "Bearer $token"
     };
-    http.Response response = await http.post(
-      Uri.parse("https://wisensor.cl/api/app/logout"),
-      headers: headers,
-    );
-    if (response.statusCode == 200) {
-      prefs.remove("token");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
+
+    // Obtener la cantidad de alertas para cada centro
+    List<int> counts = [];
+    for (var centro in _centros) {
+      int ide = centro["ide"];
+      int idu = centro["idu"];
+      int idc = centro["idc"];
+
+      http.Response response = await http.get(
+        Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas?ide=$ide&idu=$idu&idc=$idc"),
+        headers: headers,
       );
-    } else {
-      var errorResponse = jsonDecode(response.body);
-      if (errorResponse.containsKey("message")) {
-        var errorMessage = errorResponse["message"];
-        if (errorMessage == "Unauthenticated.") {
-          prefs.remove("token");
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
-          );
-        }
+
+      if (response.statusCode == 200) {
+        _isLoading = false;
+        print(";D");
+        var jsonResponse = jsonDecode(response.body);
+        print(jsonResponse["message"]);
+        int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
+        counts.add(count);
+      } else {
+        _isLoading = false;
+        print(":c");
+        //print("IDE: $ide");
+        //print("IDU: $idu");
+        //print("IDC: $idc");
+        var jsonResponse = jsonDecode(response.body);
+
+        print(jsonResponse["message"]);
+
+        counts.add(0); // Si hay un error, agregar cero alertas para el centro
       }
     }
+
+    setState(() {
+      _alertCounts = counts;
+    });
+  }
+
+  // Método para manejar el cierre de sesión
+  Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("erroneo");
+    prefs.remove("token");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
   }
 
   @override
   void initState() {
-    init();
     super.initState();
     _fetchCentros();
   }
 
-  init() async{
+  init() async {
     String deviceToken = await getDeviceToken();
     print("##### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFICATION #####");
     print(deviceToken);
@@ -139,7 +167,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: _onWillPop, // Asignar el método _onWillPop como el controlador de retroceso
+      onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Alertas Generales', style: TextStyle(fontSize: 20.0)),
@@ -238,6 +266,7 @@ class _HomePageState extends State<HomePage> {
                   Icons.travel_explore,
                 ),
                 title: const Text('Estación metereológica'),
+
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -245,6 +274,8 @@ class _HomePageState extends State<HomePage> {
                     CustomPageRoute(child: MapPage()),
                   );
                 },
+
+
               ),
               Divider(),
               ListTile(
@@ -297,7 +328,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-
         body: _isLoading
             ? Center(child: CircularProgressIndicator())
             : Stack(
@@ -328,74 +358,91 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white,
                     ),
                   ),
-
                 ),
                 Divider(height: 1, color: Colors.grey, thickness: 1,),
                 Expanded(
                   child: ListView.builder(
                     itemCount: _centros.length,
                     itemBuilder: (BuildContext context, int index) {
+                      bool isRed = _alertCounts[index] > 0;
+                      bool hasYellowAlert = _alertCounts[index] > 0;
+                      bool hasRedAlert = _alertCounts[index] > 0 && _centros[index]['severidad'] == 'Rojo';
                       return Column(
                         children: [
-                          ListTile(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                CustomPageRoute(
-                                  child: WeatherPage(
-                                    idu: _centros[index]["idu"],
-                                    idc: _centros[index]["idc"],
-                                  ),
-                                ),
-                              );
-                            },
-                            title: Text(
-                              _centros[index]["nombre"],
-                              style: TextStyle(
-                                fontSize: 21.0,
-                                fontWeight: FontWeight.bold,
+                          Container(
+                            decoration: BoxDecoration(
+                              color: hasRedAlert ?  Colors.red.withOpacity(0.7) : hasYellowAlert ? Colors.yellow[600]!.withOpacity(0.8) : Colors.green[600]!.withOpacity(0.8),
+                              border: Border.all(
+                                color: isRed ? Colors.black : Colors.black,
+                                width: 2.0,
                               ),
                             ),
-                            subtitle: Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: RichText(
-                                text: TextSpan(
-                                  style: TextStyle(
-                                    fontSize: 20.0,
-                                    color: Colors.white,
+                            child: ListTile(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  CustomPageRoute(
+                                    child: WeatherPage(
+                                      ide: _centros[index]["ide"],
+                                      idu: _centros[index]["idu"],
+                                      idc: _centros[index]["idc"],
+                                      nombreCentro: _centros[index]["nombre"], // Pasar el nombre del centro
+                                    ),
                                   ),
-                                  children: [
-                                    TextSpan(
-                                      text: 'Latitud: ',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
-                                    ),
-                                    TextSpan(text: '${_centros[index]["latitud"]}\n',style: TextStyle(fontSize: 17)),
-                                    TextSpan(
-                                      text: 'Longitud: ',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
-                                    ),
-                                    TextSpan(text: '${_centros[index]["longitud"]}\n', style: TextStyle(fontSize: 17)),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            trailing: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: 40.0,
-                                height: 40.0,
-
-                                child: Icon(
-                                  Icons.keyboard_arrow_right,
-                                  color: Colors.white,
-                                  size: 60.0,
-                                ),
+                                );
+                              },
+                              title: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        _centros[index]["nombre"],
+                                        style: TextStyle(
+                                          fontSize: 21.0,
+                                          fontWeight: FontWeight.w500,
+                                          color: hasRedAlert ?  Colors.grey[200] : hasYellowAlert? Colors.black87 : Colors.grey[200],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Icon(
+                                          Icons.directions_boat,
+                                          size: 30.0,
+                                          color: hasRedAlert ? Colors.blueAccent[100] : hasYellowAlert ? Colors.black : Colors.white,
+                                      ),
+                                      Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: Container(
+                                          padding: EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                            color: isRed ? Colors.red : Colors.black54,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          constraints: BoxConstraints(
+                                            minWidth: 18,
+                                            minHeight: 18,
+                                          ),
+                                          child: Text(
+                                            _alertCounts.length > index ? '${_alertCounts[index]}' : '0',
+                                            style: TextStyle(
+                                              color: isRed ? Colors.grey[300] : Colors.grey[300],
+                                              fontSize: 12,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                           Divider(height: 1, color: Colors.grey),
-
                         ],
                       );
                     },

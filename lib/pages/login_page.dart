@@ -96,9 +96,6 @@ class _LoginPageState extends State<LoginPage> {
       });
     });
 
-
-
-
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept": "application/json"
@@ -107,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
     Map<String, String> body = {"email": email, "password": password};
 
     http.Response response = await http.post(
-      Uri.parse("https://wisensor.cl/api/app/login"),
+      Uri.parse("http://201.220.112.247:1880/wisensor/api/login"),
       headers: headers,
       body: jsonEncode(body),
     );
@@ -119,33 +116,29 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
       String token = jsonResponse["data"]["token"];
+      int idu = jsonResponse["data"]["idu"];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("token", token);
+      await prefs.setInt("idu", idu);
+
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => HomePage(idu: idu)),
       );
+      print("IDU: $idu"); // Printing the idu
+      print("TOKEN: $token"); //Printing the token
       timeoutTimer.cancel();
     } else {
+      print("alfin");
       var errorResponse = jsonDecode(response.body);
       var errorMessage = "";
-      if (errorResponse.containsKey("errors")) {
-        var errors = errorResponse["errors"];
-        if (errors.containsKey("email")) {
-          errorMessage = errors["email"][0];
-        } else if (errors.containsKey("password")) {
-          errorMessage = errors["password"][0];
-        }
-      } else if (errorResponse.containsKey("message")) {
         var message = errorResponse["message"];
-        if (message == "Las credenciales no coinciden") {
-          errorMessage = "Las credenciales no coinciden";
-        } else if (message == "Email no existe") {
-          errorMessage = "Email no existe";
-        } else if (message == "Email no es valido") {
-          errorMessage = "Email no es valido";
+        if (message == "El usuario no existe en nuestro sistema.") {
+          errorMessage = "El usuario no existe en nuestro sistema.";
+        } else if (message == "Las credenciales no son válidas") {
+          errorMessage = "Las credenciales no son válidas";
         }
-      }
+
       setState(() {
         _errorMessage = errorMessage;
       });

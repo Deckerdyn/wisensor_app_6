@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -19,7 +19,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 Future<void> main() async {
-
+  //FontAwesomeIcons.loadFont('24D6EE65-7B0B-4A1F-A696-F6FA8BD6D23D');
   WidgetsFlutterBinding.ensureInitialized();
   //initialize firebase from firebase core plugin
   final prefs = await SharedPreferences.getInstance();
@@ -49,7 +49,7 @@ Future<void> main() async {
       print('Notification Body: ${message.notification?.body}');
     }
   });
-  prefs.setString('apiUrl', 'https://wisensor.cl/api/app/login');
+  prefs.setString('apiUrl', 'http://201.220.112.247:1880/wisensor/api/login');
   prefs.setString('token', '');
 
   //mostrarNotificacion();
@@ -59,7 +59,7 @@ Future<void> main() async {
 Future<String?> getToken() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getString("token");
-}
+}/*
 void checkAuthentication(BuildContext context) async {
   String? token = await getToken();
   if (token != null) {
@@ -67,7 +67,7 @@ void checkAuthentication(BuildContext context) async {
     // Redirect to the home page
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomePage()),
+      MaterialPageRoute(builder: (context) => HomePage(idu: 1,)),
     );
   } else {
     // The token doesn't exist, the user is not authenticated
@@ -78,7 +78,7 @@ void checkAuthentication(BuildContext context) async {
     );
   }
 }
-
+*/
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
@@ -88,9 +88,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    checkAuthentication(); // Llamada a la función checkAuthentication en initState
+    //checkAuthentication(); // Llamada a la función checkAuthentication en initState
   }
-
+/*
   void checkAuthentication() async {
     String? token = await getToken();
     if (token != null) {
@@ -109,7 +109,7 @@ class _MyAppState extends State<MyApp> {
       );
     }
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
