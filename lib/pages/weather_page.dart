@@ -25,10 +25,7 @@ class _WeatherPageState extends State<WeatherPage> {
   double _weathers = 0.0;
   bool _isLoading = true;
   String _message = "";
-  String _centroNombre = "";
-  List<dynamic> _centros = [];
   Timer? _timer;
-  String _nombreCentro = "";
 
   IconData parseIconData(String icon) {
     switch (icon) {

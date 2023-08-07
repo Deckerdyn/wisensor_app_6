@@ -8,6 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'weather_page.dart';
 
 class MapPage extends StatefulWidget {
+  final int idu; // Agregamos el parámetro idu al constructor
+
+  MapPage({required this.idu}); // Agregamos el parámetro idu al constructor
+
   @override
   _MapPageState createState() => _MapPageState();
 }
@@ -15,7 +19,6 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   late GoogleMapController mapController;
   Set<Marker> markers = {};
-  late int idu;
 
   @override
   void initState() {
@@ -37,7 +40,7 @@ class _MapPageState extends State<MapPage> {
                 MaterialPageRoute(
                   builder: (context) => WeatherPage(
                     ide: centro['ide'] as int,
-                    idu: idu,
+                    idu: widget.idu, // Utilizamos el idu del widget
                     idc: centro['idc'] as int,
                     nombreCentro: centro['nombre'],
                   ),
@@ -62,7 +65,7 @@ class _MapPageState extends State<MapPage> {
       throw Exception('Usuario no autenticado');
     }
 
-    final url = Uri.parse('https://wisensor.cl/api/app/user/centros');
+    final url = Uri.parse('http://201.220.112.247:1880/wisensor/api/centros?idu=${widget.idu}');
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -73,7 +76,6 @@ class _MapPageState extends State<MapPage> {
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       final centrosData = jsonResponse['data'] as List<dynamic>;
-      idu = centrosData[0]['idu'] as int;
       return centrosData.map((centro) => centro as Map<String, dynamic>).toList();
     } else {
       throw Exception('Error al cargar los centros');

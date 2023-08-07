@@ -266,16 +266,15 @@ class _HomePageState extends State<HomePage> {
                   Icons.travel_explore,
                 ),
                 title: const Text('Estación metereológica'),
-
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    CustomPageRoute(child: MapPage()),
+                    MaterialPageRoute(
+                      builder: (context) => MapPage(idu: widget.idu),
+                    ),
                   );
                 },
-
-
               ),
               Divider(),
               ListTile(
@@ -312,7 +311,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-
               Container(
                 margin: const EdgeInsets.fromLTRB(90, 0, 0, 0),
                 child: const Text(
@@ -359,7 +357,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                Divider(height: 1, color: Colors.grey, thickness: 1,),
+                Divider(
+                  height: 1,
+                  color: Colors.grey,
+                  thickness: 1,
+                ),
                 Expanded(
                   child: ListView.builder(
                     itemCount: _centros.length,
@@ -371,7 +373,11 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Container(
                             decoration: BoxDecoration(
-                              color: hasRedAlert ?  Colors.red.withOpacity(0.7) : hasYellowAlert ? Colors.yellow[600]!.withOpacity(0.8) : Colors.green[600]!.withOpacity(0.8),
+                              color: hasRedAlert
+                                  ? Colors.red.withOpacity(0.7)
+                                  : hasYellowAlert
+                                  ? Colors.yellow[600]!.withOpacity(0.8)
+                                  : Colors.green[600]!.withOpacity(0.8),
                               border: Border.all(
                                 color: isRed ? Colors.black : Colors.black,
                                 width: 2.0,
@@ -401,7 +407,11 @@ class _HomePageState extends State<HomePage> {
                                         style: TextStyle(
                                           fontSize: 21.0,
                                           fontWeight: FontWeight.w500,
-                                          color: hasRedAlert ?  Colors.grey[200] : hasYellowAlert? Colors.black87 : Colors.grey[200],
+                                          color: hasRedAlert
+                                              ? Colors.grey[200]
+                                              : hasYellowAlert
+                                              ? Colors.black87
+                                              : Colors.grey[200],
                                         ),
                                       ),
                                     ],
@@ -409,9 +419,9 @@ class _HomePageState extends State<HomePage> {
                                   Stack(
                                     children: [
                                       Icon(
-                                          Icons.directions_boat,
-                                          size: 30.0,
-                                          color: hasRedAlert ? Colors.blueAccent[100] : hasYellowAlert ? Colors.black : Colors.white,
+                                        Icons.directions_boat,
+                                        size: 30.0,
+                                        color: hasRedAlert ? Colors.blueAccent[100] : hasYellowAlert ? Colors.black : Colors.white,
                                       ),
                                       Positioned(
                                         top: 0,
