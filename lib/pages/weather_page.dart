@@ -65,7 +65,7 @@ class _WeatherPageState extends State<WeatherPage> {
       var jsonResponse = jsonDecode(response.body);
       setState(() {
         _alerts = jsonResponse["data"];
-        _isLoading = false;
+        //_isLoading = false;
         _message = jsonResponse["message"];
 /*
         if (_alerts.isNotEmpty) {
@@ -135,10 +135,10 @@ class _WeatherPageState extends State<WeatherPage> {
       );
 
       if (response.statusCode == 200) {
+        _isLoading = false;
         var jsonResponse = jsonDecode(response.body);
         double weatherValue = jsonResponse["data"]["valor"];
         _weatherValues[weather["codigo_empresa"] + weather["codigo_centro"] + weather["clima_id"]] = weatherValue;
-        print (_weatherValues);
       } else {
         print("parece que no");
         var errorResponse = jsonDecode(response.body);

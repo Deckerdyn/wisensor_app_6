@@ -36,7 +36,32 @@ class _HomePageState extends State<HomePage> {
     if (Navigator.of(context).canPop()) {
       return true; // Permitir retroceder si hay una página anterior
     } else {
-      return false; // Deshabilitar el retroceso si no hay una página anterior
+      // Mostrar un diálogo para confirmar si el usuario desea cerrar sesión
+      bool confirmLogout = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Cerrar Sesión'),
+            content: Text('¿Estás seguro que deseas cerrar sesión?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false); // No cerrar sesión
+                },
+                child: Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true); // Cerrar sesión
+                },
+                child: Text('Aceptar'),
+              ),
+            ],
+          );
+        },
+      );
+
+      return confirmLogout == true; // Si confirmLogout es true, permitir cerrar sesión
     }
   }
 
