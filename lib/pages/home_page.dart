@@ -265,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                 leading: const Icon(
                   Icons.travel_explore,
                 ),
-                title: const Text('Estación metereológica'),
+                title: const Text('Mapa'),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(

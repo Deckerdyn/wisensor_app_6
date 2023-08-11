@@ -26,6 +26,8 @@ class _WeatherPageState extends State<WeatherPage> {
   bool _isLoading = true;
   String _message = "";
   Timer? _timer;
+  Map<String, double> _weatherValues = {}; // Mapa para almacenar valores de clima por alerta
+
 
   IconData parseIconData(String icon) {
     switch (icon) {
@@ -114,7 +116,8 @@ class _WeatherPageState extends State<WeatherPage> {
     };
 
 //push de prueba 4
-    for (var weather in _alerts) {
+    for (int index = 0; index < _alerts.length; index++) {
+      var weather = _alerts[index]; // Acceder a la alerta utilizando el índice
       print(_alerts);
       print("????");
       String cli = weather["clima_id"];
@@ -132,11 +135,10 @@ class _WeatherPageState extends State<WeatherPage> {
       );
 
       if (response.statusCode == 200) {
-        print("parece que sí");
         var jsonResponse = jsonDecode(response.body);
-        _weathers = jsonResponse["data"]["valor"];
-        print(jsonResponse["data"]["valor"]);
-
+        double weatherValue = jsonResponse["data"]["valor"];
+        _weatherValues[weather["codigo_empresa"] + weather["codigo_centro"] + weather["clima_id"]] = weatherValue;
+        print (_weatherValues);
       } else {
         print("parece que no");
         var errorResponse = jsonDecode(response.body);
@@ -277,20 +279,16 @@ class _WeatherPageState extends State<WeatherPage> {
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18,
                                         ),
+                                        text: '${_weatherValues[_alerts[index]["codigo_empresa"] + _alerts[index]["codigo_centro"] + _alerts[index]["clima_id"]]}',
                                       ),
                                       TextSpan(
-                                        text:
-                                        '${_weathers}',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                        '${_alerts[index]["simbolo"]}',
+                                        text: '${_alerts[index]["simbolo"]}',
                                         style: TextStyle(fontSize: 16),
                                       ),
                                     ],
                                   ),
                                 ),
+
                               ],
                             ),
                           ),
