@@ -146,7 +146,7 @@ class _MapPageState extends State<MapPage> {
         for (var alerta in jsonResponse["data"]) {
           print("Severidad: ${alerta["severidad"]}");
           if(alerta["severidad"] == "Rojo"){
-            print("Centro $idc es amarillo ");
+            print("Centro $idc es Rojo ");
             setState(() {
               markersWithAlerts.add(idc); // Agregar el ID del centro a la lista
             });

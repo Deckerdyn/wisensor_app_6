@@ -29,6 +29,8 @@ class _HomePageState extends State<HomePage> {
   List<int> _alertCounts = [];
   bool _isLoading = true;
   String _message = "";
+  List<int> markersWithAlerts = []; // Cambiado a List<int>
+  List<int> markersWithAlerts2 = []; // Cambiado a List<int>
 
   // Método que maneja la acción de retroceso del botón físico o virtual de Android
   Future<bool> _onWillPop() async {
@@ -140,14 +142,29 @@ class _HomePageState extends State<HomePage> {
       );
 
       if (response.statusCode == 200) {
-        _isLoading = false;
+
         print(";D");
         var jsonResponse = jsonDecode(response.body);
         print(jsonResponse["message"]);
         int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
         counts.add(count);
+        // Imprimir la severidad de la alerta
+        for (var alerta in jsonResponse["data"]) {
+          print("Severidad: ${alerta["severidad"]}");
+          if(alerta["severidad"] == "Rojo"){
+            print("Centro $idc es Rojo ");
+            setState(() {
+              markersWithAlerts.add(idc); // Agregar el ID del centro a la lista
+            });
+          } else if(alerta["severidad"] == "Amarillo"){
+            print("Centro $idc es amarillo ");
+            setState(() {
+              markersWithAlerts2.add(idc); // Agregar el ID del centro a la lista
+            });
+          }
+        }
+        //_isLoading = false;
       } else {
-        _isLoading = false;
         print(":c");
         //print("IDE: $ide");
         //print("IDU: $idu");
@@ -161,6 +178,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     setState(() {
+      _isLoading = false;
       _alertCounts = counts;
     });
   }
@@ -391,9 +409,11 @@ class _HomePageState extends State<HomePage> {
                   child: ListView.builder(
                     itemCount: _centros.length,
                     itemBuilder: (BuildContext context, int index) {
-                      bool isRed = _alertCounts[index] > 0;
-                      bool hasYellowAlert = _alertCounts[index] > 0;
-                      bool hasRedAlert = _alertCounts[index] > 0 && _centros[index]['severidad'] == 'Rojo';
+                      //bool isRed = _alertCounts[index] > 0;
+
+                      final hasRedAlert= markersWithAlerts.contains(_centros[index]['idc']);
+                      final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['idc']);
+
                       return Column(
                         children: [
                           Container(
@@ -404,7 +424,7 @@ class _HomePageState extends State<HomePage> {
                                   ? Colors.yellow[600]!.withOpacity(0.8)
                                   : Colors.green[600]!.withOpacity(0.8),
                               border: Border.all(
-                                color: isRed ? Colors.black : Colors.black,
+                                color: Colors.black,
                                 width: 2.0,
                               ),
                             ),
@@ -454,7 +474,7 @@ class _HomePageState extends State<HomePage> {
                                         child: Container(
                                           padding: EdgeInsets.all(2),
                                           decoration: BoxDecoration(
-                                            color: isRed ? Colors.red : Colors.black54,
+                                            color: hasYellowAlert ? Colors.red : Colors.black54,
                                             shape: BoxShape.circle,
                                           ),
                                           constraints: BoxConstraints(
@@ -464,7 +484,7 @@ class _HomePageState extends State<HomePage> {
                                           child: Text(
                                             _alertCounts.length > index ? '${_alertCounts[index]}' : '0',
                                             style: TextStyle(
-                                              color: isRed ? Colors.grey[300] : Colors.grey[300],
+                                              color: hasYellowAlert ? Colors.grey[300] : Colors.grey[300],
                                               fontSize: 12,
                                             ),
                                             textAlign: TextAlign.center,

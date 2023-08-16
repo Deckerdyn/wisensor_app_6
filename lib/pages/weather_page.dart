@@ -78,7 +78,6 @@ class _WeatherPageState extends State<WeatherPage> {
       // Obtener la cantidad de alertas para cada centro
       await _fetchWeather();
     } else if(response.statusCode == 401){
-      print("asdasd");
       var errorResponse = jsonDecode(response.body);
       setState(() {
         _isLoading = false;
@@ -138,7 +137,10 @@ class _WeatherPageState extends State<WeatherPage> {
         _isLoading = false;
         var jsonResponse = jsonDecode(response.body);
         double weatherValue = jsonResponse["data"]["valor"];
-        _weatherValues[weather["codigo_empresa"] + weather["codigo_centro"] + weather["clima_id"]] = weatherValue;
+        // Redondear el valor utilizando double.round()
+        double roundedValue = weatherValue.roundToDouble();
+
+        _weatherValues[weather["codigo_empresa"] + weather["codigo_centro"] + weather["clima_id"]] = roundedValue;
       } else {
         print("parece que no");
         var errorResponse = jsonDecode(response.body);
