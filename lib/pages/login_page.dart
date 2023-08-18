@@ -263,7 +263,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       // Checkbox para la opción "Recuérdame"
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start, // Añadir esta línea
                         children: <Widget>[
                           Checkbox(
                             value: _rememberMe,

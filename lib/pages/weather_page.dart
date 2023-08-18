@@ -102,7 +102,17 @@ class _WeatherPageState extends State<WeatherPage> {
         }
       }
     }
+  }
 
+  Future<void> _handleRefresh() async {
+
+
+    await _fetchAlerts();
+    await _fetchWeather();
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> _fetchWeather() async {
@@ -187,140 +197,144 @@ class _WeatherPageState extends State<WeatherPage> {
         ),
         centerTitle: true,
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Stack(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/fondo_olas.PNG"),
-                fit: BoxFit.cover,
+      body: RefreshIndicator(
+        onRefresh: _handleRefresh,
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Stack(
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/fondo_olas.PNG"),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Color.fromRGBO(0, 0, 0, 0.5),
+            Container(
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(0, 0, 0, 0.5),
+              ),
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  _message,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.0,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    _message,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                    ),
                   ),
                 ),
-              ),
-              Divider(
-                height: 1,
-                color: Colors.grey,
-                thickness: 1,
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _alerts.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    int reversedIndex = _alerts.length - index - 1; // Calcula el índice invertido
-                    String iconDataString = _alerts[reversedIndex]["icono"];
-                    IconData iconData = parseIconData(iconDataString);
-                    //String iconDataString = _alerts[index]["icono"];
-                    //IconData iconData = parseIconData(iconDataString);
-                    return Column(
-                      children: [
-                        ListTile(
-                          title: Text(
-                            _alerts[reversedIndex]["nombre_visible"],
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 21.0,
-                            ),
-                          ),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Row(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                RichText(
-                                  text: TextSpan(
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.white,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text:
-                                        '${_alerts[reversedIndex]["fecha"]}',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                RichText(
-                                  text: TextSpan(
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.white,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                        text: '${_weatherValues["${_alerts[reversedIndex]["codigo_empresa"]}_${_alerts[reversedIndex]["codigo_centro"]}_${_alerts[reversedIndex]["clima_id"]}_${_alerts[reversedIndex]["nombre_real"]}_${_alerts[reversedIndex]["mongodb"]}_${_alerts[reversedIndex]["latitud"]}_${_alerts[reversedIndex]["longitud"]}_${_alerts[reversedIndex]["heading_inicial"]}"]}',
-
-                                      ),
-                                      TextSpan(
-                                        text: '${_alerts[reversedIndex]["simbolo"]}',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                              ],
-                            ),
-                          ),
-                          trailing: Padding(
-                            padding:
-                            const EdgeInsets.fromLTRB(8, 15, 8, 8),
-                            child: Icon(
-                              iconData,
-                              color: _alerts[reversedIndex]["severidad"] ==
-                                  "Rojo"
-                                  ? Colors.red
-                                  : _alerts[reversedIndex]["severidad"] ==
-                                  "Amarillo"
-                                  ? Colors.amber
-                                  : Colors.green,
-                              size: 26,
-                            ),
-                          ),
-                        ),
-                        Divider(height: 1, color: Colors.grey),
-                      ],
-                    );
-                  },
+                Divider(
+                  height: 1,
+                  color: Colors.grey,
+                  thickness: 1,
                 ),
-              ),
-            ],
-          ),
-        ],
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _alerts.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      int reversedIndex = _alerts.length - index - 1; // Calcula el índice invertido
+                      String iconDataString = _alerts[reversedIndex]["icono"];
+                      IconData iconData = parseIconData(iconDataString);
+                      //String iconDataString = _alerts[index]["icono"];
+                      //IconData iconData = parseIconData(iconDataString);
+                      return Column(
+                        children: [
+                          ListTile(
+                            title: Text(
+                              _alerts[reversedIndex]["nombre_visible"],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 21.0,
+                              ),
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Row(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                        color: Colors.white,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                          '${_alerts[reversedIndex]["fecha"]}',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 16),
+                                  RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                        color: Colors.white,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                          ),
+                                          text: '${_weatherValues["${_alerts[reversedIndex]["codigo_empresa"]}_${_alerts[reversedIndex]["codigo_centro"]}_${_alerts[reversedIndex]["clima_id"]}_${_alerts[reversedIndex]["nombre_real"]}_${_alerts[reversedIndex]["mongodb"]}_${_alerts[reversedIndex]["latitud"]}_${_alerts[reversedIndex]["longitud"]}_${_alerts[reversedIndex]["heading_inicial"]}"]}',
+
+                                        ),
+                                        TextSpan(
+                                          text: '${_alerts[reversedIndex]["simbolo"]}',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                            trailing: Padding(
+                              padding:
+                              const EdgeInsets.fromLTRB(8, 15, 8, 8),
+                              child: Icon(
+                                iconData,
+                                color: _alerts[reversedIndex]["severidad"] ==
+                                    "Rojo"
+                                    ? Colors.red
+                                    : _alerts[reversedIndex]["severidad"] ==
+                                    "Amarillo"
+                                    ? Colors.amber
+                                    : Colors.green,
+                                size: 26,
+                              ),
+                            ),
+                          ),
+                          Divider(height: 1, color: Colors.grey),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
+
 }

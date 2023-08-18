@@ -32,6 +32,15 @@ class _HomePageState extends State<HomePage> {
   List<int> markersWithAlerts = []; // Cambiado a List<int>
   List<int> markersWithAlerts2 = []; // Cambiado a List<int>
 
+  Future<void> _handleRefresh() async {
+    // Actualiza los datos aquí
+    await _fetchCentros();
+    await _fetchAlertCounts();
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   // Método que maneja la acción de retroceso del botón físico o virtual de Android
   Future<bool> _onWillPop() async {
     // Verificar si hay una página anterior en la ruta del Navigator
@@ -369,147 +378,151 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        body: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/fondo_olas.PNG"),
-                  fit: BoxFit.cover,
+        body: RefreshIndicator(
+          onRefresh: _handleRefresh,
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/fondo_olas.PNG"),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(0, 0, 0, 0.5),
+              Container(
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(0, 0, 0, 0.5),
+                ),
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    _message,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                      color: Colors.white,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      _message,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-                Divider(
-                  height: 1,
-                  color: Colors.grey,
-                  thickness: 1,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _centros.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      //bool isRed = _alertCounts[index] > 0;
-
-                      final hasRedAlert= markersWithAlerts.contains(_centros[index]['idc']);
-                      final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['idc']);
-
-                      return Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: hasRedAlert
-                                  ? Colors.red.withOpacity(0.7)
-                                  : hasYellowAlert
-                                  ? Colors.yellow[600]!.withOpacity(0.8)
-                                  : Colors.green[600]!.withOpacity(0.8),
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 2.0,
-                              ),
-                            ),
-                            child: ListTile(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  CustomPageRoute(
-                                    child: WeatherPage(
-                                      ide: _centros[index]["ide"],
-                                      idu: _centros[index]["idu"],
-                                      idc: _centros[index]["idc"],
-                                      nombreCentro: _centros[index]["nombre"], // Pasar el nombre del centro
-                                    ),
-                                  ),
-                                );
-                              },
-                              title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        _centros[index]["nombre"],
-                                        style: TextStyle(
-                                          fontSize: 21.0,
-                                          fontWeight: FontWeight.w500,
-                                          color: hasRedAlert
-                                              ? Colors.grey[200]
-                                              : hasYellowAlert
-                                              ? Colors.black87
-                                              : Colors.grey[200],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Stack(
-                                    children: [
-                                      Icon(
-                                        Icons.directions_boat,
-                                        size: 30.0,
-                                        color: hasRedAlert ? Colors.blueAccent[100] : hasYellowAlert ? Colors.black : Colors.white,
-                                      ),
-                                      Positioned(
-                                        top: 0,
-                                        right: 0,
-                                        child: Container(
-                                          padding: EdgeInsets.all(2),
-                                          decoration: BoxDecoration(
-                                            color: hasYellowAlert ? Colors.red : Colors.black54,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          constraints: BoxConstraints(
-                                            minWidth: 18,
-                                            minHeight: 18,
-                                          ),
-                                          child: Text(
-                                            _alertCounts.length > index ? '${_alertCounts[index]}' : '0',
-                                            style: TextStyle(
-                                              color: hasYellowAlert ? Colors.grey[300] : Colors.grey[300],
-                                              fontSize: 12,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Divider(height: 1, color: Colors.grey),
-                        ],
-                      );
-                    },
+                  Divider(
+                    height: 1,
+                    color: Colors.grey,
+                    thickness: 1,
                   ),
-                ),
-              ],
-            ),
-          ],
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _centros.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        //bool isRed = _alertCounts[index] > 0;
+
+                        final hasRedAlert= markersWithAlerts.contains(_centros[index]['idc']);
+                        final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['idc']);
+
+                        return Column(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: hasRedAlert
+                                    ? Colors.red.withOpacity(0.7)
+                                    : hasYellowAlert
+                                    ? Colors.yellow[600]!.withOpacity(0.8)
+                                    : Colors.green[600]!.withOpacity(0.8),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2.0,
+                                ),
+                              ),
+                              child: ListTile(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    CustomPageRoute(
+                                      child: WeatherPage(
+                                        ide: _centros[index]["ide"],
+                                        idu: _centros[index]["idu"],
+                                        idc: _centros[index]["idc"],
+                                        nombreCentro: _centros[index]["nombre"], // Pasar el nombre del centro
+                                      ),
+                                    ),
+                                  );
+                                },
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          _centros[index]["nombre"],
+                                          style: TextStyle(
+                                            fontSize: 21.0,
+                                            fontWeight: FontWeight.w500,
+                                            color: hasRedAlert
+                                                ? Colors.grey[200]
+                                                : hasYellowAlert
+                                                ? Colors.black87
+                                                : Colors.grey[200],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Stack(
+                                      children: [
+                                        Icon(
+                                          Icons.directions_boat,
+                                          size: 30.0,
+                                          color: hasRedAlert ? Colors.blueAccent[100] : hasYellowAlert ? Colors.black : Colors.white,
+                                        ),
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: Container(
+                                            padding: EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                              color: hasYellowAlert ? Colors.red : Colors.black54,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            constraints: BoxConstraints(
+                                              minWidth: 18,
+                                              minHeight: 18,
+                                            ),
+                                            child: Text(
+                                              _alertCounts.length > index ? '${_alertCounts[index]}' : '0',
+                                              style: TextStyle(
+                                                color: hasYellowAlert ? Colors.grey[300] : Colors.grey[300],
+                                                fontSize: 12,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Divider(height: 1, color: Colors.grey),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
 
   //get device token to use for push notification
   Future getDeviceToken() async {
