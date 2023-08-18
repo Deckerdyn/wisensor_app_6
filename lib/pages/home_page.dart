@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Cerrar Sesión'),
-            content: Text('¿Estás seguro que deseas cerrar sesión?'),
+            content: Text('¿Estás seguro que deseas cerrar la aplicación?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -143,21 +143,21 @@ class _HomePageState extends State<HomePage> {
 
       if (response.statusCode == 200) {
 
-        print(";D");
+        //print(";D");
         var jsonResponse = jsonDecode(response.body);
         print(jsonResponse["message"]);
         int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
         counts.add(count);
         // Imprimir la severidad de la alerta
         for (var alerta in jsonResponse["data"]) {
-          print("Severidad: ${alerta["severidad"]}");
+          //print("Severidad: ${alerta["severidad"]}");
           if(alerta["severidad"] == "Rojo"){
-            print("Centro $idc es Rojo ");
+            //print("Centro $idc es Rojo ");
             setState(() {
               markersWithAlerts.add(idc); // Agregar el ID del centro a la lista
             });
           } else if(alerta["severidad"] == "Amarillo"){
-            print("Centro $idc es amarillo ");
+            //print("Centro $idc es amarillo ");
             setState(() {
               markersWithAlerts2.add(idc); // Agregar el ID del centro a la lista
             });
@@ -165,7 +165,7 @@ class _HomePageState extends State<HomePage> {
         }
         //_isLoading = false;
       } else {
-        print(":c");
+
         //print("IDE: $ide");
         //print("IDU: $idu");
         //print("IDC: $idc");

@@ -226,13 +226,16 @@ class _WeatherPageState extends State<WeatherPage> {
                 child: ListView.builder(
                   itemCount: _alerts.length,
                   itemBuilder: (BuildContext context, int index) {
-                    String iconDataString = _alerts[index]["icono"];
+                    int reversedIndex = _alerts.length - index - 1; // Calcula el índice invertido
+                    String iconDataString = _alerts[reversedIndex]["icono"];
                     IconData iconData = parseIconData(iconDataString);
+                    //String iconDataString = _alerts[index]["icono"];
+                    //IconData iconData = parseIconData(iconDataString);
                     return Column(
                       children: [
                         ListTile(
                           title: Text(
-                            _alerts[index]["nombre_visible"],
+                            _alerts[reversedIndex]["nombre_visible"],
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 21.0,
@@ -259,7 +262,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                       ),
                                       TextSpan(
                                         text:
-                                        '${_alerts[index]["fecha"]}',
+                                        '${_alerts[reversedIndex]["fecha"]}',
                                         style: TextStyle(fontSize: 16),
                                       ),
                                     ],
@@ -278,11 +281,11 @@ class _WeatherPageState extends State<WeatherPage> {
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18,
                                         ),
-                                        text: '${_weatherValues["${_alerts[index]["codigo_empresa"]}_${_alerts[index]["codigo_centro"]}_${_alerts[index]["clima_id"]}_${_alerts[index]["nombre_real"]}_${_alerts[index]["mongodb"]}_${_alerts[index]["latitud"]}_${_alerts[index]["longitud"]}_${_alerts[index]["heading_inicial"]}"]}',
+                                        text: '${_weatherValues["${_alerts[reversedIndex]["codigo_empresa"]}_${_alerts[reversedIndex]["codigo_centro"]}_${_alerts[reversedIndex]["clima_id"]}_${_alerts[reversedIndex]["nombre_real"]}_${_alerts[reversedIndex]["mongodb"]}_${_alerts[reversedIndex]["latitud"]}_${_alerts[reversedIndex]["longitud"]}_${_alerts[reversedIndex]["heading_inicial"]}"]}',
 
                                       ),
                                       TextSpan(
-                                        text: '${_alerts[index]["simbolo"]}',
+                                        text: '${_alerts[reversedIndex]["simbolo"]}',
                                         style: TextStyle(fontSize: 16),
                                       ),
                                     ],
@@ -297,10 +300,10 @@ class _WeatherPageState extends State<WeatherPage> {
                             const EdgeInsets.fromLTRB(8, 15, 8, 8),
                             child: Icon(
                               iconData,
-                              color: _alerts[index]["severidad"] ==
+                              color: _alerts[reversedIndex]["severidad"] ==
                                   "Rojo"
                                   ? Colors.red
-                                  : _alerts[index]["severidad"] ==
+                                  : _alerts[reversedIndex]["severidad"] ==
                                   "Amarillo"
                                   ? Colors.amber
                                   : Colors.green,

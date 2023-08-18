@@ -18,6 +18,27 @@ class _LoginPageState extends State<LoginPage> {
   String _errorMessage = "";
   bool _isTimeout = false;
   bool _isPasswordVisible = false;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedEmail = prefs.getString("email");
+    String? savedPassword = prefs.getString("password");
+
+    if (savedEmail != null && savedPassword != null) {
+      setState(() {
+        _emailController.text = savedEmail;
+        _passwordController.text = savedPassword;
+        _rememberMe = true;
+      });
+    }
+  }
 
   Future<bool> _checkConnectivity() async {
     var connectivityResult = await Connectivity().checkConnectivity();
@@ -25,22 +46,20 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   bool _isEmailValid(String email) {
-    // Utiliza una expresión regular para validar el formato del correo electrónico
     final emailRegExp = RegExp(r'^[\w-]+(\.[\w-]+)*@[a-zA-Z\d-]+(\.[a-zA-Z\d-]+)*\.[a-zA-Z\d-]+$');
     return emailRegExp.hasMatch(email);
   }
 
   bool _isPasswordValid(String password) {
-    // Agrega tus propios requisitos para la contraseña, por ejemplo, longitud mínima, caracteres especiales, etc.
     return password.length >= 6;
   }
-
 
   Future<void> _submit() async {
     setState(() {
       _isLoading = true;
       _errorMessage = "";
     });
+
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
 
@@ -53,42 +72,17 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-
-    if (email.isEmpty) {
+    if (email.isEmpty || password.isEmpty || !_isEmailValid(email) || !_isPasswordValid(password)) {
       setState(() {
         _isLoading = false;
-        _errorMessage = "Por favor, ingresa tu correo electrónico";
+        _errorMessage = "Credenciales inválidas";
       });
       return;
     }
 
-    if (password.isEmpty) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = "Por favor, ingresa tu contraseña";
-      });
-      return;
-    }
-    if (!_isEmailValid(email)) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'Correo electrónico no válido';
-      });
-      return;
-    }
-
-    if (!_isPasswordValid(password)) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'La contraseña debe tener al menos 6 caracteres';
-      });
-      return;
-    }
-    const Duration timeoutDuration = Duration(seconds: 10); // Establece el tiempo de espera en segundos
-
+    const Duration timeoutDuration = Duration(seconds: 10);
     Timer timeoutTimer = Timer(timeoutDuration, () {
-      // Se agotó el tiempo de espera, cancela la solicitud y muestra un mensaje de error
-      http.Client().close(); // Cancela la solicitud HTTP actual
+      http.Client().close();
       setState(() {
         _isLoading = false;
         _isTimeout = true;
@@ -121,23 +115,30 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setString("token", token);
       await prefs.setInt("idu", idu);
 
+      if (_rememberMe) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString("email", email);
+        prefs.setString("password", password);
+      } else {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.remove("email");
+        prefs.remove("password");
+      }
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage(idu: idu)),
       );
-      print("IDU: $idu"); // Printing the idu
-      print("TOKEN: $token"); //Printing the token
       timeoutTimer.cancel();
     } else {
-      print("alfin");
       var errorResponse = jsonDecode(response.body);
       var errorMessage = "";
-        var message = errorResponse["message"];
-        if (message == "El usuario no existe en nuestro sistema.") {
-          errorMessage = "El usuario no existe en nuestro sistema.";
-        } else if (message == "Las credenciales no son válidas") {
-          errorMessage = "Las credenciales no son válidas";
-        }
+      var message = errorResponse["message"];
+      if (message == "El usuario no existe en nuestro sistema.") {
+        errorMessage = "El usuario no existe en nuestro sistema.";
+      } else if (message == "Las credenciales no son válidas") {
+        errorMessage = "Las credenciales no son válidas";
+      }
 
       setState(() {
         _errorMessage = errorMessage;
@@ -184,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                     textAlign: TextAlign.start,
                   ),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 10.0),
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   height: MediaQuery.of(context).size.height * 0.4,
@@ -203,25 +204,24 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 8.0),
+                      const SizedBox(height: 4.0),
                       TextField(
                         controller: _emailController,
                         onChanged: (value) {
                           setState(() {
-                            // Realiza la validación del correo electrónico a medida que el usuario escribe
-                            _errorMessage = !_isEmailValid(value) ? 'Correo electrónico no válido' : '';
+                            _errorMessage =
+                            !_isEmailValid(value) ? 'Correo electrónico no válido' : '';
                           });
                         },
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           hintText: 'Ingrese su correo',
-                          hintStyle: TextStyle(
-                              fontSize: 18.0, color: Colors.grey[400]),
+                          hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
                           border: const OutlineInputBorder(),
                         ),
                       ),
 
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 4.0),
 
                       const Text(
                         'Contraseña',
@@ -232,16 +232,17 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                      const SizedBox(height: 8.0),
+                      const SizedBox(height: 4.0),
 
                       TextFormField(
                         controller: _passwordController,
                         onChanged: (value) {
                           setState(() {
-                            _errorMessage = !_isPasswordValid(value) ? 'La contraseña debe tener al menos 6 caracteres' : '';
+                            _errorMessage =
+                            !_isPasswordValid(value) ? 'La contraseña debe tener al menos 6 caracteres' : '';
                           });
                         },
-                        obscureText: !_isPasswordVisible, // Muestra los caracteres ocultos si _isPasswordVisible es false
+                        obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
                           hintText: 'Ingrese su contraseña',
                           hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
@@ -249,7 +250,7 @@ class _LoginPageState extends State<LoginPage> {
                           suffixIcon: GestureDetector(
                             onTap: () {
                               setState(() {
-                                _isPasswordVisible = !_isPasswordVisible; // Cambia el estado de la visibilidad de la contraseña
+                                _isPasswordVisible = !_isPasswordVisible;
                               });
                             },
                             child: Icon(
@@ -260,7 +261,26 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                      const SizedBox(height: 25.0),
+                      // Checkbox para la opción "Recuérdame"
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Checkbox(
+                            value: _rememberMe,
+                            onChanged: (value) {
+                              setState(() {
+                                _rememberMe = value ?? false;
+                              });
+                            },
+                          ),
+                          Text(
+                            'Recuérdame',
+                            style: TextStyle(fontSize: 16.0, color: Colors.white),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 0.0),
 
                       SizedBox(
                         width: double.infinity,
@@ -279,18 +299,17 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                      const SizedBox(height: 3.0),
+                      const SizedBox(height: 4.0),
 
                       Center(
                         child: _errorMessage.isNotEmpty
                             ? Text(
-                                _errorMessage,
-                                style: const TextStyle(
-                                    color: Colors.red, fontSize: 14),
-                              )
+                          _errorMessage,
+                          style: const TextStyle(
+                              color: Colors.red, fontSize: 14),
+                        )
                             : Container(),
                       ),
-
                     ],
                   ),
                 ),
@@ -301,4 +320,5 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
 }
