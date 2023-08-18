@@ -114,11 +114,8 @@ class _WeatherPageState extends State<WeatherPage> {
       "Authorization": "Bearer $token"
     };
 
-//push de prueba 4
     for (int index = 0; index < _alerts.length; index++) {
-      var weather = _alerts[index]; // Acceder a la alerta utilizando el índice
-      print(_alerts);
-      print("????");
+      var weather = _alerts[index];
       String cli = weather["clima_id"];
       String emp = weather["codigo_empresa"];
       String cce = weather["codigo_centro"];
@@ -128,6 +125,8 @@ class _WeatherPageState extends State<WeatherPage> {
       double lng = weather["longitud"];
       double hdi = weather["heading_inicial"];
 
+      String key = "${emp}_${cce}_${cli}_${nr}_${dref}_${lat}_${lng}_${hdi}";
+
       http.Response response = await http.get(
         Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas/clima?cli=$cli&emp=$emp&cce=$cce&nr=$nr&dref=$dref&lat=$lat&lng=$lng&hdi=$hdi"),
         headers: headers,
@@ -136,20 +135,18 @@ class _WeatherPageState extends State<WeatherPage> {
       if (response.statusCode == 200) {
         _isLoading = false;
         var jsonResponse = jsonDecode(response.body);
-        double weatherValue = jsonResponse["data"]["valor"];
-        // Redondear el valor utilizando double.round()
-        double roundedValue = weatherValue.roundToDouble();
+        double weatherValue = jsonResponse["data"]["valor"] is int
+            ? (jsonResponse["data"]["valor"] as int).toDouble()
+            : jsonResponse["data"]["valor"];
 
-        _weatherValues[weather["codigo_empresa"] + weather["codigo_centro"] + weather["clima_id"]] = roundedValue;
+        _weatherValues[key] = weatherValue;
       } else {
         print("parece que no");
         var errorResponse = jsonDecode(response.body);
         setState(() {
           _isLoading = false;
           _message = errorResponse["message"];
-
         });
-
       }
     }
 
@@ -281,7 +278,8 @@ class _WeatherPageState extends State<WeatherPage> {
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18,
                                         ),
-                                        text: '${_weatherValues[_alerts[index]["codigo_empresa"] + _alerts[index]["codigo_centro"] + _alerts[index]["clima_id"]]}',
+                                        text: '${_weatherValues["${_alerts[index]["codigo_empresa"]}_${_alerts[index]["codigo_centro"]}_${_alerts[index]["clima_id"]}_${_alerts[index]["nombre_real"]}_${_alerts[index]["mongodb"]}_${_alerts[index]["latitud"]}_${_alerts[index]["longitud"]}_${_alerts[index]["heading_inicial"]}"]}',
+
                                       ),
                                       TextSpan(
                                         text: '${_alerts[index]["simbolo"]}',
