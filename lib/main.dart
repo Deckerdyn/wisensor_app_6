@@ -15,7 +15,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  print("Handling a background message: ${message.messageId}");
+  //print("Handling a background message: ${message.messageId}");
 }
 
 Future<void> main() async {
@@ -38,15 +38,15 @@ Future<void> main() async {
     provisional: false,
     sound: true,
   );
-  print('User granted permission: ${settings.authorizationStatus}');
+  //print('User granted permission: ${settings.authorizationStatus}');
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('Got a message whilst in the foreground!');
-    print('Message data: ${message.data}');
+    //print('Got a message whilst in the foreground!');
+    //print('Message data: ${message.data}');
 
     if (message.notification != null) {
-      print('Message also contained a notification: ${message.notification}');
-      print('Notification Title: ${message.notification?.title}');
-      print('Notification Body: ${message.notification?.body}');
+      //print('Message also contained a notification: ${message.notification}');
+      //print('Notification Title: ${message.notification?.title}');
+      //print('Notification Body: ${message.notification?.body}');
     }
   });
   prefs.setString('apiUrl', 'http://201.220.112.247:1880/wisensor/api/login');

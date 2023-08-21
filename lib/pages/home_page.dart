@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
       await _fetchAlertCounts();
     } else {
       var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse["message"]);
+      //print(jsonResponse["message"]);
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
         var errorMessage = errorResponse["message"];
@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> {
 
         //print(";D");
         var jsonResponse = jsonDecode(response.body);
-        print(jsonResponse["message"]);
+        //print(jsonResponse["message"]);
         int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
         counts.add(count);
         // Imprimir la severidad de la alerta
@@ -180,7 +180,7 @@ class _HomePageState extends State<HomePage> {
         //print("IDC: $idc");
         var jsonResponse = jsonDecode(response.body);
 
-        print(jsonResponse["message"]);
+        //print(jsonResponse["message"]);
 
         counts.add(0); // Si hay un error, agregar cero alertas para el centro
       }
@@ -195,7 +195,7 @@ class _HomePageState extends State<HomePage> {
   // Método para manejar el cierre de sesión
   Future<void> _logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print("erroneo");
+    //print("erroneo");
     prefs.remove("token");
     Navigator.pushReplacement(
       context,
@@ -209,12 +209,12 @@ class _HomePageState extends State<HomePage> {
     _fetchCentros();
   }
 
-  init() async {
-    String deviceToken = await getDeviceToken();
-    print("##### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFICATION #####");
-    print(deviceToken);
-    print("###########################################################");
-  }
+  //init() async {
+    //String deviceToken = await getDeviceToken();
+    //print("##### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFICATION #####");
+    //print(deviceToken);
+    //print("###########################################################");
+  //}
 
   @override
   Widget build(BuildContext context) {

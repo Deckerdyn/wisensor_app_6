@@ -20,6 +20,14 @@ class WeatherPage extends StatefulWidget {
   _WeatherPageState createState() => _WeatherPageState();
 }
 
+String parseDate(String inputDate) {
+  List<String> parts = inputDate.split(' ');
+  List<String> dateParts = parts[0].split('-');
+  List<String> timeParts = parts[1].split(':');
+  String formattedDate = '${dateParts[2]}-${dateParts[1]}-${dateParts[0]} ${timeParts[0]}:${timeParts[1]}';
+  return formattedDate;
+}
+
 class _WeatherPageState extends State<WeatherPage> {
   List<dynamic> _alerts = [];
   double _weathers = 0.0;
@@ -86,12 +94,12 @@ class _WeatherPageState extends State<WeatherPage> {
       });
     }
     else {
-      print(_message);
-      print("NOOOO");
-      print(response.statusCode);
+      //print(_message);
+      //print("NOOOO");
+      //print(response.statusCode);
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
-        print(errorResponse);
+        //print(errorResponse);
         var errorMessage = errorResponse["message"];
         if (errorMessage == "Unauthenticated.") {
           prefs.remove("token");
@@ -151,7 +159,7 @@ class _WeatherPageState extends State<WeatherPage> {
 
         _weatherValues[key] = weatherValue;
       } else {
-        print("parece que no");
+        //print("parece que no");
         var errorResponse = jsonDecode(response.body);
         setState(() {
           _isLoading = false;
@@ -238,8 +246,14 @@ class _WeatherPageState extends State<WeatherPage> {
                   child: ListView.builder(
                     itemCount: _alerts.length,
                     itemBuilder: (BuildContext context, int index) {
-                      int reversedIndex = _alerts.length - index - 1; // Calcula el índice invertido
-                      String iconDataString = _alerts[reversedIndex]["icono"];
+                      _alerts.sort((a, b) {
+                        DateTime dateA = DateTime.parse(parseDate(a["fecha"]));
+                        DateTime dateB = DateTime.parse(parseDate(b["fecha"]));
+                        return dateB.compareTo(dateA); // Reversed order for descending
+                      });
+
+                      //int index = _alerts.length - index - 1; // Calcula el índice invertido
+                      String iconDataString = _alerts[index]["icono"];
                       IconData iconData = parseIconData(iconDataString);
                       //String iconDataString = _alerts[index]["icono"];
                       //IconData iconData = parseIconData(iconDataString);
@@ -247,7 +261,7 @@ class _WeatherPageState extends State<WeatherPage> {
                         children: [
                           ListTile(
                             title: Text(
-                              _alerts[reversedIndex]["nombre_visible"],
+                              _alerts[index]["nombre_visible"],
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 21.0,
@@ -274,7 +288,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                         ),
                                         TextSpan(
                                           text:
-                                          '${_alerts[reversedIndex]["fecha"]}',
+                                          '${_alerts[index]["fecha"]}',
                                           style: TextStyle(fontSize: 16),
                                         ),
                                       ],
@@ -293,16 +307,24 @@ class _WeatherPageState extends State<WeatherPage> {
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18,
                                           ),
-                                          text: '${_weatherValues["${_alerts[reversedIndex]["codigo_empresa"]}_${_alerts[reversedIndex]["codigo_centro"]}_${_alerts[reversedIndex]["clima_id"]}_${_alerts[reversedIndex]["nombre_real"]}_${_alerts[reversedIndex]["mongodb"]}_${_alerts[reversedIndex]["latitud"]}_${_alerts[reversedIndex]["longitud"]}_${_alerts[reversedIndex]["heading_inicial"]}"]}',
-
+                                          text: _weatherValues[
+                                          "${_alerts[index]["codigo_empresa"]}_${_alerts[index]["codigo_centro"]}_${_alerts[index]["clima_id"]}_${_alerts[index]["nombre_real"]}_${_alerts[index]["mongodb"]}_${_alerts[index]["latitud"]}_${_alerts[index]["longitud"]}_${_alerts[index]["heading_inicial"]}"
+                                          ] != null
+                                              ? _weatherValues[
+                                          "${_alerts[index]["codigo_empresa"]}_${_alerts[index]["codigo_centro"]}_${_alerts[index]["clima_id"]}_${_alerts[index]["nombre_real"]}_${_alerts[index]["mongodb"]}_${_alerts[index]["latitud"]}_${_alerts[index]["longitud"]}_${_alerts[index]["heading_inicial"]}"
+                                          ]!.toStringAsFixed(1)
+                                              : 'N/A',
                                         ),
+
+
                                         TextSpan(
-                                          text: '${_alerts[reversedIndex]["simbolo"]}',
+                                          text: '${_alerts[index]["simbolo"]}',
                                           style: TextStyle(fontSize: 16),
                                         ),
                                       ],
                                     ),
                                   ),
+
 
                                 ],
                               ),
@@ -312,10 +334,10 @@ class _WeatherPageState extends State<WeatherPage> {
                               const EdgeInsets.fromLTRB(8, 15, 8, 8),
                               child: Icon(
                                 iconData,
-                                color: _alerts[reversedIndex]["severidad"] ==
+                                color: _alerts[index]["severidad"] ==
                                     "Rojo"
                                     ? Colors.red
-                                    : _alerts[reversedIndex]["severidad"] ==
+                                    : _alerts[index]["severidad"] ==
                                     "Amarillo"
                                     ? Colors.amber
                                     : Colors.green,
