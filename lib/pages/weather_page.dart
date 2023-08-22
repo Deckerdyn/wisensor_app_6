@@ -184,7 +184,7 @@ class _WeatherPageState extends State<WeatherPage> {
     _fetchAlerts();
 
     // Configure the timer to fetch alerts every msecondsinute
-    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+    _timer = Timer.periodic(Duration(minutes: 5), (timer) {
       _fetchAlerts();
     });
   }

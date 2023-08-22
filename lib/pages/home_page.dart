@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:Wisensor/pages/map_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   String _message = "";
   List<int> markersWithAlerts = []; // Cambiado a List<int>
   List<int> markersWithAlerts2 = []; // Cambiado a List<int>
+  Timer? _timer;
 
   Future<void> _handleRefresh() async {
     // Actualiza los datos aquí
@@ -113,7 +115,7 @@ class _HomePageState extends State<HomePage> {
       // Obtener la cantidad de alertas para cada centro
       await _fetchAlertCounts();
     } else {
-      var jsonResponse = jsonDecode(response.body);
+      //var jsonResponse = jsonDecode(response.body);
       //print(jsonResponse["message"]);
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
@@ -178,7 +180,7 @@ class _HomePageState extends State<HomePage> {
         //print("IDE: $ide");
         //print("IDU: $idu");
         //print("IDC: $idc");
-        var jsonResponse = jsonDecode(response.body);
+        //var jsonResponse = jsonDecode(response.body);
 
         //print(jsonResponse["message"]);
 
@@ -207,6 +209,18 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _fetchCentros();
+
+    // Configure the timer to fetch alerts every msecondsinute
+    _timer = Timer.periodic(Duration(minutes: 5), (timer) {
+      _fetchCentros();
+      _fetchAlertCounts();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer to avoid memory leaks
+    super.dispose();
   }
 
   //init() async {
