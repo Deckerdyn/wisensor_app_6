@@ -343,6 +343,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               Divider(),
+              /*
               ListTile(
                 leading: const Icon(
                   Icons.settings,
@@ -356,6 +357,8 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
+
+               */
               ListTile(
                 leading: const Icon(
                   Icons.directions_run,
@@ -365,7 +368,7 @@ class _HomePageState extends State<HomePage> {
                   _logout(context);
                 },
               ),
-              const SizedBox(height: 150.0),
+              const SizedBox(height: 80.0),
               Container(
                 margin: EdgeInsets.fromLTRB(85, 60, 0, 0),
                 child: const Text(

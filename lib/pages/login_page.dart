@@ -272,7 +272,10 @@ class _LoginPageState extends State<LoginPage> {
                                 _rememberMe = value ?? false;
                               });
                             },
+                            activeColor: Colors.red,  // Color del fondo del Checkbox cuando está seleccionado
+                            checkColor: Colors.white,  // Color del checkmark dentro del Checkbox cuando está seleccionado
                           ),
+
                           Text(
                             'Recuérdame',
                             style: TextStyle(fontSize: 16.0, color: Colors.white),
