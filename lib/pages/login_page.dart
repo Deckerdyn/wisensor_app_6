@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../global_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'package:connectivity/connectivity.dart';
+import 'dart:async';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -15,6 +16,43 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String _errorMessage = "";
+  bool _isTimeout = false;
+  bool _isPasswordVisible = false;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedEmail = prefs.getString("email");
+    String? savedPassword = prefs.getString("password");
+
+    if (savedEmail != null && savedPassword != null) {
+      setState(() {
+        _emailController.text = savedEmail;
+        _passwordController.text = savedPassword;
+        _rememberMe = true;
+      });
+    }
+  }
+
+  Future<bool> _checkConnectivity() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
+  }
+
+  bool _isEmailValid(String email) {
+    final emailRegExp = RegExp(r'^[\w-]+(\.[\w-]+)*@[a-zA-Z\d-]+(\.[a-zA-Z\d-]+)*\.[a-zA-Z\d-]+$');
+    return emailRegExp.hasMatch(email);
+  }
+
+  bool _isPasswordValid(String password) {
+    return password.length >= 6;
+  }
 
   Future<void> _submit() async {
     setState(() {
@@ -22,18 +60,35 @@ class _LoginPageState extends State<LoginPage> {
       _errorMessage = "";
     });
 
-    // Verifica la conectividad a internet
-    var connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    bool isConnected = await _checkConnectivity();
+    if (!isConnected) {
       setState(() {
         _isLoading = false;
-        _errorMessage = "No hay conexión a internet";
+        _errorMessage = "No hay conexión a Internet";
       });
       return;
     }
 
-    String email = _emailController.text;
-    String password = _passwordController.text;
+    if (email.isEmpty || password.isEmpty || !_isEmailValid(email) || !_isPasswordValid(password)) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "Credenciales inválidas";
+      });
+      return;
+    }
+
+    const Duration timeoutDuration = Duration(seconds: 10);
+    Timer timeoutTimer = Timer(timeoutDuration, () {
+      http.Client().close();
+      setState(() {
+        _isLoading = false;
+        _isTimeout = true;
+        _errorMessage = "No se pudo conectar con el servidor.";
+      });
+    });
 
     Map<String, String> headers = {
       "Content-Type": "application/json",
@@ -43,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
     Map<String, String> body = {"email": email, "password": password};
 
     http.Response response = await http.post(
-      Uri.parse(GlobalData.apiUrl),
+      Uri.parse("http://201.220.112.247:1880/wisensor/api/login"),
       headers: headers,
       body: jsonEncode(body),
     );
@@ -55,31 +110,34 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
       String token = jsonResponse["data"]["token"];
-      GlobalData.token = token;
+      int idu = jsonResponse["data"]["idu"];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString("token", token);
+      await prefs.setInt("idu", idu);
+
+      if (_rememberMe) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString("email", email);
+        prefs.setString("password", password);
+      } else {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.remove("email");
+        prefs.remove("password");
+      }
+
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => HomePage(idu: idu)),
       );
+      timeoutTimer.cancel();
     } else {
       var errorResponse = jsonDecode(response.body);
       var errorMessage = "";
-
-      if (errorResponse.containsKey("errors")) {
-        var errors = errorResponse["errors"];
-        if (errors.containsKey("email")) {
-          errorMessage = errors["email"][0];
-        } else if (errors.containsKey("password")) {
-          errorMessage = errors["password"][0];
-        }
-      } else if (errorResponse.containsKey("message")) {
-        var message = errorResponse["message"];
-        if (message == "Las credenciales no coinciden") {
-          errorMessage = "Las credenciales no coinciden";
-        } else if (message == "Email no existe") {
-          errorMessage = "Email no existe";
-        } else if (message == "Email no es valido") {
-          errorMessage = "Email no es valido";
-        }
+      var message = errorResponse["message"];
+      if (message == "El usuario no existe en nuestro sistema.") {
+        errorMessage = "El usuario no existe en nuestro sistema.";
+      } else if (message == "Las credenciales no son válidas") {
+        errorMessage = "Las credenciales no son válidas";
       }
 
       setState(() {
@@ -127,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                     textAlign: TextAlign.start,
                   ),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 10.0),
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   height: MediaQuery.of(context).size.height * 0.4,
@@ -146,18 +204,25 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 8.0),
+                      const SizedBox(height: 4.0),
                       TextField(
                         controller: _emailController,
+                        onChanged: (value) {
+                          setState(() {
+                            _errorMessage =
+                            !_isEmailValid(value) ? 'Correo electrónico no válido' : '';
+                          });
+                        },
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           hintText: 'Ingrese su correo',
-                          hintStyle: TextStyle(
-                              fontSize: 18.0, color: Colors.grey[400]),
+                          hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
                           border: const OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 16.0),
+
+                      const SizedBox(height: 4.0),
+
                       const Text(
                         'Contraseña',
                         style: TextStyle(
@@ -166,19 +231,57 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 8.0),
-                      TextField(
+
+                      const SizedBox(height: 4.0),
+
+                      TextFormField(
                         controller: _passwordController,
-                        style: const TextStyle(color: Colors.white),
-                        obscureText: true,
+                        onChanged: (value) {
+                          setState(() {
+                            _errorMessage =
+                            !_isPasswordValid(value) ? 'La contraseña debe tener al menos 6 caracteres' : '';
+                          });
+                        },
+                        obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
                           hintText: 'Ingrese su contraseña',
-                          hintStyle: TextStyle(
-                              fontSize: 18.0, color: Colors.grey[400]),
-                          border: const OutlineInputBorder(),
+                          hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
+                          border: OutlineInputBorder(),
+                          suffixIcon: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                            child: Icon(
+                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 25.0),
+
+                      // Checkbox para la opción "Recuérdame"
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start, // Añadir esta línea
+                        children: <Widget>[
+                          Checkbox(
+                            value: _rememberMe,
+                            onChanged: (value) {
+                              setState(() {
+                                _rememberMe = value ?? false;
+                              });
+                            },
+                          ),
+                          Text(
+                            'Recuérdame',
+                            style: TextStyle(fontSize: 16.0, color: Colors.white),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 0.0),
+
                       SizedBox(
                         width: double.infinity,
                         height: 50.0,
@@ -195,14 +298,16 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 3.0),
+
+                      const SizedBox(height: 4.0),
+
                       Center(
                         child: _errorMessage.isNotEmpty
                             ? Text(
-                                _errorMessage,
-                                style: const TextStyle(
-                                    color: Colors.red, fontSize: 14),
-                              )
+                          _errorMessage,
+                          style: const TextStyle(
+                              color: Colors.red, fontSize: 14),
+                        )
                             : Container(),
                       ),
                     ],
@@ -215,4 +320,5 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
 }
