@@ -39,7 +39,6 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
   }
-
   Future<bool> _checkConnectivity() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     return connectivityResult != ConnectivityResult.none;
@@ -53,7 +52,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordValid(String password) {
     return password.length >= 6;
   }
-
   Future<void> _submit() async {
     setState(() {
       _isLoading = true;
@@ -114,6 +112,7 @@ class _LoginPageState extends State<LoginPage> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("token", token);
       await prefs.setInt("idu", idu);
+      await _saveAuthentication(token, idu); // Save authentication data
 
       if (_rememberMe) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -144,6 +143,12 @@ class _LoginPageState extends State<LoginPage> {
         _errorMessage = errorMessage;
       });
     }
+  }
+
+  Future<void> _saveAuthentication(String token, int idu) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("token", token);
+    await prefs.setInt("idu", idu);
   }
 
   @override
@@ -188,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10.0),
                 Container(
                   padding: const EdgeInsets.all(16.0),
-                  height: MediaQuery.of(context).size.height * 0.4,
+                  height: MediaQuery.of(context).size.height * 0.441,
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(255, 255, 255, 0.155),
                     borderRadius: BorderRadius.circular(8.0),
@@ -272,7 +277,10 @@ class _LoginPageState extends State<LoginPage> {
                                 _rememberMe = value ?? false;
                               });
                             },
+                            activeColor: Colors.red,  // Color del fondo del Checkbox cuando está seleccionado
+                            checkColor: Colors.white,  // Color del checkmark dentro del Checkbox cuando está seleccionado
                           ),
+
                           Text(
                             'Recuérdame',
                             style: TextStyle(fontSize: 16.0, color: Colors.white),
@@ -320,5 +328,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
 }
