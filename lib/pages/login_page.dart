@@ -193,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10.0),
                 Container(
                   padding: const EdgeInsets.all(16.0),
-                  height: MediaQuery.of(context).size.height * 0.441,
+                  height: MediaQuery.of(context).size.height * 0.442,
                   decoration: BoxDecoration(
                     color: const Color.fromRGBO(255, 255, 255, 0.155),
                     borderRadius: BorderRadius.circular(8.0),
@@ -241,12 +241,15 @@ class _LoginPageState extends State<LoginPage> {
 
                       TextFormField(
                         controller: _passwordController,
+                        /*
                         onChanged: (value) {
                           setState(() {
                             _errorMessage =
                             !_isPasswordValid(value) ? 'La contraseña debe tener al menos 6 caracteres' : '';
                           });
                         },
+
+                         */
                         obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
                           hintText: 'Ingrese su contraseña',
