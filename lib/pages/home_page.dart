@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Cerrar Sesión'),
+            title: Text('Cerrar Aplicación'),
             content: Text('¿Estás seguro que deseas cerrar la aplicación?'),
             actions: <Widget>[
               TextButton(
@@ -178,6 +178,7 @@ class _HomePageState extends State<HomePage> {
       markersWithAlerts2 = updatedMarkersWithAlerts2; // Actualizar la lista de IDs con alertas "Amarillo"
     });
   }
+
 
   // Método para manejar el cierre de sesión
   Future<void> _logout(BuildContext context) async {
