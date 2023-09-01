@@ -329,6 +329,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               Divider(),
+    /*
               ListTile(
                 leading: const Icon(
                   Icons.settings,
@@ -342,6 +343,8 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
+
+     */
               ListTile(
                 leading: const Icon(
                   Icons.directions_run,
