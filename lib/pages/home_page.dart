@@ -140,8 +140,10 @@ class _HomePageState extends State<HomePage> {
       "Authorization": "Bearer $token"
     };
 
-    // Obtener la cantidad de alertas para cada centro
     List<int> counts = [];
+    List<int> updatedMarkersWithAlerts = []; // Nueva lista para IDs de centros con alertas "Rojo"
+    List<int> updatedMarkersWithAlerts2 = []; // Nueva lista para IDs de centros con alertas "Amarillo"
+
     for (var centro in _centros) {
       int ide = centro["ide"];
       int idu = centro["idu"];
@@ -153,44 +155,27 @@ class _HomePageState extends State<HomePage> {
       );
 
       if (response.statusCode == 200) {
-
-        //print(";D");
         var jsonResponse = jsonDecode(response.body);
-        //print(jsonResponse["message"]);
         int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
         counts.add(count);
-        // Imprimir la severidad de la alerta
+
         for (var alerta in jsonResponse["data"]) {
-          //print("Severidad: ${alerta["severidad"]}");
-          if(alerta["severidad"] == "Rojo"){
-            //print("Centro $idc es Rojo ");
-            setState(() {
-              markersWithAlerts.add(idc); // Agregar el ID del centro a la lista
-            });
-          } else if(alerta["severidad"] == "Amarillo"){
-            //print("Centro $idc es amarillo ");
-            setState(() {
-              markersWithAlerts2.add(idc); // Agregar el ID del centro a la lista
-            });
+          if (alerta["severidad"] == "Rojo") {
+            updatedMarkersWithAlerts.add(idc);
+          } else if (alerta["severidad"] == "Amarillo") {
+            updatedMarkersWithAlerts2.add(idc);
           }
         }
-        //_isLoading = false;
       } else {
-
-        //print("IDE: $ide");
-        //print("IDU: $idu");
-        //print("IDC: $idc");
-        //var jsonResponse = jsonDecode(response.body);
-
-        //print(jsonResponse["message"]);
-
-        counts.add(0); // Si hay un error, agregar cero alertas para el centro
+        counts.add(0);
       }
     }
 
     setState(() {
       _isLoading = false;
       _alertCounts = counts;
+      markersWithAlerts = updatedMarkersWithAlerts; // Actualizar la lista de IDs con alertas "Rojo"
+      markersWithAlerts2 = updatedMarkersWithAlerts2; // Actualizar la lista de IDs con alertas "Amarillo"
     });
   }
 
