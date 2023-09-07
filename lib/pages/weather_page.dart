@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -30,7 +29,6 @@ String parseDate(String inputDate) {
 
 class _WeatherPageState extends State<WeatherPage> {
   List<dynamic> _alerts = [];
-  double _weathers = 0.0;
   bool _isLoading = true;
   String _message = "";
   //Timer? _timer;
@@ -141,7 +139,7 @@ class _WeatherPageState extends State<WeatherPage> {
       String dref = weather["mongodb"];
       double lat = weather["latitud"];
       double lng = weather["longitud"];
-      double hdi = weather["heading_inicial"];
+      dynamic hdi = weather["heading_inicial"]; // Usar dynamic en lugar de double
 
       String key = "${emp}_${cce}_${cli}_${nr}_${dref}_${lat}_${lng}_${hdi}";
 
@@ -153,13 +151,15 @@ class _WeatherPageState extends State<WeatherPage> {
       if (response.statusCode == 200) {
         _isLoading = false;
         var jsonResponse = jsonDecode(response.body);
-        double weatherValue = jsonResponse["data"]["valor"] is int
-            ? (jsonResponse["data"]["valor"] as int).toDouble()
-            : jsonResponse["data"]["valor"];
+        dynamic weatherValue = jsonResponse["data"]["valor"];
+
+        // Convertir a double si es un entero
+        if (weatherValue is int) {
+          weatherValue = weatherValue.toDouble();
+        }
 
         _weatherValues[key] = weatherValue;
       } else {
-        //print("parece que no");
         var errorResponse = jsonDecode(response.body);
         setState(() {
           _isLoading = false;
@@ -169,10 +169,8 @@ class _WeatherPageState extends State<WeatherPage> {
     }
 
     setState(() {
-      //_weathers = jsonResponse["data"]["valor"];
       _isLoading = false;
     });
-
   }
 
 

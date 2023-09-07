@@ -201,6 +201,8 @@ class _HomePageState extends State<HomePage> {
       _fetchCentros();
       _fetchAlertCounts();
     });
+    // Llama a la función para obtener el token del dispositivo al iniciar la página
+    init();
   }
 
   @override
@@ -209,12 +211,12 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  //init() async {
-    //String deviceToken = await getDeviceToken();
-    //print("##### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFICATION #####");
-    //print(deviceToken);
-    //print("###########################################################");
-  //}
+  init() async {
+    String deviceToken = await getDeviceToken();
+    print("##### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFICATION #####");
+    print(deviceToken);
+    print("###########################################################");
+  }
 
   @override
   Widget build(BuildContext context) {
