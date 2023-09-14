@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   String _message = "";
   List<int> markersWithAlerts = []; // Cambiado a List<int>
   List<int> markersWithAlerts2 = []; // Cambiado a List<int>
-  Timer? _timer;
+  //Timer? _timer;
 
   Future<void> _handleRefresh() async {
     // Actualiza los datos aquí
@@ -197,17 +197,17 @@ class _HomePageState extends State<HomePage> {
     _fetchCentros();
 
     // Configure the timer to fetch alerts every msecondsinute
-    _timer = Timer.periodic(Duration(minutes: 5), (timer) {
-      _fetchCentros();
-      _fetchAlertCounts();
-    });
+    //_timer = Timer.periodic(Duration(seconds: 10), (timer) {
+    //  _fetchCentros();
+    //  _fetchAlertCounts();
+    //});
     // Llama a la función para obtener el token del dispositivo al iniciar la página
     init();
   }
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel the timer to avoid memory leaks
+    //_timer?.cancel(); // Cancel the timer to avoid memory leaks
     super.dispose();
   }
 
@@ -356,7 +356,7 @@ class _HomePageState extends State<HomePage> {
                   _logout(context);
                 },
               ),
-              const SizedBox(height: 80.0),
+              const SizedBox(height: 60.0),
               Container(
                 margin: EdgeInsets.fromLTRB(85, 60, 0, 0),
                 child: const Text(
