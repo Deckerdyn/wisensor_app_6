@@ -31,7 +31,7 @@ class _WeatherPageState extends State<WeatherPage> {
   List<dynamic> _alerts = [];
   bool _isLoading = true;
   String _message = "";
-  //Timer? _timer;
+  Timer? _timer;
   Map<String, double> _weatherValues = {}; // Mapa para almacenar valores de clima por alerta
 
 
@@ -180,17 +180,17 @@ class _WeatherPageState extends State<WeatherPage> {
   void initState() {
     super.initState();
     _fetchAlerts();
-    /*
+
     // Configure the timer to fetch alerts every msecondsinute
-    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
       _fetchAlerts();
     });
-    */
+
   }
 
   @override
   void dispose() {
-    //_timer?.cancel(); // Cancel the timer to avoid memory leaks
+    _timer?.cancel(); // Cancel the timer to avoid memory leaks
     super.dispose();
   }
 
