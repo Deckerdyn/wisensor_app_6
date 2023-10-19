@@ -7,6 +7,15 @@ import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'services/notification_services.dart';
 
+/*
+Future multipleRegistration() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await FirebaseMessaging.instance.subscribeToTopic("ADMIN");
+}
+*/
+
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -36,6 +45,7 @@ Future<void> main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
+  //multipleRegistration();
   runApp(MyApp());
 }
 

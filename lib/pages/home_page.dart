@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   String _message = "";
   List<int> markersWithAlerts = []; // Cambiado a List<int>
   List<int> markersWithAlerts2 = []; // Cambiado a List<int>
-  //Timer? _timer;
+  Timer? _timer;
 
   Future<void> _handleRefresh() async {
     // Actualiza los datos aquí
@@ -153,7 +153,15 @@ class _HomePageState extends State<HomePage> {
         Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas?ide=$ide&idu=$idu&idc=$idc"),
         headers: headers,
       );
-
+      print("Este es el ide");
+      print(ide);
+      if(ide == 2){
+        print("GMT");
+        FirebaseMessaging.instance.subscribeToTopic("GMT");
+      }if (ide == 3) {
+        print("MOWI");
+        FirebaseMessaging.instance.subscribeToTopic("MOWI");
+      }
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
         int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
@@ -165,7 +173,9 @@ class _HomePageState extends State<HomePage> {
           } else if (alerta["severidad"] == "Amarillo") {
             updatedMarkersWithAlerts2.add(idc);
           }
+         // FirebaseMessaging.instance.subscribeToTopic(alerta["codigo_centro"]);
         }
+
       } else {
         counts.add(0);
       }
@@ -197,17 +207,17 @@ class _HomePageState extends State<HomePage> {
     _fetchCentros();
 
     // Configure the timer to fetch alerts every msecondsinute
-    //_timer = Timer.periodic(Duration(seconds: 10), (timer) {
-    //  _fetchCentros();
-    //  _fetchAlertCounts();
-    //});
+    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+      _fetchCentros();
+      _fetchAlertCounts();
+    });
     // Llama a la función para obtener el token del dispositivo al iniciar la página
     init();
   }
 
   @override
   void dispose() {
-    //_timer?.cancel(); // Cancel the timer to avoid memory leaks
+    _timer?.cancel(); // Cancel the timer to avoid memory leaks
     super.dispose();
   }
 
@@ -354,6 +364,10 @@ class _HomePageState extends State<HomePage> {
                 title: const Text('Cerrar Sesión'),
                 onTap: () {
                   _logout(context);
+                  print("se ha desuscrito de GMT");
+                  FirebaseMessaging.instance.unsubscribeFromTopic("GMT");
+                  print("se ha desuscrito de MOWI");
+                  FirebaseMessaging.instance.unsubscribeFromTopic("MOWI");
                 },
               ),
               const SizedBox(height: 60.0),
