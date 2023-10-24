@@ -26,6 +26,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Set<String> subscribedTopics = Set<String>();
   List<dynamic> _centros = [];
   List<int> _alertCounts = [];
   bool _isLoading = true;
@@ -153,14 +154,20 @@ class _HomePageState extends State<HomePage> {
         Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas?ide=$ide&idu=$idu&idc=$idc"),
         headers: headers,
       );
-      print("Este es el ide");
-      print(ide);
-      if(ide == 2){
-        print("GMT");
-        FirebaseMessaging.instance.subscribeToTopic("GMT");
-      }if (ide == 3) {
-        print("MOWI");
-        FirebaseMessaging.instance.subscribeToTopic("MOWI");
+      //print("Este es el ide");
+      //print(ide);
+      // Verificar si ya se ha suscrito al tópico correspondiente
+      if (!subscribedTopics.contains(centro["nombre"])) {
+        if (ide == 2) {
+          //print("GMT");
+          FirebaseMessaging.instance.subscribeToTopic("GMT");
+          subscribedTopics.add("GMT");
+        }
+        if (ide == 3) {
+          //print("MOWI");
+          FirebaseMessaging.instance.subscribeToTopic("MOWI");
+          subscribedTopics.add("MOWI");
+        }
       }
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
