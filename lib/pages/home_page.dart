@@ -158,7 +158,7 @@ class _HomePageState extends State<HomePage> {
       //print(ide);
       // Verificar si ya se ha suscrito al tópico correspondiente
       if (!subscribedTopics.contains(centro["nombre"])) {
-        if (ide == 2) {
+        if (ide == 6 || ide == 2) {
           //print("GMT");
           FirebaseMessaging.instance.subscribeToTopic("GMT");
           subscribedTopics.add("GMT");
