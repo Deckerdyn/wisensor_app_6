@@ -158,10 +158,15 @@ class _HomePageState extends State<HomePage> {
       //print(ide);
       // Verificar si ya se ha suscrito al tópico correspondiente
       if (!subscribedTopics.contains(centro["nombre"])) {
-        if (ide == 6 || ide == 2) {
+        if (ide == 2) {
           //print("GMT");
           FirebaseMessaging.instance.subscribeToTopic("GMT");
           subscribedTopics.add("GMT");
+        }
+        if (ide == 6) {
+          //print("GMT");
+          FirebaseMessaging.instance.subscribeToTopic("AQUACHILE");
+          subscribedTopics.add("AQUACHILE");
         }
         if (ide == 3) {
           //print("MOWI");
