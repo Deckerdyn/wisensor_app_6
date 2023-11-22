@@ -27,6 +27,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Set<String> subscribedTopics = Set<String>();
+  List<int> idEmpresas = [];
   List<dynamic> _centros = [];
   List<int> _alertCounts = [];
   bool _isLoading = true;
@@ -157,21 +158,26 @@ class _HomePageState extends State<HomePage> {
       //print("Este es el ide");
       //print(ide);
       // Verificar si ya se ha suscrito al tópico correspondiente
-      if (!subscribedTopics.contains(centro["nombre"])) {
-        if (ide == 2) {
-          //print("GMT");
-          FirebaseMessaging.instance.subscribeToTopic("GMT");
-          subscribedTopics.add("GMT");
-        }
-        if (ide == 6) {
-          //print("GMT");
-          FirebaseMessaging.instance.subscribeToTopic("AQUACHILE");
-          subscribedTopics.add("AQUACHILE");
-        }
-        if (ide == 3) {
-          //print("MOWI");
-          FirebaseMessaging.instance.subscribeToTopic("MOWI");
-          subscribedTopics.add("MOWI");
+      if (!idEmpresas.contains(centro["ide"])) {
+        switch (ide) {
+          case 2:
+            print("GMT");
+            FirebaseMessaging.instance.subscribeToTopic("GMT");
+            idEmpresas.add(ide);
+            break;
+          case 6:
+            print("AQUACHILE");
+            FirebaseMessaging.instance.subscribeToTopic("AQUACHILE");
+            idEmpresas.add(ide);
+            break;
+          case 3:
+            print("MOWI");
+            FirebaseMessaging.instance.subscribeToTopic("MOWI");
+            idEmpresas.add(ide);
+            break;
+          default:
+          // Manejar otros casos si es necesario
+            break;
         }
       }
       if (response.statusCode == 200) {
