@@ -386,6 +386,8 @@ class _HomePageState extends State<HomePage> {
                   FirebaseMessaging.instance.unsubscribeFromTopic("GMT");
                   print("se ha desuscrito de MOWI");
                   FirebaseMessaging.instance.unsubscribeFromTopic("MOWI");
+                  print("se ha desuscrito de AQUACHILE");
+                  FirebaseMessaging.instance.unsubscribeFromTopic("AQUACHILE");
                 },
               ),
               const SizedBox(height: 60.0),
