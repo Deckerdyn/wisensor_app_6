@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:Wisensor/pages/map_page.dart';
+import 'package:Wisensor/pages/security_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -155,6 +156,7 @@ class _HomePageState extends State<HomePage> {
         Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas?ide=$ide&idu=$idu&idc=$idc"),
         headers: headers,
       );
+
       //print("Este es el ide");
       //print(ide);
       // Verificar si ya se ha suscrito al tópico correspondiente
@@ -276,6 +278,7 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
+              /*
               ListTile(
                 leading: const Icon(
                   Icons.sunny,
@@ -291,6 +294,8 @@ class _HomePageState extends State<HomePage> {
                    */
                 },
               ),
+
+               */
               ListTile(
                 leading: const Icon(
                   Icons.shield,
@@ -300,7 +305,9 @@ class _HomePageState extends State<HomePage> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    CustomPageRoute(child: SecurityModule()),
+                    MaterialPageRoute(
+                      builder: (context) => SecurityPage(idu: widget.idu),
+                    ),
                   );
                 },
               ),
@@ -355,6 +362,45 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(
                       builder: (context) => MapPage(idu: widget.idu),
                     ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  FontAwesomeIcons.buromobelexperte,
+                ),
+                title: const Text('Jaula Smart'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    CustomPageRoute(child: NetworkModule()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  FontAwesomeIcons.robot,
+                ),
+                title: const Text('Sub Dron'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    CustomPageRoute(child: NetworkModule()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  FontAwesomeIcons.train,
+                ),
+                title: const Text('Ferrocarril'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    CustomPageRoute(child: NetworkModule()),
                   );
                 },
               ),
@@ -516,7 +562,7 @@ class _HomePageState extends State<HomePage> {
                                         Icon(
                                           Icons.directions_boat,
                                           size: 30.0,
-                                          color: hasRedAlert ? Colors.blueAccent[100] : hasYellowAlert ? Colors.black : Colors.white,
+                                          color: hasRedAlert ? Colors.black54 : hasYellowAlert ? Colors.black : Colors.white70,
                                         ),
                                         Positioned(
                                           top: 0,
@@ -524,7 +570,7 @@ class _HomePageState extends State<HomePage> {
                                           child: Container(
                                             padding: EdgeInsets.all(2),
                                             decoration: BoxDecoration(
-                                              color: hasYellowAlert ? Colors.red : Colors.black54,
+                                              color: hasRedAlert || hasYellowAlert ? Colors.red : Colors.black54,
                                               shape: BoxShape.circle,
                                             ),
                                             constraints: BoxConstraints(
