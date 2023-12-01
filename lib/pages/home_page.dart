@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:Wisensor/modules/railway_module.dart';
+import 'package:Wisensor/modules/subdrone_module.dart';
 import 'package:Wisensor/pages/map_page.dart';
 import 'package:Wisensor/pages/security_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -12,6 +14,7 @@ import 'package:Wisensor/modules/network_module.dart';
 import 'package:Wisensor/modules/security_module.dart';
 import 'package:Wisensor/pages/weather_page.dart';
 import 'dart:convert';
+import '../modules/cage_module.dart';
 import '../modules/setting_module.dart';
 import 'custom_page_route.dart';
 import 'login_page.dart';
@@ -254,7 +257,7 @@ class _HomePageState extends State<HomePage> {
       onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Alertas Generales', style: TextStyle(fontSize: 20.0)),
+          title: Text('Alertas de Clima', style: TextStyle(fontSize: 20.0)),
           centerTitle: true,
         ),
         drawer: Drawer(
@@ -374,7 +377,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    CustomPageRoute(child: NetworkModule()),
+                    CustomPageRoute(child: CageModule()),
                   );
                 },
               ),
@@ -382,12 +385,12 @@ class _HomePageState extends State<HomePage> {
                 leading: const Icon(
                   FontAwesomeIcons.robot,
                 ),
-                title: const Text('Sub Dron'),
+                title: const Text('Sub Drone'),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    CustomPageRoute(child: NetworkModule()),
+                    CustomPageRoute(child: SubdroneModule()),
                   );
                 },
               ),
@@ -400,7 +403,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    CustomPageRoute(child: NetworkModule()),
+                    CustomPageRoute(child: RailwayModule()),
                   );
                 },
               ),
