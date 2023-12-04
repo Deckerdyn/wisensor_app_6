@@ -14,11 +14,11 @@ class SecurityModule extends StatefulWidget {
   //final int idc;
   //final String nombreCentro; // Agregar el nuevo parámetro
   final String emp;
-  final String cce;
+  final String nce;
   final String dref;
   final String nombreCentro; // Agregar el nuevo parámetro
 
-  SecurityModule({required this.emp,required this.cce, required this.dref,required this.nombreCentro,
+  SecurityModule({required this.emp,required this.nce, required this.dref,required this.nombreCentro,
     });
 
   @override
@@ -44,7 +44,7 @@ class _SecurityModuleState extends State<SecurityModule> {
   IconData parseIconData(String clasificacion) {
     switch (clasificacion) {
       case "person":
-        return Icons.nordic_walking;
+        return FontAwesomeIcons.walking;
       case "boatMedium":
         return FontAwesomeIcons.ship;
       case "<i class=\"fas fa-compass\"></i>":
@@ -69,8 +69,8 @@ class _SecurityModuleState extends State<SecurityModule> {
     http.Response response = await http.get(
       Uri.parse(
           "http://201.220.112.247:1880/wisensor/api/centros/alertas2?emp=${widget
-              .emp}&cce=${widget
-              .cce}&dref=${widget.dref}"),
+              .emp}&nce=${widget
+              .nce}&dref=${widget.dref}"),
       headers: headers,
     );
     if (response.statusCode == 200) {

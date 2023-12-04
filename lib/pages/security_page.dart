@@ -110,7 +110,7 @@ class _SecurityPageState extends State<SecurityPage> {
       var jsonResponse = jsonDecode(response.body);
       setState(() {
         _centros = jsonResponse["data"];
-        _isLoading = false;
+        //_isLoading = false;
         _message = jsonResponse["message"];
         //print(_centros);
       });
@@ -149,12 +149,13 @@ class _SecurityPageState extends State<SecurityPage> {
 
     for (var centro in _centros) {
       String emp = centro["codigo_empresa"];
-      String cce = centro["codigo_centro"];
+      String nce = centro["nombre"];
       String dref = centro["mongodb"];
-
+      //print(emp);
+      //print(nce);
 
       http.Response response2 = await http.get(
-        Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas2?emp=$emp&cce=$cce&dref=$dref"),
+        Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas2?emp=$emp&nce=$nce&dref=$dref"),
         headers: headers,
       );
       //print("Este es el ide");
@@ -191,10 +192,10 @@ class _SecurityPageState extends State<SecurityPage> {
 
         for (var alerta in jsonResponse["data"]) {
           if (alerta["modulo"] != null || alerta["zona"] == "INTERIOR") {
-            updatedMarkersWithAlerts.add(cce);
+            updatedMarkersWithAlerts.add(nce);
             //print("INTERIOR");
           } else if (alerta["zona"] != null && (alerta["zona"] == "EXTERIOR")) {
-            updatedMarkersWithAlerts2.add(cce);
+            updatedMarkersWithAlerts2.add(nce);
             //print(updatedMarkersWithAlerts2);
             //print("EXTERIOR");
           }
@@ -477,8 +478,8 @@ class _SecurityPageState extends State<SecurityPage> {
                       itemBuilder: (BuildContext context, int index) {
                         //bool isRed = _alertCounts[index] > 0;
 
-                        final hasRedAlert= markersWithAlerts.contains(_centros[index]['codigo_centro']);
-                        final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['codigo_centro']);
+                        final hasRedAlert= markersWithAlerts.contains(_centros[index]['nombre']);
+                        final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['nombre']);
 
 
 
@@ -508,7 +509,7 @@ class _SecurityPageState extends State<SecurityPage> {
                                       child: SecurityModule(
 
                                         emp: _centros[index]["codigo_empresa"],
-                                        cce: _centros[index]["codigo_centro"],
+                                        nce: _centros[index]["nombre"],
                                         dref: _centros[index]["mongodb"],
                                         nombreCentro: _centros[index]["nombre"],
                                         //nombreCentro: _centros[index]["nombre"], // Pasar el nombre del centro
