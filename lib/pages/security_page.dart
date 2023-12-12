@@ -33,8 +33,8 @@ class _SecurityPageState extends State<SecurityPage> {
   List<int> _alertCounts = [];
   bool _isLoading = true;
   String _message = "";
-  List<String> markersWithAlerts = []; // Cambiado a List<int>
-  List<String> markersWithAlerts2 = []; // Cambiado a List<int>
+  List<String> markersWithAlerts = []; // Cambiado a List<String>
+  List<String> markersWithAlerts2 = []; // Cambiado a List<String>
   Timer? _timer;
 
   Future<void> _handleRefresh() async {
@@ -235,7 +235,7 @@ class _SecurityPageState extends State<SecurityPage> {
     _fetchCentros();
 
     // Configure the timer to fetch alerts every msecondsinute
-    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 60), (timer) {
       _fetchCentros();
       _fetchAlertCounts();
     });
