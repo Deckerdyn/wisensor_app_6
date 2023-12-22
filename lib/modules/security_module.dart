@@ -132,8 +132,8 @@ class _SecurityModuleState extends State<SecurityModule> {
     super.initState();
     _fetchAlerts();
 
-    // Configure the timer to fetch alerts every msecondsinute
-    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    // Configure the timer to fetch alerts every 10 minutes
+    _timer = Timer.periodic(Duration(minutes: 10), (timer) {
       _fetchAlerts();
     });
 
