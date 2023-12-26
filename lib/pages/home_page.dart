@@ -180,6 +180,11 @@ class _HomePageState extends State<HomePage> {
             FirebaseMessaging.instance.subscribeToTopic("MOWI");
             idEmpresas.add(ide);
             break;
+          case 7:
+            print("SALMONESAUSTRAL");
+            FirebaseMessaging.instance.subscribeToTopic("SALMONESAUSTRAL");
+            idEmpresas.add(ide);
+            break;
           default:
           // Manejar otros casos si es necesario
             break;
@@ -454,7 +459,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                 margin: const EdgeInsets.fromLTRB(90, 0, 0, 0),
                 child: const Text(
-                  'V 1.0',
+                  'V 1.1.0',
                   style: TextStyle(
                     fontSize: 10.0,
                     fontWeight: FontWeight.bold,
