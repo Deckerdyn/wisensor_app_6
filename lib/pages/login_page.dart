@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'package:connectivity/connectivity.dart';
 import 'dart:async';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -181,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 0, 120, 0),
                   child: const Text(
-                    'Versión 1.0',
+                    'Versión 1.1.0',
                     style: TextStyle(
                       fontSize: 10.0,
                       fontWeight: FontWeight.bold,
@@ -209,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 4.0),
+                      const SizedBox(height: 0.0),
                       TextField(
                         controller: _emailController,
                         onChanged: (value) {
@@ -226,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                      const SizedBox(height: 4.0),
+                      const SizedBox(height: 0.0),
 
                       const Text(
                         'Contraseña',
@@ -237,7 +238,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                      const SizedBox(height: 4.0),
+                      const SizedBox(height: 0.0),
 
                       TextFormField(
                         controller: _passwordController,
@@ -295,7 +296,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       SizedBox(
                         width: double.infinity,
-                        height: 50.0,
+                        height: 45.0,
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _submit,
                           style: ElevatedButton.styleFrom(
@@ -307,10 +308,31 @@ class _LoginPageState extends State<LoginPage> {
                               fontSize: 17,
                             ),
                           ),
+
+                        ),
+                      ),
+                      // Agrega un GestureDetector para el enlace de políticas de privacidad
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            launchUrl(Uri.parse("https://wisensor.cl/politicas"));
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: Text(
+                              'Política de Privacidad',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                color: Color(0xFFEA4335),
+
+                              ),
+                            ),
+                          ),
                         ),
                       ),
 
-                      const SizedBox(height: 4.0),
+
+                      const SizedBox(height: 2.54),
 
                       Center(
                         child: _errorMessage.isNotEmpty
