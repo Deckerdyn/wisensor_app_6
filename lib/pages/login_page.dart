@@ -155,201 +155,208 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/fondo_olas.PNG"),
-                fit: BoxFit.cover,
+      resizeToAvoidBottomInset: false,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/fondo_olas.PNG"),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text(
-                  'Wisensor',
-                  style: TextStyle(
-                    fontSize: 45.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.fromLTRB(0, 0, 120, 0),
-                  child: const Text(
-                    'Versión 1.1.0',
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    'Wisensor',
                     style: TextStyle(
-                      fontSize: 10.0,
+                      fontSize: 45.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
-                    textAlign: TextAlign.start,
                   ),
-                ),
-                const SizedBox(height: 10.0),
-                Container(
-                  padding: const EdgeInsets.all(16.0),
-                  height: MediaQuery.of(context).size.height * 0.442,
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(255, 255, 255, 0.155),
-                    borderRadius: BorderRadius.circular(8.0),
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(0, 0, 120, 0),
+                    child: const Text(
+                      'Versión 1.1.0',
+                      style: TextStyle(
+                        fontSize: 10.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Correo',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 0.0),
-                      TextField(
-                        controller: _emailController,
-                        onChanged: (value) {
-                          setState(() {
-                            _errorMessage =
-                            !_isEmailValid(value) ? 'Correo electrónico no válido' : '';
-                          });
-                        },
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Ingrese su correo',
-                          hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
-                          border: const OutlineInputBorder(),
-                        ),
-                      ),
-
-                      const SizedBox(height: 0.0),
-
-                      const Text(
-                        'Contraseña',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-
-                      const SizedBox(height: 0.0),
-
-                      TextFormField(
-                        controller: _passwordController,
-                        /*
-                        onChanged: (value) {
-                          setState(() {
-                            _errorMessage =
-                            !_isPasswordValid(value) ? 'La contraseña debe tener al menos 6 caracteres' : '';
-                          });
-                        },
-
-                         */
-                        obscureText: !_isPasswordVisible,
-                        decoration: InputDecoration(
-                          hintText: 'Ingrese su contraseña',
-                          hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
-                          border: OutlineInputBorder(),
-                          suffixIcon: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
-                            child: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                              color: Colors.grey,
-                            ),
+                  const SizedBox(height: 10.0),
+                  Container(
+                    padding: const EdgeInsets.all(16.0),
+                    height: MediaQuery.of(context).size.height * 0.442,
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(255, 255, 255, 0.155),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Correo',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
-                      ),
-
-                      // Checkbox para la opción "Recuérdame"
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start, // Añadir esta línea
-                        children: <Widget>[
-                          Checkbox(
-                            value: _rememberMe,
-                            onChanged: (value) {
-                              setState(() {
-                                _rememberMe = value ?? false;
-                              });
-                            },
-                            activeColor: Colors.red,  // Color del fondo del Checkbox cuando está seleccionado
-                            checkColor: Colors.white,  // Color del checkmark dentro del Checkbox cuando está seleccionado
-                          ),
-
-                          Text(
-                            'Recuérdame',
-                            style: TextStyle(fontSize: 16.0, color: Colors.white),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 0.0),
-
-                      SizedBox(
-                        width: double.infinity,
-                        height: 45.0,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _submit,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xffdc3545),
-                          ),
-                          child: const Text(
-                            'Ingresar',
-                            style: TextStyle(
-                              fontSize: 17,
-                            ),
-                          ),
-
-                        ),
-                      ),
-                      // Agrega un GestureDetector para el enlace de políticas de privacidad
-                      Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            launchUrl(Uri.parse("https://wisensor.cl/politicas"));
+                        const SizedBox(height: 4.0),
+                        TextField(
+                          controller: _emailController,
+                          onChanged: (value) {
+                            setState(() {
+                              _errorMessage =
+                              !_isEmailValid(value) ? 'Correo electrónico no válido' : '';
+                            });
                           },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: Text(
-                              'Política de Privacidad',
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                color: Color(0xFFEA4335),
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: 'Ingrese su correo',
+                            hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
+                            border: const OutlineInputBorder(),
+                          ),
+                        ),
 
+                        const SizedBox(height: 4.0),
+
+                        const Text(
+                          'Contraseña',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+
+                        const SizedBox(height: 4.0),
+
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: !_isPasswordVisible,
+                          decoration: InputDecoration(
+                            hintText: 'Ingrese su contraseña',
+                            hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
+                            border: OutlineInputBorder(),
+                            suffixIcon: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                              child: Icon(
+                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: Colors.grey,
                               ),
                             ),
                           ),
                         ),
+
+                        // Checkbox para la opción "Recuérdame"
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start, // Añadir esta línea
+                          children: <Widget>[
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rememberMe = value ?? false;
+                                });
+                              },
+                              activeColor: Colors.red,  // Color del fondo del Checkbox cuando está seleccionado
+                              checkColor: Colors.white,  // Color del checkmark dentro del Checkbox cuando está seleccionado
+                            ),
+
+                            Text(
+                              'Recuérdame',
+                              style: TextStyle(fontSize: 16.0, color: Colors.white),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 0.0),
+
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50.0,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _submit,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xffdc3545),
+                            ),
+                            child: const Text(
+                              'Ingresar',
+                              style: TextStyle(
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+
+
+
+                        const SizedBox(height: 2.54),
+
+                        Center(
+                          child: _errorMessage.isNotEmpty
+                              ? Text(
+                            _errorMessage,
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 14),
+                          )
+                              : Container(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Contenedor para la política de privacidad
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.all(6.0),
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(255, 255, 255, 0.155),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    launchUrl(Uri.parse("https://wisensor.cl/politicas"));
+                  },
+                  child: Center(
+                    child: Text(
+                      'Políticas de Privacidad',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Color(0xFF4285F4),
+                        decoration: TextDecoration.underline,
                       ),
-
-
-                      const SizedBox(height: 2.54),
-
-                      Center(
-                        child: _errorMessage.isNotEmpty
-                            ? Text(
-                          _errorMessage,
-                          style: const TextStyle(
-                              color: Colors.red, fontSize: 14),
-                        )
-                            : Container(),
-                      ),
-                    ],
+                      textAlign: TextAlign.center,  // Añadido para centrar el texto
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
