@@ -347,7 +347,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Color(0xFF4285F4),
-                        decoration: TextDecoration.underline,
+                        //decoration: TextDecoration.underline,
                       ),
                       textAlign: TextAlign.center,  // Añadido para centrar el texto
                     ),
