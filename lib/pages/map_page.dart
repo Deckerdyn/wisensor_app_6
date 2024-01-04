@@ -24,7 +24,6 @@ class _MapPageState extends State<MapPage> {
   List<dynamic> _centros = [];
   List<int> _alertCounts = [];
   bool _isLoading = true;
-  String _message = "";
 
   @override
   void initState() {
