@@ -199,7 +199,7 @@ class _WeatherPageState extends State<WeatherPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Alertas de Clima - ${widget.nombreCentro}',
+          '${widget.nombreCentro}',
           style: TextStyle(fontSize: 20.0),
         ),
         centerTitle: true,

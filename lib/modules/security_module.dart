@@ -12,13 +12,13 @@ class SecurityModule extends StatefulWidget {
   //final int ide;
   //final int idu;
   //final int idc;
-  //final String nombreCentro; // Agregar el nuevo parámetro
   final String emp;
-  final String nce;
+  //final String nce;
   final String dref;
   final String nombreCentro; // Agregar el nuevo parámetro
+  final String cce; // Agregar el nuevo parámetro
 
-  SecurityModule({required this.emp,required this.nce, required this.dref,required this.nombreCentro,
+  SecurityModule({required this.emp, required this.dref,required this.nombreCentro,required this.cce,
     });
 
   @override
@@ -69,8 +69,7 @@ class _SecurityModuleState extends State<SecurityModule> {
     http.Response response = await http.get(
       Uri.parse(
           "http://201.220.112.247:1880/wisensor/api/centros/alertas2?emp=${widget
-              .emp}&nce=${widget
-              .nce}&dref=${widget.dref}"),
+              .emp}&dref=${widget.dref}&cce=${widget.cce}"),
       headers: headers,
     );
     if (response.statusCode == 200) {
@@ -150,7 +149,7 @@ class _SecurityModuleState extends State<SecurityModule> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Alertas de Seguridad - ${widget.nombreCentro}',
+          '${widget.nombreCentro}',
           style: TextStyle(fontSize: 20.0),
         ),
         centerTitle: true,
