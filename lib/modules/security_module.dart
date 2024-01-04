@@ -3,17 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-//import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pages/login_page.dart';
 
 class SecurityModule extends StatefulWidget {
-  //final int ide;
-  //final int idu;
-  //final int idc;
   final String emp;
-  //final String nce;
   final String dref;
   final String nombreCentro; // Agregar el nuevo parámetro
   final String cce; // Agregar el nuevo parámetro
@@ -24,15 +19,7 @@ class SecurityModule extends StatefulWidget {
   @override
   _SecurityModuleState createState() => _SecurityModuleState();
 }
-/*
-String parseDate(String inputDate) {
-  List<String> parts = inputDate.split(' ');
-  List<String> dateParts = parts[0].split('-');
-  List<String> timeParts = parts[1].split(':');
-  String formattedDate = '${dateParts[2]}-${dateParts[1]}-${dateParts[0]} ${timeParts[0]}:${timeParts[1]}';
-  return formattedDate;
-}
-*/
+
 class _SecurityModuleState extends State<SecurityModule> {
   List<dynamic> _alerts = [];
   bool _isLoading = true;
@@ -79,12 +66,6 @@ class _SecurityModuleState extends State<SecurityModule> {
         _alerts = jsonResponse["data"];
         _isLoading = false;
         _message = jsonResponse["message"];
-/*
-        if (_alerts.isNotEmpty) {
-          _nombreCentro = _alerts[0]["nombre_centro"];
-        }
-
- */
       });
 
 
@@ -98,12 +79,8 @@ class _SecurityModuleState extends State<SecurityModule> {
       });
     }
     else {
-      //print(_message);
-      //print("NOOOO");
-      //print(response.statusCode);
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
-        //print(errorResponse);
         var errorMessage = errorResponse["message"];
         if (errorMessage == "Unauthenticated.") {
           prefs.remove("token");
@@ -196,11 +173,8 @@ class _SecurityModuleState extends State<SecurityModule> {
                     itemCount: _alerts.length,
                     itemBuilder: (BuildContext context, int index) {
 
-                      //int index = _alerts.length - index - 1; // Calcula el índice invertido
                       String iconDataString = _alerts[index]["clasificacion"];
                       IconData iconData = parseIconData(iconDataString);
-                      //String iconDataString = _alerts[index]["icono"];
-                      //IconData iconData = parseIconData(iconDataString);
                       return Column(
                         children: [
                           ListTile(

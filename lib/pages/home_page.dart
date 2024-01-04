@@ -11,11 +11,9 @@ import 'package:Wisensor/modules/biomass_module.dart';
 import 'package:Wisensor/modules/energy_module.dart';
 import 'package:Wisensor/modules/iot_module.dart';
 import 'package:Wisensor/modules/network_module.dart';
-import 'package:Wisensor/modules/security_module.dart';
 import 'package:Wisensor/pages/weather_page.dart';
 import 'dart:convert';
 import '../modules/cage_module.dart';
-import '../modules/setting_module.dart';
 import 'custom_page_route.dart';
 import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -121,8 +119,6 @@ class _HomePageState extends State<HomePage> {
       // Obtener la cantidad de alertas para cada centro
       await _fetchAlertCounts();
     } else {
-      //var jsonResponse = jsonDecode(response.body);
-      //print(jsonResponse["message"]);
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
         var errorMessage = errorResponse["message"];
@@ -160,9 +156,8 @@ class _HomePageState extends State<HomePage> {
         headers: headers,
       );
 
-      //print("Este es el ide");
-      //print(ide);
       // Verificar si ya se ha suscrito al tópico correspondiente
+
       if (!idEmpresas.contains(centro["ide"])) {
         switch (ide) {
           case 2:
@@ -201,7 +196,6 @@ class _HomePageState extends State<HomePage> {
           } else if (alerta["severidad"] == "Amarillo") {
             updatedMarkersWithAlerts2.add(idc);
           }
-         // FirebaseMessaging.instance.subscribeToTopic(alerta["codigo_centro"]);
         }
 
       } else {
@@ -221,7 +215,6 @@ class _HomePageState extends State<HomePage> {
   // Método para manejar el cierre de sesión
   Future<void> _logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    //print("erroneo");
     prefs.remove("token");
     Navigator.pushReplacement(
       context,
@@ -235,7 +228,7 @@ class _HomePageState extends State<HomePage> {
     _fetchCentros();
 
     // Configure the timer to fetch alerts every msecondsinute
-    _timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
       _fetchCentros();
       _fetchAlertCounts();
     });

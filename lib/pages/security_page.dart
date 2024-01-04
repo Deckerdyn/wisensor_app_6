@@ -1,18 +1,9 @@
 import 'dart:async';
-import 'package:Wisensor/pages/map_page.dart';
-import 'package:Wisensor/pages/security_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:Wisensor/modules/biomass_module.dart';
-import 'package:Wisensor/modules/energy_module.dart';
-import 'package:Wisensor/modules/iot_module.dart';
-import 'package:Wisensor/modules/network_module.dart';
 import 'package:Wisensor/modules/security_module.dart';
-import 'package:Wisensor/pages/weather_page.dart';
 import 'dart:convert';
-import '../modules/setting_module.dart';
 import 'custom_page_route.dart';
 import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -118,8 +109,6 @@ class _SecurityPageState extends State<SecurityPage> {
       // Obtener la cantidad de alertas para cada centro
       await _fetchAlertCounts();
     } else {
-      //var jsonResponse = jsonDecode(response.body);
-      //print(jsonResponse["message"]);
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
         var errorMessage = errorResponse["message"];
@@ -152,40 +141,13 @@ class _SecurityPageState extends State<SecurityPage> {
       //String nce = centro["nombre"];
       String dref = centro["mongodb"];
       String cce = centro["codigo_centro"];
-      //print(emp);
-      //print(nce);
+
 
       http.Response response2 = await http.get(
         Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas2?emp=$emp&dref=$dref&cce=$cce"),
         headers: headers,
       );
-      //print("Este es el ide");
-      //print(ide);
-      // Verificar si ya se ha suscrito al tópico correspondiente
-      /*
-      if (!idEmpresas.contains(centro["ide"])) {
-        switch (ide) {
-          case 2:
-            print("GMT");
-            FirebaseMessaging.instance.subscribeToTopic("GMT");
-            idEmpresas.add(ide);
-            break;
-          case 6:
-            print("AQUACHILE");
-            FirebaseMessaging.instance.subscribeToTopic("AQUACHILE");
-            idEmpresas.add(ide);
-            break;
-          case 3:
-            print("MOWI");
-            FirebaseMessaging.instance.subscribeToTopic("MOWI");
-            idEmpresas.add(ide);
-            break;
-          default:
-          // Manejar otros casos si es necesario
-            break;
-        }
-      }
-      */
+
      if(response2.statusCode == 200){
         var jsonResponse = jsonDecode(response2.body);
         int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
@@ -194,19 +156,13 @@ class _SecurityPageState extends State<SecurityPage> {
         for (var alerta in jsonResponse["data"]) {
           if (alerta["modulo"] != null || alerta["zona"] == "INTERIOR") {
             updatedMarkersWithAlerts.add(cce);
-            //print("INTERIOR");
           } else if (alerta["zona"] != null && (alerta["zona"] == "EXTERIOR")) {
             updatedMarkersWithAlerts2.add(cce);
-            //print(updatedMarkersWithAlerts2);
-            //print("EXTERIOR");
           }
-          // FirebaseMessaging.instance.subscribeToTopic(alerta["codigo_centro"]);
-          //print("MODULO");
         }
       }
       else {
         counts.add(0);
-        //print("????");
       }
     }
 
@@ -218,18 +174,6 @@ class _SecurityPageState extends State<SecurityPage> {
     });
   }
 
-/*
-  // Método para manejar el cierre de sesión
-  Future<void> _logout(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    //print("erroneo");
-    prefs.remove("token");
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-    );
-  }
-*/
   @override
   void initState() {
     super.initState();
@@ -266,175 +210,7 @@ class _SecurityPageState extends State<SecurityPage> {
           title: Text('Alertas de Seguridad', style: TextStyle(fontSize: 20.0)),
           centerTitle: true,
         ),
-        /*
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              AppBar(
-                title: const Text('Módulos'),
-                leading: const BackButton(),
-              ),
-              ListTile(
-                leading: const Icon(
-                  FontAwesomeIcons.fish,
-                ),
-                title: const Text('Biomasa'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    CustomPageRoute(child: BiomassModule()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.sunny,
-                ),
-                title: const Text('Clima'),
-                onTap: () {
-                  Navigator.pop(context);
-                  /*
-                  Navigator.push(
-                    context,
-                    CustomPageRoute(child: WeatherModule()),
-                  );
-                   */
-                },
-              ),
-              /*
-              ListTile(
-                leading: const Icon(
-                  Icons.shield,
-                ),
-                title: const Text('Seguridad'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SecurityPage(idu: widget.idu),
-                    ),
-                  );
-                },
-              ),
 
-               */
-              ListTile(
-                leading: const Icon(
-                  Icons.touch_app,
-                ),
-                title: const Text('IoT'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    CustomPageRoute(child: IotModule()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.battery_5_bar_rounded,
-                ),
-                title: const Text('Energía'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    CustomPageRoute(child: EnergyModule()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.network_wifi_outlined,
-                ),
-                title: const Text('Estado de Red'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    CustomPageRoute(child: NetworkModule()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.travel_explore,
-                ),
-                title: const Text('Mapa'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MapPage(idu: widget.idu),
-                    ),
-                  );
-                },
-              ),
-              Divider(),
-              /*
-              ListTile(
-                leading: const Icon(
-                  Icons.settings,
-                ),
-                title: const Text('Configuraciones'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    CustomPageRoute(child: SettingModule()),
-                  );
-                },
-              ),
-
-     */
-              ListTile(
-                leading: const Icon(
-                  Icons.directions_run,
-                ),
-                title: const Text('Cerrar Sesión'),
-                onTap: () {
-                  _logout(context);
-                  print("se ha desuscrito de GMT");
-                  FirebaseMessaging.instance.unsubscribeFromTopic("GMT");
-                  print("se ha desuscrito de MOWI");
-                  FirebaseMessaging.instance.unsubscribeFromTopic("MOWI");
-                  print("se ha desuscrito de AQUACHILE");
-                  FirebaseMessaging.instance.unsubscribeFromTopic("AQUACHILE");
-                },
-              ),
-              const SizedBox(height: 60.0),
-              Container(
-                margin: EdgeInsets.fromLTRB(85, 60, 0, 0),
-                child: const Text(
-                  'Wisensor',
-                  style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(90, 0, 0, 0),
-                child: const Text(
-                  'V 1.0',
-                  style: TextStyle(
-                    fontSize: 10.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.start,
-                ),
-              ),
-            ],
-          ),
-        ),
-        */
         body: RefreshIndicator(
           onRefresh: _handleRefresh,
           child: _isLoading
@@ -482,12 +258,6 @@ class _SecurityPageState extends State<SecurityPage> {
                         final hasRedAlert= markersWithAlerts.contains(_centros[index]['codigo_centro']);
                         final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['codigo_centro']);
 
-
-
-                        //print("hasRedAlert: $hasRedAlert");
-                        //print("hasYellowAlert: $hasYellowAlert");
-                        //print(markersWithAlerts);
-                        //print(_centros[index]['idc']);
                         return Column(
                           children: [
                             Container(
@@ -510,12 +280,9 @@ class _SecurityPageState extends State<SecurityPage> {
                                       child: SecurityModule(
 
                                         emp: _centros[index]["codigo_empresa"],
-                                        //nce: _centros[index]["nombre"],
                                         dref: _centros[index]["mongodb"],
                                         nombreCentro: _centros[index]["nombre"],
                                         cce: _centros[index]["codigo_centro"],
-                                        //nombreCentro: _centros[index]["nombre"], // Pasar el nombre del centro
-
 
                                       ),
                                     ),

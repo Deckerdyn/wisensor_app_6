@@ -73,12 +73,6 @@ class _WeatherPageState extends State<WeatherPage> {
         _alerts = jsonResponse["data"];
         //_isLoading = false;
         _message = jsonResponse["message"];
-/*
-        if (_alerts.isNotEmpty) {
-          _nombreCentro = _alerts[0]["nombre_centro"];
-        }
-
- */
       });
 
       // Obtener la cantidad de alertas para cada centro
@@ -92,9 +86,7 @@ class _WeatherPageState extends State<WeatherPage> {
       });
     }
     else {
-      //print(_message);
-      //print("NOOOO");
-      //print(response.statusCode);
+
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
         //print(errorResponse);
@@ -254,8 +246,7 @@ class _WeatherPageState extends State<WeatherPage> {
                       //int index = _alerts.length - index - 1; // Calcula el índice invertido
                       String iconDataString = _alerts[index]["icono"];
                       IconData iconData = parseIconData(iconDataString);
-                      //String iconDataString = _alerts[index]["icono"];
-                      //IconData iconData = parseIconData(iconDataString);
+
                       return Column(
                         children: [
                           ListTile(
@@ -323,8 +314,6 @@ class _WeatherPageState extends State<WeatherPage> {
                                       ],
                                     ),
                                   ),
-
-
                                 ],
                               ),
                             ),
