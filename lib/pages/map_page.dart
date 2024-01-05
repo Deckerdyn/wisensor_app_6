@@ -61,9 +61,10 @@ class _MapPageState extends State<MapPage> {
           final markerIcon = isMarkerWithAlert
               ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed)
               : isMarkerWithAlert2
-              ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow)
-          :
-          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+                  ? BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueYellow)
+                  : BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueGreen);
 
           return Marker(
             markerId: markerId,
@@ -86,7 +87,8 @@ class _MapPageState extends State<MapPage> {
       throw Exception('Usuario no autenticado');
     }
 
-    final url = Uri.parse('http://201.220.112.247:1880/wisensor/api/centros?idu=${widget.idu}');
+    final url = Uri.parse(
+        'http://201.220.112.247:1880/wisensor/api/centros?idu=${widget.idu}');
     final headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -99,12 +101,15 @@ class _MapPageState extends State<MapPage> {
       final centrosData = jsonResponse['data'] as List<dynamic>;
 
       // Store fetched data in _centros list
-      _centros = centrosData.map((centro) => centro as Map<String, dynamic>).toList();
+      _centros =
+          centrosData.map((centro) => centro as Map<String, dynamic>).toList();
 
       // Call _printAlerts function
       await _printAlerts();
 
-      return centrosData.map((centro) => centro as Map<String, dynamic>).toList();
+      return centrosData
+          .map((centro) => centro as Map<String, dynamic>)
+          .toList();
     } else {
       await _printAlerts();
       throw Exception('Error al cargar los centros');
@@ -129,7 +134,8 @@ class _MapPageState extends State<MapPage> {
       int idc = centro["idc"];
 
       http.Response response = await http.get(
-        Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas?ide=$ide&idu=$idu&idc=$idc"),
+        Uri.parse(
+            "http://201.220.112.247:1880/wisensor/api/centros/alertas?ide=$ide&idu=$idu&idc=$idc"),
         headers: headers,
       );
 
@@ -138,21 +144,23 @@ class _MapPageState extends State<MapPage> {
         print("Alerts data: ${response.body}");
         cantidad = (jsonResponse["data"].length);
         print(cantidad);
-        int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
+        int count =
+            jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
         counts.add(count);
 
         // Imprimir la severidad de la alerta
         for (var alerta in jsonResponse["data"]) {
           print("Severidad: ${alerta["severidad"]}");
-          if(alerta["severidad"] == "Rojo"){
+          if (alerta["severidad"] == "Rojo") {
             print("Centro $idc es Rojo ");
             setState(() {
               markersWithAlerts.add(idc); // Agregar el ID del centro a la lista
             });
-          } else if(alerta["severidad"] == "Amarillo"){
+          } else if (alerta["severidad"] == "Amarillo") {
             print("Centro $idc es amarillo ");
             setState(() {
-              markersWithAlerts2.add(idc); // Agregar el ID del centro a la lista
+              markersWithAlerts2
+                  .add(idc); // Agregar el ID del centro a la lista
             });
           }
         }

@@ -40,19 +40,22 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
   }
+
   Future<bool> _checkConnectivity() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     return connectivityResult != ConnectivityResult.none;
   }
 
   bool _isEmailValid(String email) {
-    final emailRegExp = RegExp(r'^[\w-]+(\.[\w-]+)*@[a-zA-Z\d-]+(\.[a-zA-Z\d-]+)*\.[a-zA-Z\d-]+$');
+    final emailRegExp = RegExp(
+        r'^[\w-]+(\.[\w-]+)*@[a-zA-Z\d-]+(\.[a-zA-Z\d-]+)*\.[a-zA-Z\d-]+$');
     return emailRegExp.hasMatch(email);
   }
 
   bool _isPasswordValid(String password) {
     return password.length >= 6;
   }
+
   Future<void> _submit() async {
     setState(() {
       _isLoading = true;
@@ -71,7 +74,10 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    if (email.isEmpty || password.isEmpty || !_isEmailValid(email) || !_isPasswordValid(password)) {
+    if (email.isEmpty ||
+        password.isEmpty ||
+        !_isEmailValid(email) ||
+        !_isPasswordValid(password)) {
       setState(() {
         _isLoading = false;
         _errorMessage = "Credenciales inválidas";
@@ -220,14 +226,16 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _emailController,
                           onChanged: (value) {
                             setState(() {
-                              _errorMessage =
-                              !_isEmailValid(value) ? 'Correo electrónico no válido' : '';
+                              _errorMessage = !_isEmailValid(value)
+                                  ? 'Correo electrónico no válido'
+                                  : '';
                             });
                           },
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             hintText: 'Ingrese su correo',
-                            hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
+                            hintStyle: TextStyle(
+                                fontSize: 18.0, color: Colors.grey[400]),
                             border: const OutlineInputBorder(),
                           ),
                         ),
@@ -250,7 +258,8 @@ class _LoginPageState extends State<LoginPage> {
                           obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
                             hintText: 'Ingrese su contraseña',
-                            hintStyle: TextStyle(fontSize: 18.0, color: Colors.grey[400]),
+                            hintStyle: TextStyle(
+                                fontSize: 18.0, color: Colors.grey[400]),
                             border: OutlineInputBorder(),
                             suffixIcon: GestureDetector(
                               onTap: () {
@@ -259,7 +268,9 @@ class _LoginPageState extends State<LoginPage> {
                                 });
                               },
                               child: Icon(
-                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                                 color: Colors.grey,
                               ),
                             ),
@@ -268,7 +279,8 @@ class _LoginPageState extends State<LoginPage> {
 
                         // Checkbox para la opción "Recuérdame"
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.start, // Añadir esta línea
+                          mainAxisAlignment:
+                              MainAxisAlignment.start, // Añadir esta línea
                           children: <Widget>[
                             Checkbox(
                               value: _rememberMe,
@@ -277,13 +289,15 @@ class _LoginPageState extends State<LoginPage> {
                                   _rememberMe = value ?? false;
                                 });
                               },
-                              activeColor: Colors.red,  // Color del fondo del Checkbox cuando está seleccionado
-                              checkColor: Colors.white,  // Color del checkmark dentro del Checkbox cuando está seleccionado
+                              activeColor: Colors
+                                  .red, // Color del fondo del Checkbox cuando está seleccionado
+                              checkColor: Colors
+                                  .white, // Color del checkmark dentro del Checkbox cuando está seleccionado
                             ),
-
                             Text(
                               'Recuérdame',
-                              style: TextStyle(fontSize: 16.0, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 16.0, color: Colors.white),
                             ),
                           ],
                         ),
@@ -307,17 +321,15 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
 
-
-
                         const SizedBox(height: 2.54),
 
                         Center(
                           child: _errorMessage.isNotEmpty
                               ? Text(
-                            _errorMessage,
-                            style: const TextStyle(
-                                color: Colors.red, fontSize: 14),
-                          )
+                                  _errorMessage,
+                                  style: const TextStyle(
+                                      color: Colors.red, fontSize: 14),
+                                )
                               : Container(),
                         ),
                       ],
@@ -349,7 +361,8 @@ class _LoginPageState extends State<LoginPage> {
                         color: Color(0xFF4285F4),
                         //decoration: TextDecoration.underline,
                       ),
-                      textAlign: TextAlign.center,  // Añadido para centrar el texto
+                      textAlign:
+                          TextAlign.center, // Añadido para centrar el texto
                     ),
                   ),
                 ),

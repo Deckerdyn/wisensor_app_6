@@ -13,8 +13,12 @@ class SecurityModule extends StatefulWidget {
   final String nombreCentro; // Agregar el nuevo parámetro
   final String cce; // Agregar el nuevo parámetro
 
-  SecurityModule({required this.emp, required this.dref,required this.nombreCentro,required this.cce,
-    });
+  SecurityModule({
+    required this.emp,
+    required this.dref,
+    required this.nombreCentro,
+    required this.cce,
+  });
 
   @override
   _SecurityModuleState createState() => _SecurityModuleState();
@@ -25,8 +29,8 @@ class _SecurityModuleState extends State<SecurityModule> {
   bool _isLoading = true;
   String _message = "";
   Timer? _timer;
-  Map<String, double> _weatherValues = {}; // Mapa para almacenar valores de clima por alerta
-
+  Map<String, double> _weatherValues =
+      {}; // Mapa para almacenar valores de clima por alerta
 
   IconData parseIconData(String clasificacion) {
     switch (clasificacion) {
@@ -55,8 +59,7 @@ class _SecurityModuleState extends State<SecurityModule> {
     };
     http.Response response = await http.get(
       Uri.parse(
-          "http://201.220.112.247:1880/wisensor/api/centros/alertas2?emp=${widget
-              .emp}&dref=${widget.dref}&cce=${widget.cce}"),
+          "http://201.220.112.247:1880/wisensor/api/centros/alertas2?emp=${widget.emp}&dref=${widget.dref}&cce=${widget.cce}"),
       headers: headers,
     );
     if (response.statusCode == 200) {
@@ -67,18 +70,14 @@ class _SecurityModuleState extends State<SecurityModule> {
         _isLoading = false;
         _message = jsonResponse["message"];
       });
-
-
-    } else if(response.statusCode == 401){
+    } else if (response.statusCode == 401) {
       print("no");
       var errorResponse = jsonDecode(response.body);
       setState(() {
         _isLoading = false;
         _message = errorResponse["message"];
-
       });
-    }
-    else {
+    } else {
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
         var errorMessage = errorResponse["message"];
@@ -94,8 +93,6 @@ class _SecurityModuleState extends State<SecurityModule> {
   }
 
   Future<void> _handleRefresh() async {
-
-
     await _fetchAlerts();
 
     setState(() {
@@ -112,7 +109,6 @@ class _SecurityModuleState extends State<SecurityModule> {
     _timer = Timer.periodic(Duration(minutes: 10), (timer) {
       _fetchAlerts();
     });
-
   }
 
   @override
@@ -136,145 +132,156 @@ class _SecurityModuleState extends State<SecurityModule> {
         child: _isLoading
             ? Center(child: CircularProgressIndicator())
             : Stack(
-          children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/fondo_olas.PNG"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(0, 0, 0, 0.5),
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    _message,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/fondo_olas.PNG"),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
-                Divider(
-                  height: 1,
-                  color: Colors.grey,
-                  thickness: 1,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _alerts.length,
-                    itemBuilder: (BuildContext context, int index) {
-
-                      String iconDataString = _alerts[index]["clasificacion"];
-                      IconData iconData = parseIconData(iconDataString);
-                      return Column(
-                        children: [
-                          ListTile(
-                            title: Text(
-                              _alerts[index]["clasificacion"] == "person" ? "Persona" : "Embarcación",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 21.0,
-                              ),
-                            ),
-                            subtitle: Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Row(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  RichText(
-                                    text: TextSpan(
-                                      style: TextStyle(
-                                        fontSize: 20.0,
-                                        color: Colors.white,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text:
-                                          '${_alerts[index]["fecha"] + " "}',
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                        TextSpan(
-                                          text:
-                                          '${_alerts[index]["hora"]}',
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(width: 16),
-                                  RichText(
-                                    text: TextSpan(
-                                      style: TextStyle(
-                                        fontSize: 20.0,
-                                        color: Colors.white,
-                                      ),
-                                      children: [
-                                        if (_alerts[index]["zona"] != null)
-                                          TextSpan(
-                                            text: 'Zona ${_alerts[index]["zona"]}',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                        if (_alerts[index]["zona"] != null && _alerts[index]["modulo"] != null)
-                                          TextSpan(
-                                            text: ' ',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                        if (_alerts[index]["modulo"] != null)
-                                          TextSpan(
-                                            text: 'Modulo ${_alerts[index]["modulo"]}',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-
-
-
-                                ],
-                              ),
-                            ),
-                            trailing: Padding(
-                              padding:
-                              const EdgeInsets.fromLTRB(8, 15, 8, 8),
-                              child: Icon(
-                                iconData,
-                                color: (_alerts[index]["modulo"] != null || _alerts[index]["zona"] == "INTERIOR")
-                                    ? Colors.red
-                                    : _alerts[index]["zona"] == "EXTERIOR"
-                                    ? Colors.amber
-                                    : Colors.orange,
-                                size: 26,
-                              ),
-                            ),
-                          ),
-                          Divider(height: 1, color: Colors.grey),
-                        ],
-                      );
-                    },
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(0, 0, 0, 0.5),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          _message,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                      ),
+                      Divider(
+                        height: 1,
+                        color: Colors.grey,
+                        thickness: 1,
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _alerts.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            String iconDataString =
+                                _alerts[index]["clasificacion"];
+                            IconData iconData = parseIconData(iconDataString);
+                            return Column(
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                    _alerts[index]["clasificacion"] == "person"
+                                        ? "Persona"
+                                        : "Embarcación",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 21.0,
+                                    ),
+                                  ),
+                                  subtitle: Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            style: TextStyle(
+                                              fontSize: 20.0,
+                                              color: Colors.white,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    '${_alerts[index]["fecha"] + " "}',
+                                                style: TextStyle(fontSize: 16),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    '${_alerts[index]["hora"]}',
+                                                style: TextStyle(fontSize: 16),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(width: 16),
+                                        RichText(
+                                          text: TextSpan(
+                                            style: TextStyle(
+                                              fontSize: 20.0,
+                                              color: Colors.white,
+                                            ),
+                                            children: [
+                                              if (_alerts[index]["zona"] !=
+                                                  null)
+                                                TextSpan(
+                                                  text:
+                                                      'Zona ${_alerts[index]["zona"]}',
+                                                  style:
+                                                      TextStyle(fontSize: 16),
+                                                ),
+                                              if (_alerts[index]["zona"] !=
+                                                      null &&
+                                                  _alerts[index]["modulo"] !=
+                                                      null)
+                                                TextSpan(
+                                                  text: ' ',
+                                                  style:
+                                                      TextStyle(fontSize: 16),
+                                                ),
+                                              if (_alerts[index]["modulo"] !=
+                                                  null)
+                                                TextSpan(
+                                                  text:
+                                                      'Modulo ${_alerts[index]["modulo"]}',
+                                                  style:
+                                                      TextStyle(fontSize: 16),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  trailing: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(8, 15, 8, 8),
+                                    child: Icon(
+                                      iconData,
+                                      color: (_alerts[index]["modulo"] !=
+                                                  null ||
+                                              _alerts[index]["zona"] ==
+                                                  "INTERIOR")
+                                          ? Colors.red
+                                          : _alerts[index]["zona"] == "EXTERIOR"
+                                              ? Colors.amber
+                                              : Colors.orange,
+                                      size: 26,
+                                    ),
+                                  ),
+                                ),
+                                Divider(height: 1, color: Colors.grey),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
       ),
     );
   }
-
 }

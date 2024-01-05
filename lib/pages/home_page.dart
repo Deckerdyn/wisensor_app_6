@@ -78,7 +78,8 @@ class _HomePageState extends State<HomePage> {
         },
       );
 
-      return confirmLogout == true; // Si confirmLogout es true, permitir cerrar sesión
+      return confirmLogout ==
+          true; // Si confirmLogout es true, permitir cerrar sesión
     }
   }
 
@@ -103,7 +104,8 @@ class _HomePageState extends State<HomePage> {
     };
 
     http.Response response = await http.get(
-      Uri.parse("http://201.220.112.247:1880/wisensor/api/centros?idu=${widget.idu}"),
+      Uri.parse(
+          "http://201.220.112.247:1880/wisensor/api/centros?idu=${widget.idu}"),
       headers: headers,
     );
 
@@ -143,8 +145,10 @@ class _HomePageState extends State<HomePage> {
     };
 
     List<int> counts = [];
-    List<int> updatedMarkersWithAlerts = []; // Nueva lista para IDs de centros con alertas "Rojo"
-    List<int> updatedMarkersWithAlerts2 = []; // Nueva lista para IDs de centros con alertas "Amarillo"
+    List<int> updatedMarkersWithAlerts =
+        []; // Nueva lista para IDs de centros con alertas "Rojo"
+    List<int> updatedMarkersWithAlerts2 =
+        []; // Nueva lista para IDs de centros con alertas "Amarillo"
 
     for (var centro in _centros) {
       int ide = centro["ide"];
@@ -152,7 +156,8 @@ class _HomePageState extends State<HomePage> {
       int idc = centro["idc"];
 
       http.Response response = await http.get(
-        Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas?ide=$ide&idu=$idu&idc=$idc"),
+        Uri.parse(
+            "http://201.220.112.247:1880/wisensor/api/centros/alertas?ide=$ide&idu=$idu&idc=$idc"),
         headers: headers,
       );
 
@@ -181,13 +186,14 @@ class _HomePageState extends State<HomePage> {
             idEmpresas.add(ide);
             break;
           default:
-          // Manejar otros casos si es necesario
+            // Manejar otros casos si es necesario
             break;
         }
       }
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
-        int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
+        int count =
+            jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
         counts.add(count);
 
         for (var alerta in jsonResponse["data"]) {
@@ -197,7 +203,6 @@ class _HomePageState extends State<HomePage> {
             updatedMarkersWithAlerts2.add(idc);
           }
         }
-
       } else {
         counts.add(0);
       }
@@ -206,11 +211,12 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _isLoading = false;
       _alertCounts = counts;
-      markersWithAlerts = updatedMarkersWithAlerts; // Actualizar la lista de IDs con alertas "Rojo"
-      markersWithAlerts2 = updatedMarkersWithAlerts2; // Actualizar la lista de IDs con alertas "Amarillo"
+      markersWithAlerts =
+          updatedMarkersWithAlerts; // Actualizar la lista de IDs con alertas "Rojo"
+      markersWithAlerts2 =
+          updatedMarkersWithAlerts2; // Actualizar la lista de IDs con alertas "Amarillo"
     });
   }
-
 
   // Método para manejar el cierre de sesión
   Future<void> _logout(BuildContext context) async {
@@ -406,7 +412,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               Divider(),
-    /*
+              /*
               ListTile(
                 leading: const Icon(
                   Icons.settings,
@@ -436,7 +442,8 @@ class _HomePageState extends State<HomePage> {
                   print("se ha desuscrito de AQUACHILE");
                   FirebaseMessaging.instance.unsubscribeFromTopic("AQUACHILE");
                   print("se ha desuscrito de SALMONESAUSTRAL");
-                  FirebaseMessaging.instance.unsubscribeFromTopic("SALMONESAUSTRAL");
+                  FirebaseMessaging.instance
+                      .unsubscribeFromTopic("SALMONESAUSTRAL");
                 },
               ),
               const SizedBox(height: 60.0),
@@ -471,146 +478,162 @@ class _HomePageState extends State<HomePage> {
           child: _isLoading
               ? Center(child: CircularProgressIndicator())
               : Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/fondo_olas.PNG"),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(0, 0, 0, 0.5),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      _message,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                        color: Colors.white,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/fondo_olas.PNG"),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                    thickness: 1,
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _centros.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        //bool isRed = _alertCounts[index] > 0;
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(0, 0, 0, 0.5),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            _message,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        Divider(
+                          height: 1,
+                          color: Colors.grey,
+                          thickness: 1,
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _centros.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              //bool isRed = _alertCounts[index] > 0;
 
-                        final hasRedAlert= markersWithAlerts.contains(_centros[index]['idc']);
-                        final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['idc']);
+                              final hasRedAlert = markersWithAlerts
+                                  .contains(_centros[index]['idc']);
+                              final hasYellowAlert = markersWithAlerts2
+                                  .contains(_centros[index]['idc']);
 
-                        return Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: hasRedAlert
-                                    ? Colors.red.withOpacity(0.7)
-                                    : hasYellowAlert
-                                    ? Colors.yellow[600]!.withOpacity(0.8)
-                                    : Colors.green[600]!.withOpacity(0.8),
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 2.0,
-                                ),
-                              ),
-                              child: ListTile(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    CustomPageRoute(
-                                      child: WeatherPage(
-                                        ide: _centros[index]["ide"],
-                                        idu: _centros[index]["idu"],
-                                        idc: _centros[index]["idc"],
-                                        nombreCentro: _centros[index]["nombre"], // Pasar el nombre del centro
+                              return Column(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: hasRedAlert
+                                          ? Colors.red.withOpacity(0.7)
+                                          : hasYellowAlert
+                                              ? Colors.yellow[600]!
+                                                  .withOpacity(0.8)
+                                              : Colors.green[600]!
+                                                  .withOpacity(0.8),
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 2.0,
                                       ),
                                     ),
-                                  );
-                                },
-                                title: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          _centros[index]["nombre"],
-                                          style: TextStyle(
-                                            fontSize: 21.0,
-                                            fontWeight: FontWeight.w500,
-                                            color: hasRedAlert
-                                                ? Colors.grey[200]
-                                                : hasYellowAlert
-                                                ? Colors.black87
-                                                : Colors.grey[200],
+                                    child: ListTile(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          CustomPageRoute(
+                                            child: WeatherPage(
+                                              ide: _centros[index]["ide"],
+                                              idu: _centros[index]["idu"],
+                                              idc: _centros[index]["idc"],
+                                              nombreCentro: _centros[index][
+                                                  "nombre"], // Pasar el nombre del centro
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    Stack(
-                                      children: [
-                                        Icon(
-                                          Icons.directions_boat,
-                                          size: 30.0,
-                                          color: hasRedAlert ? Colors.black54 : hasYellowAlert ? Colors.black : Colors.white70,
-                                        ),
-                                        Positioned(
-                                          top: 0,
-                                          right: 0,
-                                          child: Container(
-                                            padding: EdgeInsets.all(2),
-                                            decoration: BoxDecoration(
-                                              color: hasRedAlert || hasYellowAlert ? Colors.red : Colors.black54,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            constraints: BoxConstraints(
-                                              minWidth: 18,
-                                              minHeight: 18,
-                                            ),
-                                            child: Text(
-                                              _alertCounts.length > index ? '${_alertCounts[index]}' : '0',
-                                              style: TextStyle(
-                                                color: hasYellowAlert ? Colors.grey[300] : Colors.grey[300],
-                                                fontSize: 12,
+                                        );
+                                      },
+                                      title: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                _centros[index]["nombre"],
+                                                style: TextStyle(
+                                                  fontSize: 21.0,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: hasRedAlert
+                                                      ? Colors.grey[200]
+                                                      : hasYellowAlert
+                                                          ? Colors.black87
+                                                          : Colors.grey[200],
+                                                ),
                                               ),
-                                              textAlign: TextAlign.center,
-                                            ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
+                                          Stack(
+                                            children: [
+                                              Icon(
+                                                Icons.directions_boat,
+                                                size: 30.0,
+                                                color: hasRedAlert
+                                                    ? Colors.black54
+                                                    : hasYellowAlert
+                                                        ? Colors.black
+                                                        : Colors.white70,
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                right: 0,
+                                                child: Container(
+                                                  padding: EdgeInsets.all(2),
+                                                  decoration: BoxDecoration(
+                                                    color: hasRedAlert ||
+                                                            hasYellowAlert
+                                                        ? Colors.red
+                                                        : Colors.black54,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  constraints: BoxConstraints(
+                                                    minWidth: 18,
+                                                    minHeight: 18,
+                                                  ),
+                                                  child: Text(
+                                                    _alertCounts.length > index
+                                                        ? '${_alertCounts[index]}'
+                                                        : '0',
+                                                    style: TextStyle(
+                                                      color: hasYellowAlert
+                                                          ? Colors.grey[300]
+                                                          : Colors.grey[300],
+                                                      fontSize: 12,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Divider(height: 1, color: Colors.grey),
-                          ],
-                        );
-                      },
+                                  ),
+                                  Divider(height: 1, color: Colors.grey),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                  ],
+                ),
         ),
       ),
     );
   }
-
 
   //get device token to use for push notification
   Future getDeviceToken() async {

@@ -26,7 +26,6 @@ class _SettingModuleState extends State<SettingModule> {
               ),
             ),
           ),
-
           Container(
             decoration: BoxDecoration(
               color: Color.fromRGBO(0, 0, 0, 0.5),
