@@ -272,7 +272,7 @@ class _SecurityPageState extends State<SecurityPage> {
                                       color: hasRedAlert
                                           ? Colors.red.withOpacity(0.7)
                                           : hasYellowAlert
-                                              ? Colors.yellow[600]!
+                                              ? Colors.amber
                                                   .withOpacity(0.8)
                                               : Colors.green[600]!
                                                   .withOpacity(0.8),
