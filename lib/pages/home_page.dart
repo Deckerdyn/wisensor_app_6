@@ -529,7 +529,7 @@ class _HomePageState extends State<HomePage> {
                                       color: hasRedAlert
                                           ? Colors.red.withOpacity(0.7)
                                           : hasYellowAlert
-                                              ? Colors.amber
+                                              ? Colors.yellow[600]!
                                                   .withOpacity(0.8)
                                               : Colors.green[600]!
                                                   .withOpacity(0.8),
