@@ -255,18 +255,19 @@ class _SecurityModuleState extends State<SecurityModule> {
                                     ),
                                   ),
                                   trailing: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(8, 15, 8, 8),
+                                    padding: const EdgeInsets.fromLTRB(8, 15, 8, 8),
                                     child: Icon(
                                       iconData,
-                                      color: (_alerts[index]["modulo"] !=
-                                                  null ||
-                                              _alerts[index]["zona"] ==
-                                                  "INTERIOR")
+                                      color: (_alerts[index]["modulo"] != null ||
+                                          _alerts[index]["zona"] == "INTERIOR" ||
+                                          _alerts[index]["zona"] == "INTERIOR100" ||
+                                          _alerts[index]["zona"] == "INTERIOR200")
                                           ? Colors.red
-                                          : _alerts[index]["zona"] == "EXTERIOR"
-                                              ? Colors.amber
-                                              : Colors.orange,
+                                          : (_alerts[index]["zona"] == "EXTERIOR" ||
+                                          _alerts[index]["zona"] == "EXTERIOR100" ||
+                                          _alerts[index]["zona"] == "EXTERIOR200")
+                                          ? Colors.amber
+                                          : Colors.orange,
                                       size: 26,
                                     ),
                                   ),
