@@ -159,9 +159,9 @@ class _SecurityPageState extends State<SecurityPage> {
         counts.add(count);
 
         for (var alerta in jsonResponse["data"]) {
-          if (alerta["modulo"] != null || alerta["zona"] == "INTERIOR") {
+          if (alerta["modulo"] != null || alerta["zona"] == "INTERIOR" || alerta["zona"] == "INTERIOR100" || alerta["zona"] == "INTERIOR200") {
             updatedMarkersWithAlerts.add(cce);
-          } else if (alerta["zona"] != null && (alerta["zona"] == "EXTERIOR")) {
+          } else if (alerta["zona"] != null && (alerta["zona"] == "EXTERIOR" || alerta["zona"] == "EXTERIOR100" || alerta["zona"] == "EXTERIOR200")) {
             updatedMarkersWithAlerts2.add(cce);
           }
         }
