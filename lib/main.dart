@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'services/notification_services.dart';
+import 'package:upgrader/upgrader.dart';
 
 /*
 Future multipleRegistration() async {
@@ -78,7 +79,9 @@ class _MyAppState extends State<MyApp> {
       ),
       themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,
-      home: AuthenticationHandler(),
+      home: UpgradeAlert(
+        child: AuthenticationHandler(),
+      ),
     );
   }
 }

@@ -43,7 +43,7 @@ dependencies:
     sdk: flutter
   connectivity: ^3.0.6
   url_launcher: ^6.0.9
-
+  upgrader: ^5.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
