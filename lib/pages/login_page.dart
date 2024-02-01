@@ -1,3 +1,4 @@
+import 'package:Wisensor/pages/railway_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -115,6 +116,8 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
       String token = jsonResponse["data"]["token"];
+      String message = jsonResponse["message"];
+      print(message);
       int idu = jsonResponse["data"]["idu"];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("token", token);
@@ -130,12 +133,19 @@ class _LoginPageState extends State<LoginPage> {
         prefs.remove("email");
         prefs.remove("password");
       }
-
+      if(message == "wisensor"){
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage(idu: idu)),
       );
       timeoutTimer.cancel();
+      }else if(message == "trencito"){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => RailwayPage(idu: idu)),
+        );
+        timeoutTimer.cancel();
+      }
     } else {
       var errorResponse = jsonDecode(response.body);
       var errorMessage = "";
@@ -193,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                   Container(
                     margin: const EdgeInsets.fromLTRB(0, 0, 120, 0),
                     child: const Text(
-                      'Versión 1.1.1',
+                      'Versión 1.1.2',
                       style: TextStyle(
                         fontSize: 10.0,
                         fontWeight: FontWeight.bold,

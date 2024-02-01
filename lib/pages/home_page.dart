@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:Wisensor/modules/railway_module.dart';
 import 'package:Wisensor/modules/subdrone_module.dart';
 import 'package:Wisensor/pages/map_page.dart';
+import 'package:Wisensor/pages/railway_page.dart';
 import 'package:Wisensor/pages/security_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -154,6 +155,7 @@ class _HomePageState extends State<HomePage> {
       int ide = centro["ide"];
       int idu = centro["idu"];
       int idc = centro["idc"];
+      String mongo_db = centro["mongodb"];
 
       http.Response response = await http.get(
         Uri.parse(
@@ -187,6 +189,7 @@ class _HomePageState extends State<HomePage> {
             break;
           default:
             // Manejar otros casos si es necesario
+            print("no suscrito a nada");
             break;
         }
       }
@@ -407,7 +410,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    CustomPageRoute(child: RailwayModule()),
+                    CustomPageRoute(child: RailwayPage(idu: widget.idu)),
                   );
                 },
               ),
@@ -461,7 +464,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                 margin: const EdgeInsets.fromLTRB(90, 0, 0, 0),
                 child: const Text(
-                  'V 1.1.1',
+                  'V 1.1.2',
                   style: TextStyle(
                     fontSize: 10.0,
                     fontWeight: FontWeight.bold,
