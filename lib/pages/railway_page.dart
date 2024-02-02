@@ -65,7 +65,7 @@ class _RailwayPageState extends State<RailwayPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Cerrar Aplicación'),
-            content: Text('¿Estás seguro que deseas cerrar la aplicación?'),
+            content: Text('¿Estás seguro que deseas la aplicación?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -76,6 +76,7 @@ class _RailwayPageState extends State<RailwayPage> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(true); // Cerrar sesión
+                  _logout(context);
                 },
                 child: Text('Aceptar'),
               ),
