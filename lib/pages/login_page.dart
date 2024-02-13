@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => HomePage(idu: idu)),
       );
       timeoutTimer.cancel();
-      }else if(message == "trencito"){
+      }else if(message == "efe"){
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => RailwayPage(idu: idu)),
