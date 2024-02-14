@@ -203,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                   Container(
                     margin: const EdgeInsets.fromLTRB(0, 0, 120, 0),
                     child: const Text(
-                      'Versión 1.1.2',
+                      'Versión 1.2.2',
                       style: TextStyle(
                         fontSize: 10.0,
                         fontWeight: FontWeight.bold,
