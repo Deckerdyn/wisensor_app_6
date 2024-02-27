@@ -15,6 +15,7 @@ import 'package:Wisensor/modules/network_module.dart';
 import 'package:Wisensor/pages/weather_page.dart';
 import 'dart:convert';
 import '../modules/cage_module.dart';
+import '../modules/setting_module.dart';
 import 'custom_page_route.dart';
 import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -415,7 +416,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               Divider(),
-              /*
+
               ListTile(
                 leading: const Icon(
                   Icons.settings,
@@ -430,7 +431,6 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
 
-     */
               ListTile(
                 leading: const Icon(
                   Icons.directions_run,

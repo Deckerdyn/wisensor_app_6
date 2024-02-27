@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app_settings/app_settings.dart';
 
 class SettingModule extends StatefulWidget {
   @override
@@ -6,8 +7,12 @@ class SettingModule extends StatefulWidget {
 }
 
 class _SettingModuleState extends State<SettingModule> {
-  bool enableCriticalAlerts = true;
-  bool enableWarningAlerts = true;
+  //bool enableCriticalAlerts = true;
+
+  // Function to handle button press
+  void _handleSettingsButtonPress() {
+    AppSettings.openAppSettings(type: AppSettingsType.notification);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +44,7 @@ class _SettingModuleState extends State<SettingModule> {
               children: [
                 const SizedBox(height: 10.0),
                 Text(
-                  'Ajustes de alertas',
+                  'Notificaciones de la aplicación',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24.0,
@@ -47,26 +52,13 @@ class _SettingModuleState extends State<SettingModule> {
                   ),
                 ),
                 SizedBox(height: 20.0),
-                ListTile(
-                  title: Text('Notificaciones de alertas críticas'),
-                  trailing: Switch(
-                    value: enableCriticalAlerts,
-                    onChanged: (value) {
-                      setState(() {
-                        enableCriticalAlerts = value;
-                      });
-                    },
-                  ),
-                ),
-                ListTile(
-                  title: Text('Notificaciones de alertas de atención'),
-                  trailing: Switch(
-                    value: enableWarningAlerts,
-                    onChanged: (value) {
-                      setState(() {
-                        enableWarningAlerts = value;
-                      });
-                    },
+                ElevatedButton.icon(
+                  onPressed: _handleSettingsButtonPress,
+                  icon: Icon(Icons.settings, size: 24),
+                  label: Text('Configuración de notificaciones'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red, // Color del texto del botón
                   ),
                 ),
               ],

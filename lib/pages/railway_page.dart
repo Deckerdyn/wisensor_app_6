@@ -371,7 +371,7 @@ class _RailwayPageState extends State<RailwayPage> {
                                             : _alerts[index]["tipo_alerta"] ==
                                                     "atencion"
                                                 ? Colors.amber
-                                                : Colors.green,
+                                                : Colors.orange,
                                         size: 26,
                                       ),
                                     ),
