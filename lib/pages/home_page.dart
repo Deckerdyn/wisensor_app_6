@@ -168,6 +168,7 @@ class _HomePageState extends State<HomePage> {
 
       if (!idEmpresas.contains(centro["ide"])) {
         switch (ide) {
+          case 1:
           case 2:
             print("GMT");
             FirebaseMessaging.instance.subscribeToTopic("GMT");
