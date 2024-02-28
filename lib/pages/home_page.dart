@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
   List<int> markersWithAlerts = []; // Cambiado a List<int>
   List<int> markersWithAlerts2 = []; // Cambiado a List<int>
   Timer? _timer;
+  bool _isMounted = true; // Add this variable to track widget's mounting status
 
   Future<void> _handleRefresh() async {
     // Actualiza los datos aquí
@@ -86,6 +87,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchCentros() async {
+    if (!_isMounted) return; // Check if the widget is still mounted
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     int? idu = prefs.getInt("idu");
@@ -113,15 +115,15 @@ class _HomePageState extends State<HomePage> {
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
-      setState(() {
-        _centros = jsonResponse["data"];
-        //_isLoading = false;
-        _message = jsonResponse["message"];
-        //print(_centros);
-      });
+      if (_isMounted) {
+        setState(() {
+          _centros = jsonResponse["data"];
+          _message = jsonResponse["message"];
+        });
 
-      // Obtener la cantidad de alertas para cada centro
-      await _fetchAlertCounts();
+        // Obtener la cantidad de alertas para cada centro
+        await _fetchAlertCounts();
+      }
     } else {
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
@@ -138,6 +140,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchAlertCounts() async {
+    if (!_isMounted) return; // Check if the widget is still mounted
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     Map<String, String> headers = {
@@ -213,14 +216,14 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
-    setState(() {
-      _isLoading = false;
-      _alertCounts = counts;
-      markersWithAlerts =
-          updatedMarkersWithAlerts; // Actualizar la lista de IDs con alertas "Rojo"
-      markersWithAlerts2 =
-          updatedMarkersWithAlerts2; // Actualizar la lista de IDs con alertas "Amarillo"
-    });
+    if (_isMounted) {
+      setState(() {
+        _isLoading = false;
+        _alertCounts = counts;
+        markersWithAlerts = updatedMarkersWithAlerts;
+        markersWithAlerts2 = updatedMarkersWithAlerts2;
+      });
+    }
   }
 
   // Método para manejar el cierre de sesión
@@ -249,6 +252,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _isMounted = false; // Set to false when the widget is disposed
     _timer?.cancel(); // Cancel the timer to avoid memory leaks
     super.dispose();
   }
