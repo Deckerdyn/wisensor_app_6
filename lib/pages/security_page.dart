@@ -195,7 +195,7 @@ class _SecurityPageState extends State<SecurityPage> {
       _fetchAlertCounts();
     });
     // Llama a la función para obtener el token del dispositivo al iniciar la página
-    init();
+    //init();
   }
 
   @override
@@ -204,14 +204,16 @@ class _SecurityPageState extends State<SecurityPage> {
     _timer?.cancel(); // Cancel the timer to avoid memory leaks
     super.dispose();
   }
-
+/*
   init() async {
     String deviceToken = await getDeviceToken();
     print("##### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFICATION #####");
     print(deviceToken);
     print("###########################################################");
   }
-//subida de prueba 1
+
+*/
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

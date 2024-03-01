@@ -57,7 +57,7 @@ class _SecurityModuleState extends State<SecurityModule> {
       headers: headers,
     );
     if (response.statusCode == 200) {
-      print("si");
+     //print("si");
       var jsonResponse = jsonDecode(response.body);
       setState(() {
         _alerts = jsonResponse["data"];
@@ -65,7 +65,7 @@ class _SecurityModuleState extends State<SecurityModule> {
         _message = jsonResponse["message"];
       });
     } else if (response.statusCode == 401) {
-      print("no");
+      //print("no");
       var errorResponse = jsonDecode(response.body);
       setState(() {
         _isLoading = false;

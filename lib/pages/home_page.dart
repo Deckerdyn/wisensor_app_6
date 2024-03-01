@@ -247,7 +247,7 @@ class _HomePageState extends State<HomePage> {
       _fetchAlertCounts();
     });
     // Llama a la función para obtener el token del dispositivo al iniciar la página
-    init();
+    //init();
   }
 
   @override
@@ -256,14 +256,14 @@ class _HomePageState extends State<HomePage> {
     _timer?.cancel(); // Cancel the timer to avoid memory leaks
     super.dispose();
   }
-
+/*
   init() async {
     String deviceToken = await getDeviceToken();
     print("##### PRINT DEVICE TOKEN TO USE FOR PUSH NOTIFICATION #####");
     print(deviceToken);
     print("###########################################################");
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -642,11 +642,12 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
+/*
   //get device token to use for push notification
   Future getDeviceToken() async {
     FirebaseMessaging _firebaseMessage = FirebaseMessaging.instance;
     String? deviceToken = await _firebaseMessage.getToken();
     return (deviceToken == null) ? "" : deviceToken;
   }
+*/
 }
