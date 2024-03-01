@@ -38,12 +38,6 @@ class _SecurityModuleState extends State<SecurityModule> {
         return FontAwesomeIcons.walking;
       case "boatMedium":
         return FontAwesomeIcons.ship;
-      case "<i class=\"fas fa-compass\"></i>":
-        return FontAwesomeIcons.compass;
-      case "<i class=\"fas fa-thermometer-quarter\"></i>":
-        return FontAwesomeIcons.thermometerQuarter;
-      case "<i class=\"fas fa-map-marked-alt\"></i>":
-        return FontAwesomeIcons.mapMarkedAlt;
       default:
         return FontAwesomeIcons.question;
     }
