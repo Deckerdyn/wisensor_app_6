@@ -109,12 +109,9 @@ class _SecurityPageState extends State<SecurityPage> {
           _message = jsonResponse["message"];
         });
 
-        // Obtener la cantidad de alertas para cada centro
+// Obtener la cantidad de alertas para cada centro
         await _fetchAlertCounts();
       }
-
-      // Obtener la cantidad de alertas para cada centro
-      await _fetchAlertCounts();
     } else {
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
