@@ -27,6 +27,10 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     _loadSavedCredentials();
   }
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   Future<void> _loadSavedCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
