@@ -1,3 +1,4 @@
+import 'package:Wisensor/pages/railway_home_page.dart';
 import 'package:Wisensor/pages/railway_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -147,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
       }else if(message == "efe"){
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => RailwayPage(idu: idu)),
+          MaterialPageRoute(builder: (context) => RailwayHomePage(idu: idu)),
         );
         timeoutTimer.cancel();
       }

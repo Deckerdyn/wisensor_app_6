@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:Wisensor/modules/railway_module.dart';
 import 'package:Wisensor/modules/subdrone_module.dart';
 import 'package:Wisensor/pages/map_page.dart';
+import 'package:Wisensor/pages/railway_home_page.dart';
 import 'package:Wisensor/pages/railway_page.dart';
 import 'package:Wisensor/pages/security_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -416,7 +417,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    CustomPageRoute(child: RailwayPage(idu: widget.idu)),
+                    CustomPageRoute(child: RailwayHomePage(idu: widget.idu)),
                   );
                 },
               ),

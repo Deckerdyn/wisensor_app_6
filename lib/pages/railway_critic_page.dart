@@ -8,16 +8,16 @@ import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
-class RailwayPage extends StatefulWidget {
+class RailwayCriticPage extends StatefulWidget {
   final int idu;
 
-  RailwayPage({
+  RailwayCriticPage({
 
     required this.idu,
   });
 
   @override
-  _RailwayPageState createState() => _RailwayPageState();
+  _RailwayCriticPageState createState() => _RailwayCriticPageState();
 }
 
 String parseDate(String inputDate) {
@@ -29,13 +29,13 @@ String parseDate(String inputDate) {
   return formattedDate;
 }
 
-class _RailwayPageState extends State<RailwayPage> {
+class _RailwayCriticPageState extends State<RailwayCriticPage> {
   List<dynamic> _alerts = [];
   bool _isLoading = true;
   String _message = "";
   Timer? _timer;
   Map<String, double> _weatherValues =
-      {}; // Mapa para almacenar valores de clima por alerta
+  {}; // Mapa para almacenar valores de clima por alerta
 
   IconData parseIconData(String icon) {
     switch (icon) {
@@ -99,7 +99,7 @@ class _RailwayPageState extends State<RailwayPage> {
     };
     http.Response response = await http.get(
       Uri.parse(
-          "http://201.220.112.247:1880/wisensor/api/efe?idu=${widget.idu}"),
+          "http://201.220.112.247:1880/wisensor/api/efe/criticas?idu=${widget.idu}"),
       headers: headers,
     );
     if (response.statusCode == 200) {
@@ -246,105 +246,105 @@ class _RailwayPageState extends State<RailwayPage> {
           child: _isLoading
               ? Center(child: CircularProgressIndicator())
               : Stack(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage("assets/images/xd.png"),
-                          fit: BoxFit.cover,
-                        ),
+            children: <Widget>[
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/xd.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(0, 0, 0, 0.5),
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      _message,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
                       ),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color.fromRGBO(0, 0, 0, 0.5),
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            _message,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18.0,
-                            ),
-                          ),
-                        ),
+                  ),
 
-                        Divider(
-                          height: 1,
-                          color: Colors.grey,
-                          thickness: 1,
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: _alerts.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              //int index = _alerts.length - index - 1; // Calcula el índice invertido
-                              String iconDataString =
-                                  _alerts[index]["nombre_sensor"];
-                              IconData iconData = parseIconData(iconDataString);
+                  Divider(
+                    height: 1,
+                    color: Colors.grey,
+                    thickness: 1,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _alerts.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        //int index = _alerts.length - index - 1; // Calcula el índice invertido
+                        String iconDataString =
+                        _alerts[index]["nombre_sensor"];
+                        IconData iconData = parseIconData(iconDataString);
 
-                              // Obtener la fecha y hora en formato DateTime
-                              DateTime utcDateTime =
-                                  DateTime.parse(_alerts[index]["fecha"]);
+                        // Obtener la fecha y hora en formato DateTime
+                        DateTime utcDateTime =
+                        DateTime.parse(_alerts[index]["fecha"]);
 
-                              // Ajustar la fecha y hora a la zona horaria de Chile (UTC-3)
-                              DateTime chileDateTime =
-                                  utcDateTime.subtract(Duration(hours: 3));
+                        // Ajustar la fecha y hora a la zona horaria de Chile (UTC-3)
+                        DateTime chileDateTime =
+                        utcDateTime.subtract(Duration(hours: 3));
 
-                              // Formatear la fecha y hora
-                              String formattedDateTime = DateFormat.yMd()
-                                  .add_Hms()
-                                  .format(chileDateTime);
+                        // Formatear la fecha y hora
+                        String formattedDateTime = DateFormat.yMd()
+                            .add_Hms()
+                            .format(chileDateTime);
 
-                              return Column(
-                                children: [
-                                  ListTile(
-                                    title: Text(
-                                      _alerts[index]["nombre_sensor"],
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 21.0,
-                                      ),
-                                    ),
-                                    subtitle: Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                        return Column(
+                          children: [
+                            ListTile(
+                              title: Text(
+                                _alerts[index]["nombre_sensor"],
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 21.0,
+                                ),
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Row(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    RichText(
+                                      text: TextSpan(
+                                        style: TextStyle(
+                                          fontSize: 20.0,
+                                          color: Colors.white,
+                                        ),
                                         children: [
-                                          RichText(
-                                            text: TextSpan(
-                                              style: TextStyle(
-                                                fontSize: 20.0,
-                                                color: Colors.white,
-                                              ),
-                                              children: [
-                                                TextSpan(
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                                TextSpan(
-                                                  text: '$formattedDateTime',
-                                                  style: TextStyle(fontSize: 16),
-                                                ),
-                                              ],
+                                          TextSpan(
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
                                             ),
                                           ),
-                                          SizedBox(width: 16),
-                                          RichText(
-                                            text: TextSpan(
-                                              style: TextStyle(
-                                                fontSize: 20.0,
-                                                color: Colors.white,
-                                              ),
-                                              /*
+                                          TextSpan(
+                                            text: '$formattedDateTime',
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 16),
+                                    RichText(
+                                      text: TextSpan(
+                                        style: TextStyle(
+                                          fontSize: 20.0,
+                                          color: Colors.white,
+                                        ),
+                                        /*
                                         children: [
                                           TextSpan(
                                             style: TextStyle(
@@ -356,37 +356,37 @@ class _RailwayPageState extends State<RailwayPage> {
 
                                         ],
                                         */
-                                            ),
-                                          ),
-                                        ],
                                       ),
                                     ),
-                                    trailing: Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(8, 15, 8, 8),
-                                      child: Icon(
-                                        iconData,
-                                        color: _alerts[index]["tipo_alerta"] ==
-                                                "critica"
-                                            ? Colors.red
-                                            : _alerts[index]["tipo_alerta"] ==
-                                                    "atencion"
-                                                ? Colors.amber
-                                                : Colors.orange,
-                                        size: 26,
-                                      ),
-                                    ),
-                                  ),
-                                  Divider(height: 1, color: Colors.grey),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+                                  ],
+                                ),
+                              ),
+                              trailing: Padding(
+                                padding:
+                                const EdgeInsets.fromLTRB(8, 15, 8, 8),
+                                child: Icon(
+                                  iconData,
+                                  color: _alerts[index]["tipo_alerta"] ==
+                                      "critica"
+                                      ? Colors.red
+                                      : _alerts[index]["tipo_alerta"] ==
+                                      "atencion"
+                                      ? Colors.amber
+                                      : Colors.orange,
+                                  size: 26,
+                                ),
+                              ),
+                            ),
+                            Divider(height: 1, color: Colors.grey),
+                          ],
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
