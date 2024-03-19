@@ -36,6 +36,7 @@ class _RailwayPageState extends State<RailwayPage> {
   Timer? _timer;
   Map<String, double> _weatherValues =
       {}; // Mapa para almacenar valores de clima por alerta
+  bool _isMounted = true; // Add this variable to track widget's mounting status
 
   IconData parseIconData(String icon) {
     switch (icon) {
@@ -89,6 +90,7 @@ class _RailwayPageState extends State<RailwayPage> {
     }
   }
   Future<void> _fetchAlerts() async {
+    if (!_isMounted) return; // Check if the widget is still mounted
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     int? idu = prefs.getInt("idu");
@@ -113,12 +115,13 @@ class _RailwayPageState extends State<RailwayPage> {
     );
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
-      setState(() {
-        _alerts = jsonResponse["data"];
-        _isLoading = false;
-        _message = jsonResponse["message"];
-      });
-
+      if (_isMounted) {
+        setState(() {
+          _alerts = jsonResponse["data"];
+          _isLoading = false;
+          _message = jsonResponse["message"];
+        });
+      }
 
     } else if (response.statusCode == 401) {
       var errorResponse = jsonDecode(response.body);
@@ -175,13 +178,14 @@ class _RailwayPageState extends State<RailwayPage> {
       _fetchAlerts();
     });
   }
-/*
+
   @override
   void dispose() {
+    _isMounted = false; // Set to false when the widget is disposed
     _timer?.cancel(); // Cancel the timer to avoid memory leaks
     super.dispose();
   }
-*/
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

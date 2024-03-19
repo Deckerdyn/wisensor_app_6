@@ -146,80 +146,91 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
 
   Widget _buildCenterButtons() {
     return Container(
-      width: double.infinity, // Ancho que abarca toda la pantalla
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3), // Fondo opaco
+        color: Colors.black.withOpacity(0.3),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 32), // Espacio desde la parte superior de la pantagwithwilla
-          ElevatedButton(
-            onPressed: () {
-              // Lógica para el primer botón
-              Navigator.push(
-                context,
-                CustomPageRoute(child: RailwayPage(idu: widget.idu)),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange.withOpacity(0.8),
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40), // Ajusta el tamaño del botón
-            ),
-            child: Text(
-              'Alertas activas',
-              style: TextStyle(fontSize: 20), // Tamaño de texto del botón
-            ),
-          ),
-          SizedBox(height: 16), // Espacio entre botones
-          ElevatedButton(
-            onPressed: () {
-              // Lógica para el segundo botón
-              Navigator.push(
-                context,
-                CustomPageRoute(child: RailwayCriticPage(idu: widget.idu)),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.withOpacity(0.8),
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40), // Ajusta el tamaño del botón
-            ),
-            child: Text(
-              'Historico criticas',
-              style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+          SizedBox(height: 32),
+          SizedBox(
+            width: 270, // Ancho máximo de los botones
+            child: ElevatedButton(
+              onPressed: () {
+                // Lógica para el primer botón
+                Navigator.push(
+                  context,
+                  CustomPageRoute(child: RailwayPage(idu: widget.idu)),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange.withOpacity(0.8),
+                padding: EdgeInsets.symmetric(vertical: 20), // Ajusta el tamaño del botón
+              ),
+              child: Text(
+                'Alertas activas',
+                style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+              ),
             ),
           ),
           SizedBox(height: 16), // Espacio entre botones
-          ElevatedButton(
-            onPressed: () {
-              // Lógica para el tercer botón
-              Navigator.push(
-                context,
-                CustomPageRoute(child: RailwayAttentionPage(idu: widget.idu)),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.yellow[600]?.withOpacity(0.8),
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40), // Ajusta el tamaño del botón
-            ),
-
-            child: Text(
-              'Historico atención',
-              style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+          SizedBox(
+            width: 270, // Ancho máximo de los botones
+            child: ElevatedButton(
+              onPressed: () {
+                // Lógica para el segundo botón
+                Navigator.push(
+                  context,
+                  CustomPageRoute(child: RailwayCriticPage(idu: widget.idu)),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.withOpacity(0.8),
+                padding: EdgeInsets.symmetric(vertical: 20), // Ajusta el tamaño del botón
+              ),
+              child: Text(
+                'Historico criticas',
+                style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+              ),
             ),
           ),
           SizedBox(height: 16), // Espacio entre botones
-          ElevatedButton(
-            onPressed: () {
-              // Lógica para el cuarto botón
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.withOpacity(0.8),
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40), // Ajusta el tamaño del botón
+          SizedBox(
+            width: 270, // Ancho máximo de los botones
+            child: ElevatedButton(
+              onPressed: () {
+                // Lógica para el tercer botón
+                Navigator.push(
+                  context,
+                  CustomPageRoute(child: RailwayAttentionPage(idu: widget.idu)),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.yellow[600]?.withOpacity(0.8),
+                padding: EdgeInsets.symmetric(vertical: 20), // Ajusta el tamaño del botón
+              ),
+              child: Text(
+                'Historico atención',
+                style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+              ),
             ),
-            child: Text(
-              'Busqueda avanzada',
-              style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+          ),
+          SizedBox(height: 16), // Espacio entre botones
+          SizedBox(
+            width: 270, // Ancho máximo de los botones
+            child: ElevatedButton(
+              onPressed: () {
+                // Lógica para el cuarto botón
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.withOpacity(0.8),
+                padding: EdgeInsets.symmetric(vertical: 20), // Ajusta el tamaño del botón
+              ),
+              child: Text(
+                'Busqueda avanzada',
+                style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+              ),
             ),
           ),
           SizedBox(height: 32), // Espacio desde la parte inferior de la pantalla
@@ -227,6 +238,8 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
       ),
     );
   }
+
+
 
   @override
   Widget build(BuildContext context) {
