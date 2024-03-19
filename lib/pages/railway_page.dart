@@ -65,7 +65,7 @@ class _RailwayPageState extends State<RailwayPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Cerrar Aplicación'),
-            content: Text('¿Estás seguro que deseas la aplicación?'),
+            content: Text('¿Estás seguro que deseas cerrar la aplicación?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -76,7 +76,6 @@ class _RailwayPageState extends State<RailwayPage> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(true); // Cerrar sesión
-                  _logout(context);
                 },
                 child: Text('Aceptar'),
               ),
@@ -92,6 +91,16 @@ class _RailwayPageState extends State<RailwayPage> {
   Future<void> _fetchAlerts() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
+    int? idu = prefs.getInt("idu");
+
+    if (token == null || idu == null) {
+      // El token no existe, el usuario no está autenticado
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+      return;
+    }
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept": "application/json",
@@ -128,7 +137,7 @@ class _RailwayPageState extends State<RailwayPage> {
         //print(errorResponse);
         var errorMessage = errorResponse["message"];
         if (errorMessage == "Unauthenticated.") {
-          prefs.remove("token");
+          //prefs.remove("token");
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => RailwayModule()),
@@ -149,7 +158,7 @@ class _RailwayPageState extends State<RailwayPage> {
   // Método para manejar el cierre de sesión
   Future<void> _logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove("token");
+    //prefs.remove("token");
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
@@ -166,13 +175,13 @@ class _RailwayPageState extends State<RailwayPage> {
       _fetchAlerts();
     });
   }
-
+/*
   @override
   void dispose() {
     _timer?.cancel(); // Cancel the timer to avoid memory leaks
     super.dispose();
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

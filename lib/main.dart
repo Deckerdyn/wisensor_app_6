@@ -1,3 +1,4 @@
+import 'package:Wisensor/pages/railway_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -54,6 +55,10 @@ Future<String?> getToken() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getString("token");
 }
+Future<String?> getDb() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString("db");
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -99,6 +104,25 @@ class AuthenticationHandler extends StatelessWidget {
     }
   }
 
+  Future<String?> _checkDatabase() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedToken = prefs.getString("token");
+    String? db = prefs.getString("db");
+    int? idu = prefs.getInt("idu");
+
+    if (savedToken != null && idu != null && db != null) {
+
+      return db;
+    } else {
+
+      print(savedToken);
+      print(idu);
+      print(db);
+      return null;
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<int?>(
@@ -111,9 +135,42 @@ class AuthenticationHandler extends StatelessWidget {
             ),
           );
         } else if (snapshot.hasError || snapshot.data == null) {
+
+          print(snapshot.data);
           return LoginPage();
         } else {
-          return HomePage(idu: snapshot.data!);
+
+          print(snapshot.data);
+          return FutureBuilder<String?>(
+            future: _checkDatabase(),
+            builder: (context, dbSnapshot) {
+              if (dbSnapshot.connectionState == ConnectionState.waiting) {
+                return Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              } else if (dbSnapshot.hasError || dbSnapshot.data == null) {
+                print("Error obteniendo la base de datos");
+                print(dbSnapshot.data);
+                return LoginPage();
+              } else {
+                String db = dbSnapshot.data!;
+                print("Base de datos: $db");
+                // Verifica la base de datos y redirige a la página correspondiente
+                if (db == "wisensor") {
+                  print(db);
+                  return HomePage(idu: snapshot.data!);
+                } else if (db == "efe") {
+                  // Suponiendo que tengas una página llamada RailwayPage para efe
+                  return RailwayHomePage(idu: snapshot.data!);
+                } else {
+                  print("Base de datos desconocida: $db");
+                  return LoginPage();
+                }
+              }
+            },
+          );
         }
       },
     );

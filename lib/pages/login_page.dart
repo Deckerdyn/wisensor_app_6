@@ -122,13 +122,14 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
       String token = jsonResponse["data"]["token"];
+      String db = jsonResponse["data"]["db"]; // Obtener la DB desde la respuesta del servidor
       String message = jsonResponse["message"];
       print(message);
       int idu = jsonResponse["data"]["idu"];
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("token", token);
       await prefs.setInt("idu", idu);
-      await _saveAuthentication(token, idu); // Save authentication data
+      await _saveAuthentication(token, idu, db); // Llamar al método para guardar la DB
 
       if (_rememberMe) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -168,10 +169,11 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _saveAuthentication(String token, int idu) async {
+  Future<void> _saveAuthentication(String token, int idu, String db) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("token", token);
     await prefs.setInt("idu", idu);
+    await prefs.setString("db", db);
   }
 
   @override

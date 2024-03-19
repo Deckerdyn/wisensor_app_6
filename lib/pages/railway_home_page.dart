@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:Wisensor/pages/railway_attention_page.dart';
 import 'package:Wisensor/pages/railway_critic_page.dart';
 import 'package:Wisensor/pages/railway_page.dart';
 import 'package:flutter/material.dart';
+import '../modules/railway_module.dart';
 import 'custom_page_route.dart';
 import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class RailwayHomePage extends StatefulWidget {
   final int idu;
@@ -20,12 +23,12 @@ class RailwayHomePage extends StatefulWidget {
 
 class _RailwayHomePageState extends State<RailwayHomePage> {
   Timer? _timer;
-
-  // Método que maneja la acción de retroceso del botón físico o virtual de Android
-  Future<bool> _onWillPop() async {
-    // Implementación del método _onWillPop()
-    return true;
-  }
+  List<dynamic> _alerts = [];
+  bool _isLoading = true;
+  String _message = "";
+  //Timer? _timer;
+  Map<String, double> _weatherValues =
+  {}; // Mapa para almacenar valores de clima por alerta
 
   // Método para manejar el cierre de sesión
   Future<void> _logout(BuildContext context) async {
@@ -35,7 +38,7 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
   @override
   void initState() {
     super.initState();
-
+    _fetchAlerts();
     // Configurar el temporizador para actualizar alertas cada 10 minutos
     _timer = Timer.periodic(Duration(minutes: 10), (timer) {
       // Lógica para actualizar alertas (no incluida en este código modificado)
@@ -46,6 +49,99 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
   void dispose() {
     _timer?.cancel(); // Cancelar el temporizador para evitar fugas de memoria
     super.dispose();
+  }
+  Future<void> _fetchAlerts() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+    int? idu = prefs.getInt("idu");
+
+    if (token == null || idu == null) {
+      // El token no existe, el usuario no está autenticado
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+      return;
+    }
+    Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "Authorization": "Bearer $token"
+    };
+    http.Response response = await http.get(
+      Uri.parse(
+          "http://201.220.112.247:1880/wisensor/api/efe?idu=${widget.idu}"),
+      headers: headers,
+    );
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      setState(() {
+        _alerts = jsonResponse["data"];
+        _isLoading = false;
+        _message = jsonResponse["message"];
+      });
+
+
+    } else if (response.statusCode == 401) {
+      var errorResponse = jsonDecode(response.body);
+      setState(() {
+        _isLoading = false;
+        _message = errorResponse["message"];
+      });
+    } else if (response.statusCode == 403) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => RailwayModule()),
+      );
+    } else {
+      var errorResponse = jsonDecode(response.body);
+      if (errorResponse.containsKey("message")) {
+        //print(errorResponse);
+        var errorMessage = errorResponse["message"];
+        if (errorMessage == "Unauthenticated.") {
+          //prefs.remove("token");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => RailwayModule()),
+          );
+        }
+      }
+    }
+  }
+  // Método que maneja la acción de retroceso del botón físico o virtual de Android
+  Future<bool> _onWillPop() async {
+    // Verificar si hay una página anterior en la ruta del Navigator
+    if (Navigator.of(context).canPop()) {
+      return true; // Permitir retroceder si hay una página anterior
+    } else {
+      // Mostrar un diálogo para confirmar si el usuario desea cerrar sesión
+      bool confirmLogout = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Cerrar Aplicación'),
+            content: Text('¿Estás seguro que deseas cerrar la aplicación?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false); // No cerrar sesión
+                },
+                child: Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true); // Cerrar sesión
+                },
+                child: Text('Aceptar'),
+              ),
+            ],
+          );
+        },
+      );
+
+      return confirmLogout ==
+          true; // Si confirmLogout es true, permitir cerrar sesión
+    }
   }
 
   Widget _buildCenterButtons() {
