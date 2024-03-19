@@ -125,10 +125,12 @@ class _RailwayPageState extends State<RailwayPage> {
 
     } else if (response.statusCode == 401) {
       var errorResponse = jsonDecode(response.body);
-      setState(() {
-        _isLoading = false;
-        _message = errorResponse["message"];
-      });
+      if (_isMounted) {
+        setState(() {
+          _isLoading = false;
+          _message = errorResponse["message"];
+        });
+      }
     } else if (response.statusCode == 403) {
       Navigator.pushReplacement(
         context,
@@ -152,10 +154,11 @@ class _RailwayPageState extends State<RailwayPage> {
 
   Future<void> _handleRefresh() async {
     await _fetchAlerts();
-
-    setState(() {
-      _isLoading = false;
-    });
+    if (_isMounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   // Método para manejar el cierre de sesión
