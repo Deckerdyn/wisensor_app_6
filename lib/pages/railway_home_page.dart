@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Wisensor/pages/railway_attention_page.dart';
 import 'package:Wisensor/pages/railway_critic_page.dart';
 import 'package:Wisensor/pages/railway_page.dart';
+import 'package:Wisensor/pages/railway_search_page.dart';
 import 'package:flutter/material.dart';
 import '../modules/railway_module.dart';
 import 'custom_page_route.dart';
@@ -33,6 +34,12 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
   // Método para manejar el cierre de sesión
   Future<void> _logout(BuildContext context) async {
     // Implementación del método _logout()
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("token");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
   }
 
   @override
@@ -222,6 +229,10 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
             child: ElevatedButton(
               onPressed: () {
                 // Lógica para el cuarto botón
+                Navigator.push(
+                  context,
+                  CustomPageRoute(child: RailwaySearchPage(idu: widget.idu)),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green.withOpacity(0.8),
@@ -317,7 +328,7 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
             ),
             Center(
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(0.0),
                 child: _buildCenterButtons(),
               ),
             ),
