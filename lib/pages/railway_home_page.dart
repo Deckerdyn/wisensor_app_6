@@ -30,6 +30,7 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
   //Timer? _timer;
   Map<String, double> _weatherValues =
   {}; // Mapa para almacenar valores de clima por alerta
+  bool _isMounted = true; // Add this variable to track widget's mounting status
 
   // Método para manejar el cierre de sesión
   Future<void> _logout(BuildContext context) async {
@@ -58,6 +59,7 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
     super.dispose();
   }
   Future<void> _fetchAlerts() async {
+    if (!_isMounted) return; // Check if the widget is still mounted
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     int? idu = prefs.getInt("idu");
@@ -81,20 +83,23 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
       headers: headers,
     );
     if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-      setState(() {
-        _alerts = jsonResponse["data"];
-        _isLoading = false;
-        _message = jsonResponse["message"];
-      });
-
+      if (_isMounted) {
+        var jsonResponse = jsonDecode(response.body);
+        setState(() {
+          _alerts = jsonResponse["data"];
+          _isLoading = false;
+          _message = jsonResponse["message"];
+        });
+      }
 
     } else if (response.statusCode == 401) {
-      var errorResponse = jsonDecode(response.body);
-      setState(() {
-        _isLoading = false;
-        _message = errorResponse["message"];
-      });
+      if (_isMounted) {
+        var errorResponse = jsonDecode(response.body);
+        setState(() {
+          _isLoading = false;
+          _message = errorResponse["message"];
+        });
+      }
     } else if (response.statusCode == 403) {
       Navigator.pushReplacement(
         context,
@@ -160,7 +165,7 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 32),
+          SizedBox(height: 0.0),
           SizedBox(
             width: 270, // Ancho máximo de los botones
             child: ElevatedButton(
@@ -172,7 +177,7 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange.withOpacity(0.8),
+                backgroundColor: Colors.green.withOpacity(0.8),
                 padding: EdgeInsets.symmetric(vertical: 20), // Ajusta el tamaño del botón
               ),
               child: Text(
@@ -235,7 +240,7 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.withOpacity(0.8),
+                backgroundColor: Colors.lightBlue.withOpacity(0.8),
                 padding: EdgeInsets.symmetric(vertical: 20), // Ajusta el tamaño del botón
               ),
               child: Text(
