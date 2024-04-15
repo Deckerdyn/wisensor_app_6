@@ -294,7 +294,7 @@ class _RailwayAttentionPageState extends State<RailwayAttentionPage> {
 
                         // Ajustar la fecha y hora a la zona horaria de Chile (UTC-3)
                         DateTime chileDateTime =
-                        utcDateTime.subtract(Duration(hours: 3));
+                        utcDateTime.subtract(Duration(hours: 4));
 
                         // Formatear la fecha y hora
                         String formattedDateTime = DateFormat.yMd()
