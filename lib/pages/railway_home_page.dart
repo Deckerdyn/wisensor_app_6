@@ -309,7 +309,7 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
               Container(
                 margin: const EdgeInsets.fromLTRB(0, 0, 0, 20),
                 child: const Text(
-                  'V 1.2.2',
+                  'V 1.3.3',
                   style: TextStyle(
                     fontSize: 10.0,
                     fontWeight: FontWeight.bold,
