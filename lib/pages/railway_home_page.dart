@@ -167,8 +167,8 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
         children: [
           SizedBox(height: 0.0),
           SizedBox(
-            width: 270, // Ancho máximo de los botones
-            child: ElevatedButton(
+            width: 270,
+            child: ElevatedButton.icon(
               onPressed: () {
                 // Lógica para el primer botón
                 Navigator.push(
@@ -176,20 +176,21 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
                   CustomPageRoute(child: RailwayPage(idu: widget.idu)),
                 );
               },
+              icon: Icon(Icons.notifications_active),
+              label: Text(
+                'Alertas activas',
+                style: TextStyle(fontSize: 20),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green.withOpacity(0.8),
-                padding: EdgeInsets.symmetric(vertical: 20), // Ajusta el tamaño del botón
-              ),
-              child: Text(
-                'Alertas activas',
-                style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+                padding: EdgeInsets.symmetric(vertical: 20),
               ),
             ),
           ),
-          SizedBox(height: 16), // Espacio entre botones
+          SizedBox(height: 16),
           SizedBox(
-            width: 270, // Ancho máximo de los botones
-            child: ElevatedButton(
+            width: 270,
+            child: ElevatedButton.icon(
               onPressed: () {
                 // Lógica para el segundo botón
                 Navigator.push(
@@ -197,20 +198,21 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
                   CustomPageRoute(child: RailwayCriticPage(idu: widget.idu)),
                 );
               },
+              icon: Icon(Icons.history),
+              label: Text(
+                'Histórico críticas',
+                style: TextStyle(fontSize: 20),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.withOpacity(0.8),
-                padding: EdgeInsets.symmetric(vertical: 20), // Ajusta el tamaño del botón
-              ),
-              child: Text(
-                'Historico criticas',
-                style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+                padding: EdgeInsets.symmetric(vertical: 20),
               ),
             ),
           ),
-          SizedBox(height: 16), // Espacio entre botones
+          SizedBox(height: 16),
           SizedBox(
-            width: 270, // Ancho máximo de los botones
-            child: ElevatedButton(
+            width: 270,
+            child: ElevatedButton.icon(
               onPressed: () {
                 // Lógica para el tercer botón
                 Navigator.push(
@@ -218,20 +220,21 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
                   CustomPageRoute(child: RailwayAttentionPage(idu: widget.idu)),
                 );
               },
+              icon: Icon(Icons.history),
+              label: Text(
+                'Histórico atención',
+                style: TextStyle(fontSize: 20),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.yellow[600]?.withOpacity(0.8),
-                padding: EdgeInsets.symmetric(vertical: 20), // Ajusta el tamaño del botón
-              ),
-              child: Text(
-                'Historico atención',
-                style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+                padding: EdgeInsets.symmetric(vertical: 20),
               ),
             ),
           ),
-          SizedBox(height: 16), // Espacio entre botones
+          SizedBox(height: 16),
           SizedBox(
-            width: 270, // Ancho máximo de los botones
-            child: ElevatedButton(
+            width: 270,
+            child: ElevatedButton.icon(
               onPressed: () {
                 // Lógica para el cuarto botón
                 Navigator.push(
@@ -239,17 +242,18 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
                   CustomPageRoute(child: RailwaySearchPage(idu: widget.idu)),
                 );
               },
+              icon: Icon(Icons.search),
+              label: Text(
+                'Busqueda avanzada',
+                style: TextStyle(fontSize: 20),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.lightBlue.withOpacity(0.8),
-                padding: EdgeInsets.symmetric(vertical: 20), // Ajusta el tamaño del botón
-              ),
-              child: Text(
-                'Busqueda avanzada',
-                style: TextStyle(fontSize: 20), // Tamaño de texto del botón
+                padding: EdgeInsets.symmetric(vertical: 20),
               ),
             ),
           ),
-          SizedBox(height: 32), // Espacio desde la parte inferior de la pantalla
+          SizedBox(height: 32),
         ],
       ),
     );
@@ -288,7 +292,8 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
               Divider(),
               ListTile(
                 leading: const Icon(
-                  Icons.directions_run,
+                  Icons.exit_to_app, // Agregamos un icono de salida
+                  color: Colors.red, // Cambiamos el color del icono
                 ),
                 title: const Text('Cerrar Sesión'),
                 onTap: () {

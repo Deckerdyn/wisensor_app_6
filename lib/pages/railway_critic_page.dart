@@ -180,7 +180,7 @@ class _RailwayCriticPageState extends State<RailwayCriticPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Alertas de Ferrocarril',
+            'Histórico críticas',
             style: TextStyle(fontSize: 20.0),
           ),
           centerTitle: true,

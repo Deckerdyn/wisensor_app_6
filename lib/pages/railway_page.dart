@@ -196,7 +196,7 @@ class _RailwayPageState extends State<RailwayPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Alertas de Ferrocarril',
+            'Alertas Activas',
             style: TextStyle(fontSize: 20.0),
           ),
           centerTitle: true,

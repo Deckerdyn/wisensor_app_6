@@ -88,7 +88,7 @@ class _RailwaySearchPageState extends State<RailwaySearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Alertas de Ferrocarril',
+          'Busqueda avanzada',
           style: TextStyle(fontSize: 20.0),
         ),
         centerTitle: true,

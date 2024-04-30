@@ -180,7 +180,7 @@ class _RailwayAttentionPageState extends State<RailwayAttentionPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Alertas de Ferrocarril',
+            'Histórico atención',
             style: TextStyle(fontSize: 20.0),
           ),
           centerTitle: true,
