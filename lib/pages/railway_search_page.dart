@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart';  // Importar la biblioteca intl
 
 class RailwaySearchPage extends StatefulWidget {
   final int idu;
@@ -20,6 +21,7 @@ class _RailwaySearchPageState extends State<RailwaySearchPage> {
   late DateTime _focusedDay;
   late DateTime _selectedDay;
   Map<DateTime, List<dynamic>> _events = {};
+  List<dynamic> _selectedEvents = [];
   bool _isLoading = true;
 
   @override
@@ -52,21 +54,27 @@ class _RailwaySearchPageState extends State<RailwaySearchPage> {
       Map<DateTime, List<dynamic>> events = {};
 
       for (var alert in alerts) {
-        // Convertir la fecha en formato ISO 8601 a objeto DateTime
         DateTime date = DateTime.parse(alert["fecha"]);
-
-        // Crear una nueva fecha sin la parte de la hora
         DateTime eventDate = DateTime(date.year, date.month, date.day);
 
-        // Agregar el evento al mapa de eventos
-        events[eventDate] = events[eventDate] ?? [];
+        if (!events.containsKey(eventDate)) {
+          events[eventDate] = [];
+        }
         events[eventDate]!.add(alert);
       }
 
       setState(() {
         _events = events;
+        _selectedEvents = _events[_selectedDay] ?? [];
         _isLoading = false;
       });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cargar los datos')),
+      );
     }
   }
 
@@ -80,7 +88,14 @@ class _RailwaySearchPageState extends State<RailwaySearchPage> {
     setState(() {
       _selectedDay = selectedDay;
       _focusedDay = focusedDay;
+      final selectedEventsKey = DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
+      _selectedEvents = _events[selectedEventsKey] ?? [];
     });
+  }
+
+  String _formatTime(String dateString) {
+    final dateTime = DateTime.parse(dateString);
+    return DateFormat.Hm().format(dateTime); // Formato de hora y minutos
   }
 
   @override
@@ -97,26 +112,25 @@ class _RailwaySearchPageState extends State<RailwaySearchPage> {
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TableCalendar(
+            locale: 'es_ES', // Establecer el idioma a español
             firstDay: DateTime.utc(2024, 1, 1),
             lastDay: DateTime.utc(2024, 12, 31),
             focusedDay: _focusedDay,
             calendarFormat: _calendarFormat,
             selectedDayPredicate: (day) {
-              return isSameDay(_focusedDay, day);
+              return isSameDay(_selectedDay, day);
             },
-
             onFormatChanged: _onFormatChanged,
             onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
             eventLoader: (day) {
-              return _events[day] ?? [];
+              return _events[DateTime(day.year, day.month, day.day)] ?? [];
             },
             calendarStyle: CalendarStyle(
-              // Estilo del calendario
               todayDecoration: BoxDecoration(
                 color: Colors.blueAccent,
                 shape: BoxShape.circle,
@@ -126,31 +140,73 @@ class _RailwaySearchPageState extends State<RailwaySearchPage> {
               weekendStyle: TextStyle(color: Colors.red),
             ),
             headerStyle: HeaderStyle(
-              formatButtonVisible: false, // Oculta el botón de formato
+              formatButtonVisible: false,
             ),
             calendarBuilders: CalendarBuilders(
               markerBuilder: (context, date, events) {
                 final eventDate = DateTime(date.year, date.month, date.day);
                 if (_events[eventDate] != null) {
-                  return Container(
-                    child: Positioned(
-                      bottom: 1,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        width: 8.0,
-                        height: 8.0,
+                  return Positioned(
+                    bottom: 1,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
                       ),
+                      width: 8.0,
+                      height: 8.0,
                     ),
                   );
                 }
-                return Container(); // Devuelve un contenedor vacío si no hay eventos
+                return Container();
               },
-
             ),
             onDaySelected: _onDaySelected,
+          ),
+          const SizedBox(height: 50.0),
+          Expanded(
+            child: _selectedEvents.isNotEmpty
+                ? ListView.builder(
+              itemCount: _selectedEvents.length,
+              itemBuilder: (context, index) {
+                var event = _selectedEvents[index];
+                return Card(
+                  color: Colors.grey,
+                  child: ListTile(
+                    title: Text(
+                      event["nombre_sensor"] ?? 'Sin título',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Alerta Crítica",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        Text(
+                          "Motivo de revisión: ${event["motivo_revision"]}",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        Text(
+                          "Hora: ${_formatTime(event["fecha"])}",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            )
+                : Center(
+              child: Text(
+                'No hay eventos para este día',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.0, // Ajusta este valor según tus necesidades
+                ),
+              ),
+            ),
           ),
         ],
       ),

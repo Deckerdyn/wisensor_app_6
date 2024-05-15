@@ -8,15 +8,8 @@ import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'services/notification_services.dart';
 import 'package:upgrader/upgrader.dart';
-
-/*
-Future multipleRegistration() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await FirebaseMessaging.instance.subscribeToTopic("ADMIN");
-}
-*/
-
+import 'package:flutter_localizations/flutter_localizations.dart';  // Importar localizaciones
+import 'package:intl/intl.dart';  // Importar intl
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
@@ -47,7 +40,6 @@ Future<void> main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  //multipleRegistration();
   runApp(MyApp());
 }
 
@@ -55,6 +47,7 @@ Future<String?> getToken() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getString("token");
 }
+
 Future<String?> getDb() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return prefs.getString("db");
@@ -84,6 +77,16 @@ class _MyAppState extends State<MyApp> {
       ),
       themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', 'US'),
+        const Locale('es', 'ES'), // Español
+      ],
+      locale: const Locale('es', 'ES'), // Establecer el idioma a español
       home: UpgradeAlert(
         child: AuthenticationHandler(),
       ),
@@ -111,16 +114,13 @@ class AuthenticationHandler extends StatelessWidget {
     int? idu = prefs.getInt("idu");
 
     if (savedToken != null && idu != null && db != null) {
-
       return db;
     } else {
-
       print(savedToken);
       print(idu);
       print(db);
       return null;
     }
-
   }
 
   @override
@@ -135,11 +135,9 @@ class AuthenticationHandler extends StatelessWidget {
             ),
           );
         } else if (snapshot.hasError || snapshot.data == null) {
-
           print(snapshot.data);
           return LoginPage();
         } else {
-
           print(snapshot.data);
           return FutureBuilder<String?>(
             future: _checkDatabase(),

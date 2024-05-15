@@ -1,13 +1,13 @@
 import 'package:Wisensor/pages/railway_home_page.dart';
-import 'package:Wisensor/pages/railway_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'home_page.dart';
 import 'package:connectivity/connectivity.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -27,11 +27,6 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _loadSavedCredentials();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   Future<void> _loadSavedCredentials() async {
@@ -141,11 +136,11 @@ class _LoginPageState extends State<LoginPage> {
         prefs.remove("password");
       }
       if(message == "wisensor"){
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage(idu: idu)),
-      );
-      timeoutTimer.cancel();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage(idu: idu)),
+        );
+        timeoutTimer.cancel();
       }else if(message == "efe"){
         Navigator.pushReplacement(
           context,
@@ -208,24 +203,20 @@ class _LoginPageState extends State<LoginPage> {
                       color: Colors.white,
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.fromLTRB(0, 0, 120, 0),
-                    child: const Text(
-                      'Versión 1.3.3',
-                      style: TextStyle(
-                        fontSize: 10.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.start,
+                  const SizedBox(height: 10.0),
+                  const Text(
+                    'Versión 1.3.4',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 10.0),
+                  const SizedBox(height: 20.0),
                   Container(
                     padding: const EdgeInsets.all(16.0),
-                    height: MediaQuery.of(context).size.height * 0.442,
                     decoration: BoxDecoration(
-                      color: const Color.fromRGBO(255, 255, 255, 0.155),
+                      color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Column(
@@ -257,9 +248,7 @@ class _LoginPageState extends State<LoginPage> {
                             border: const OutlineInputBorder(),
                           ),
                         ),
-
-                        const SizedBox(height: 4.0),
-
+                        const SizedBox(height: 10.0),
                         const Text(
                           'Contraseña',
                           style: TextStyle(
@@ -268,9 +257,7 @@ class _LoginPageState extends State<LoginPage> {
                             color: Colors.white,
                           ),
                         ),
-
                         const SizedBox(height: 4.0),
-
                         TextFormField(
                           controller: _passwordController,
                           obscureText: !_isPasswordVisible,
@@ -294,11 +281,9 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-
-                        // Checkbox para la opción "Recuérdame"
                         Row(
                           mainAxisAlignment:
-                              MainAxisAlignment.start, // Añadir esta línea
+                          MainAxisAlignment.start,
                           children: <Widget>[
                             Checkbox(
                               value: _rememberMe,
@@ -307,10 +292,8 @@ class _LoginPageState extends State<LoginPage> {
                                   _rememberMe = value ?? false;
                                 });
                               },
-                              activeColor: Colors
-                                  .red, // Color del fondo del Checkbox cuando está seleccionado
-                              checkColor: Colors
-                                  .white, // Color del checkmark dentro del Checkbox cuando está seleccionado
+                              activeColor: Colors.red,
+                              checkColor: Colors.white,
                             ),
                             Text(
                               'Recuérdame',
@@ -319,9 +302,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ],
                         ),
-
-                        const SizedBox(height: 0.0),
-
+                        const SizedBox(height: 10.0),
                         SizedBox(
                           width: double.infinity,
                           height: 50.0,
@@ -330,7 +311,13 @@ class _LoginPageState extends State<LoginPage> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xffdc3545),
                             ),
-                            child: const Text(
+                            child: _isLoading
+                                ? CircularProgressIndicator(
+                              valueColor:
+                              AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
+                            )
+                                : const Text(
                               'Ingresar',
                               style: TextStyle(
                                 fontSize: 17,
@@ -338,16 +325,14 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ),
-
-                        const SizedBox(height: 2.54),
-
+                        const SizedBox(height: 10.0),
                         Center(
                           child: _errorMessage.isNotEmpty
                               ? Text(
-                                  _errorMessage,
-                                  style: const TextStyle(
-                                      color: Colors.red, fontSize: 14),
-                                )
+                            _errorMessage,
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 14),
+                          )
                               : Container(),
                         ),
                       ],
@@ -356,31 +341,28 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
             ),
-            // Contenedor para la política de privacidad
             Positioned(
-              bottom: 0,
+              bottom: 10,
               left: 0,
               right: 0,
-              child: Container(
-                padding: const EdgeInsets.all(6.0),
-                decoration: BoxDecoration(
-                  color: const Color.fromRGBO(255, 255, 255, 0.155),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    launchUrl(Uri.parse("https://wisensor.cl/politicas"));
-                  },
+              child: GestureDetector(
+                onTap: () {
+                  launchUrl(Uri.parse("https://wisensor.cl/politicas"));
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(6.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                   child: Center(
                     child: Text(
                       'Políticas de Privacidad',
                       style: TextStyle(
                         fontSize: 14.0,
-                        color: Color(0xFF4285F4),
-                        //decoration: TextDecoration.underline,
+                        color: Colors.blue,
                       ),
-                      textAlign:
-                          TextAlign.center, // Añadido para centrar el texto
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),

@@ -27,12 +27,10 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
   List<dynamic> _alerts = [];
   bool _isLoading = true;
   String _message = "";
-  //Timer? _timer;
-  Map<String, double> _weatherValues =
-  {}; // Mapa para almacenar valores de clima por alerta
-  bool _isMounted = true; // Add this variable to track widget's mounting status
+  Map<String, double> _weatherValues = {};
+  bool _isMounted = true;
 
-  // Método para manejar el cierre de sesión
+// Método para manejar el cierre de sesión
   Future<void> _logout(BuildContext context) async {
     // Implementación del método _logout()
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -42,30 +40,26 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
       MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
-
   @override
   void initState() {
     super.initState();
     _fetchAlerts();
-    // Configurar el temporizador para actualizar alertas cada 10 minutos
-    _timer = Timer.periodic(Duration(minutes: 10), (timer) {
-      // Lógica para actualizar alertas (no incluida en este código modificado)
-    });
+    _timer = Timer.periodic(Duration(minutes: 10), (timer) {});
   }
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancelar el temporizador para evitar fugas de memoria
+    _timer?.cancel();
     super.dispose();
   }
+
   Future<void> _fetchAlerts() async {
-    if (!_isMounted) return; // Check if the widget is still mounted
+    if (!_isMounted) return;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     int? idu = prefs.getInt("idu");
 
     if (token == null || idu == null) {
-      // El token no existe, el usuario no está autenticado
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),
@@ -91,7 +85,6 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
           _message = jsonResponse["message"];
         });
       }
-
     } else if (response.statusCode == 401) {
       if (_isMounted) {
         var errorResponse = jsonDecode(response.body);
@@ -108,10 +101,8 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
     } else {
       var errorResponse = jsonDecode(response.body);
       if (errorResponse.containsKey("message")) {
-        //print(errorResponse);
         var errorMessage = errorResponse["message"];
         if (errorMessage == "Unauthenticated.") {
-          //prefs.remove("token");
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => RailwayModule()),
@@ -120,13 +111,11 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
       }
     }
   }
-  // Método que maneja la acción de retroceso del botón físico o virtual de Android
+
   Future<bool> _onWillPop() async {
-    // Verificar si hay una página anterior en la ruta del Navigator
     if (Navigator.of(context).canPop()) {
-      return true; // Permitir retroceder si hay una página anterior
+      return true;
     } else {
-      // Mostrar un diálogo para confirmar si el usuario desea cerrar sesión
       bool confirmLogout = await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -136,13 +125,13 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(false); // No cerrar sesión
+                  Navigator.of(context).pop(false);
                 },
                 child: Text('Cancelar'),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(true); // Cerrar sesión
+                  Navigator.of(context).pop(true);
                 },
                 child: Text('Aceptar'),
               ),
@@ -151,8 +140,7 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
         },
       );
 
-      return confirmLogout ==
-          true; // Si confirmLogout es true, permitir cerrar sesión
+      return confirmLogout == true;
     }
   }
 
@@ -167,10 +155,9 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
         children: [
           SizedBox(height: 0.0),
           SizedBox(
-            width: 270,
+            width: 270, // Ancho fijo para todos los botones
             child: ElevatedButton.icon(
               onPressed: () {
-                // Lógica para el primer botón
                 Navigator.push(
                   context,
                   CustomPageRoute(child: RailwayPage(idu: widget.idu)),
@@ -182,8 +169,12 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
                 style: TextStyle(fontSize: 20),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.withOpacity(0.8),
-                padding: EdgeInsets.symmetric(vertical: 20),
+                foregroundColor: Colors.white, backgroundColor: Colors.green.withOpacity(0.8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
+                elevation: 5,
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
               ),
             ),
           ),
@@ -192,7 +183,6 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
             width: 270,
             child: ElevatedButton.icon(
               onPressed: () {
-                // Lógica para el segundo botón
                 Navigator.push(
                   context,
                   CustomPageRoute(child: RailwayCriticPage(idu: widget.idu)),
@@ -204,8 +194,12 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
                 style: TextStyle(fontSize: 20),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.withOpacity(0.8),
-                padding: EdgeInsets.symmetric(vertical: 20),
+                foregroundColor: Colors.white, backgroundColor: Colors.red.withOpacity(0.8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
+                elevation: 5,
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
               ),
             ),
           ),
@@ -214,10 +208,10 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
             width: 270,
             child: ElevatedButton.icon(
               onPressed: () {
-                // Lógica para el tercer botón
                 Navigator.push(
                   context,
-                  CustomPageRoute(child: RailwayAttentionPage(idu: widget.idu)),
+                  CustomPageRoute(
+                      child: RailwayAttentionPage(idu: widget.idu)),
                 );
               },
               icon: Icon(Icons.history),
@@ -226,8 +220,12 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
                 style: TextStyle(fontSize: 20),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow[600]?.withOpacity(0.8),
-                padding: EdgeInsets.symmetric(vertical: 20),
+                foregroundColor: Colors.white, backgroundColor: Colors.yellow[600]?.withOpacity(0.8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
+                elevation: 5,
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
               ),
             ),
           ),
@@ -236,7 +234,6 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
             width: 270,
             child: ElevatedButton.icon(
               onPressed: () {
-                // Lógica para el cuarto botón
                 Navigator.push(
                   context,
                   CustomPageRoute(child: RailwaySearchPage(idu: widget.idu)),
@@ -248,8 +245,12 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
                 style: TextStyle(fontSize: 20),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlue.withOpacity(0.8),
-                padding: EdgeInsets.symmetric(vertical: 20),
+                foregroundColor: Colors.white, backgroundColor: Colors.lightBlue.withOpacity(0.8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
+                elevation: 5,
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
               ),
             ),
           ),
@@ -258,7 +259,6 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
       ),
     );
   }
-
 
 
   @override
@@ -292,8 +292,8 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
               Divider(),
               ListTile(
                 leading: const Icon(
-                  Icons.exit_to_app, // Agregamos un icono de salida
-                  color: Colors.red, // Cambiamos el color del icono
+                  Icons.exit_to_app,
+                  color: Colors.red,
                 ),
                 title: const Text('Cerrar Sesión'),
                 onTap: () {
@@ -348,4 +348,3 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
     );
   }
 }
-//commit de prueba
