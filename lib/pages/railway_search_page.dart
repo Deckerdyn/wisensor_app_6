@@ -199,11 +199,13 @@ class _RailwaySearchPageState extends State<RailwaySearchPage> {
               },
             )
                 : Center(
-              child: Text(
-                'No hay eventos para este día',
-                style: TextStyle(
+              child: Center(
+                child: Text(
+                  'No hubo alertas críticas este día',
+                  style: TextStyle(
                     color: Colors.white,
                     fontSize: 20.0, // Ajusta este valor según tus necesidades
+                  ),
                 ),
               ),
             ),
