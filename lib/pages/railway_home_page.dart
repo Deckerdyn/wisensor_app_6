@@ -14,9 +14,7 @@ import 'package:http/http.dart' as http;
 class RailwayHomePage extends StatefulWidget {
   final int idu;
 
-  RailwayHomePage({
-    required this.idu,
-  });
+  RailwayHomePage({required this.idu});
 
   @override
   _RailwayHomePageState createState() => _RailwayHomePageState();
@@ -30,9 +28,8 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
   Map<String, double> _weatherValues = {};
   bool _isMounted = true;
 
-// Método para manejar el cierre de sesión
+  // Método para manejar el cierre de sesión
   Future<void> _logout(BuildContext context) async {
-    // Implementación del método _logout()
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("token");
     Navigator.pushReplacement(
@@ -40,6 +37,37 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
       MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
+
+  Future<void> _confirmLogout() async {
+    bool confirmLogout = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Cerrar Sesión'),
+          content: Text('¿Estás seguro de que deseas cerrar sesión?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmLogout) {
+      await _logout(context);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -66,16 +94,18 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
       );
       return;
     }
+
     Map<String, String> headers = {
       "Content-Type": "application/json",
       "Accept": "application/json",
       "Authorization": "Bearer $token"
     };
+
     http.Response response = await http.get(
-      Uri.parse(
-          "http://201.220.112.247:1880/wisensor/api/efe?idu=${widget.idu}"),
+      Uri.parse("http://201.220.112.247:1880/wisensor/api/efe?idu=${widget.idu}"),
       headers: headers,
     );
+
     if (response.statusCode == 200) {
       if (_isMounted) {
         var jsonResponse = jsonDecode(response.body);
@@ -260,7 +290,6 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -269,62 +298,18 @@ class _RailwayHomePageState extends State<RailwayHomePage> {
         appBar: AppBar(
           title: Text(
             'Alertas de Ferrocarril',
-            style: TextStyle(fontSize: 20.0),
+            style: TextStyle(fontSize: 22.0),
           ),
           centerTitle: true,
           backgroundColor: Colors.blue,
-        ),
-        drawer: Drawer(
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: [
-                    AppBar(
-                      title: const Text('Módulos'),
-                      leading: const BackButton(),
-                      backgroundColor: Colors.blue,
-                    ),
-                  ],
-                ),
-              ),
-              Divider(),
-              ListTile(
-                leading: const Icon(
-                  Icons.exit_to_app,
-                  color: Colors.red,
-                ),
-                title: const Text('Cerrar Sesión'),
-                onTap: () {
-                  _logout(context);
-                },
-              ),
-              Container(
-                margin: EdgeInsets.fromLTRB(0, 60, 0, 0),
-                child: const Text(
-                  'Wisensor',
-                  style: TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(0, 0, 0, 20),
-                child: const Text(
-                  'V 1.3.3',
-                  style: TextStyle(
-                    fontSize: 10.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.start,
-                ),
-              ),
-            ],
-          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.exit_to_app, color: Colors.white, size: 36),
+              onPressed: () async {
+                await _confirmLogout();
+              },
+            ),
+          ],
         ),
         body: Stack(
           children: [
