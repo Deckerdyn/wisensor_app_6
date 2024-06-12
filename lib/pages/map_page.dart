@@ -179,6 +179,7 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Mapa'),
+        centerTitle: true,
       ),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
