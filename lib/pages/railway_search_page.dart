@@ -117,7 +117,7 @@ class _RailwaySearchPageState extends State<RailwaySearchPage> {
           TableCalendar(
             locale: 'es_ES', // Establecer el idioma a español
             firstDay: DateTime.utc(2024, 1, 1),
-            lastDay: DateTime.utc(2024, 12, 31),
+            lastDay: DateTime.utc(2036, 12, 31),
             focusedDay: _focusedDay,
             calendarFormat: _calendarFormat,
             selectedDayPredicate: (day) {

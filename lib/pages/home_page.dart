@@ -197,6 +197,11 @@ class _HomePageState extends State<HomePage> {
             FirebaseMessaging.instance.subscribeToTopic("SALMONESAUSTRAL");
             idEmpresas.add(ide);
             break;
+          case 8:
+            print("CALETABAY");
+            FirebaseMessaging.instance.subscribeToTopic("CALETABAY");
+            idEmpresas.add(ide);
+            break;
           default:
           // Manejar otros casos si es necesario
             print("no suscrito a nada");
@@ -399,6 +404,11 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
+              /*
+              if (_centros
+                  .any((centro) => centro["ide"] != 8)) // Condición para mostrar "Ferrocarril"
+
+               */
               ListTile(
                 leading: const Icon(
                   FontAwesomeIcons.robot,
@@ -412,19 +422,22 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-              ListTile(
-                leading: const Icon(
-                  FontAwesomeIcons.train,
+              /*
+              if (_centros
+                  .any((centro) => centro["ide"] != 8)) // Condición para mostrar "Ferrocarril"
+                ListTile(
+                  leading: Icon(Icons.train),
+                  title: Text('Ferrocarril'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RailwayModule()),
+                    );
+                  },
                 ),
-                title: const Text('Ferrocarril'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    CustomPageRoute(child: RailwayHomePage(idu: widget.idu)),
-                  );
-                },
-              ),
+                */
+
               Divider(),
 
               ListTile(
@@ -534,24 +547,34 @@ class _HomePageState extends State<HomePage> {
                     child: ListView.builder(
                       itemCount: _centros.length,
                       itemBuilder: (BuildContext context, int index) {
-                        //bool isRed = _alertCounts[index] > 0;
-
-                        final hasRedAlert = markersWithAlerts
-                            .contains(_centros[index]['idc']);
-                        final hasYellowAlert = markersWithAlerts2
-                            .contains(_centros[index]['idc']);
+                        final hasRedAlert = markersWithAlerts.contains(_centros[index]['idc']);
+                        final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['idc']);
 
                         return Column(
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                color: hasRedAlert
-                                    ? Colors.red.withOpacity(0.7)
+                                gradient: hasRedAlert
+                                    ? LinearGradient(
+                                  colors: [Colors.red.withOpacity(0.8), Colors.redAccent.withOpacity(0.8)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
                                     : hasYellowAlert
-                                    ? Colors.yellow[600]!
-                                    .withOpacity(0.8)
-                                    : Colors.green[600]!
-                                    .withOpacity(0.8),
+                                    ? LinearGradient(
+                                  colors: [
+                                    Colors.yellow.withOpacity(0.8),
+                                    Colors.amber.withOpacity(0.8)
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                )
+                                    : LinearGradient(
+                                  colors: [Colors.lightGreen.withOpacity(0.8), Colors.green.withOpacity(0.8)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+
                                 border: Border.all(
                                   color: Colors.black,
                                   width: 2.0,
@@ -566,15 +589,13 @@ class _HomePageState extends State<HomePage> {
                                         ide: _centros[index]["ide"],
                                         idu: _centros[index]["idu"],
                                         idc: _centros[index]["idc"],
-                                        nombreCentro: _centros[index][
-                                        "nombre"], // Pasar el nombre del centro
+                                        nombreCentro: _centros[index]["nombre"], // Pasar el nombre del centro
                                       ),
                                     ),
                                   );
                                 },
                                 title: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
@@ -609,8 +630,7 @@ class _HomePageState extends State<HomePage> {
                                           child: Container(
                                             padding: EdgeInsets.all(2),
                                             decoration: BoxDecoration(
-                                              color: hasRedAlert ||
-                                                  hasYellowAlert
+                                              color: hasRedAlert || hasYellowAlert
                                                   ? Colors.red
                                                   : Colors.black54,
                                               shape: BoxShape.circle,
@@ -645,6 +665,7 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                   ),
+
                 ],
               ),
             ],

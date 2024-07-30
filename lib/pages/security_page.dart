@@ -265,24 +265,33 @@ class _SecurityPageState extends State<SecurityPage> {
                           child: ListView.builder(
                             itemCount: _centros.length,
                             itemBuilder: (BuildContext context, int index) {
-                              //bool isRed = _alertCounts[index] > 0;
-
-                              final hasRedAlert = markersWithAlerts
-                                  .contains(_centros[index]['codigo_centro']);
-                              final hasYellowAlert = markersWithAlerts2
-                                  .contains(_centros[index]['codigo_centro']);
+                              final hasRedAlert = markersWithAlerts.contains(_centros[index]['codigo_centro']);
+                              final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['codigo_centro']);
 
                               return Column(
                                 children: [
                                   Container(
                                     decoration: BoxDecoration(
-                                      color: hasRedAlert
-                                          ? Colors.red.withOpacity(0.7)
+                                      gradient: hasRedAlert
+                                          ? LinearGradient(
+                                        colors: [Colors.red.withOpacity(0.7), Colors.red.withOpacity(0.7)],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      )
                                           : hasYellowAlert
-                                              ? Colors.yellow[600]!
-                                                  .withOpacity(0.8)
-                                              : Colors.green[600]!
-                                                  .withOpacity(0.8),
+                                          ? LinearGradient(
+                                        colors: [
+                                          Colors.yellow.withOpacity(0.8),
+                                          Colors.amber.withOpacity(0.8)
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      )
+                                          : LinearGradient(
+                                        colors: [Colors.lightGreen.withOpacity(0.8), Colors.green.withOpacity(0.8)],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
                                       border: Border.all(
                                         color: Colors.black,
                                         width: 2.0,
@@ -294,20 +303,16 @@ class _SecurityPageState extends State<SecurityPage> {
                                           context,
                                           CustomPageRoute(
                                             child: SecurityModule(
-                                              emp: _centros[index]
-                                                  ["codigo_empresa"],
+                                              emp: _centros[index]["codigo_empresa"],
                                               dref: _centros[index]["mongodb"],
-                                              nombreCentro: _centros[index]
-                                                  ["nombre"],
-                                              cce: _centros[index]
-                                                  ["codigo_centro"],
+                                              nombreCentro: _centros[index]["nombre"],
+                                              cce: _centros[index]["codigo_centro"],
                                             ),
                                           ),
                                         );
                                       },
                                       title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(
                                             children: [
@@ -319,8 +324,8 @@ class _SecurityPageState extends State<SecurityPage> {
                                                   color: hasRedAlert
                                                       ? Colors.grey[200]
                                                       : hasYellowAlert
-                                                          ? Colors.black87
-                                                          : Colors.grey[200],
+                                                      ? Colors.black87
+                                                      : Colors.grey[200],
                                                 ),
                                               ),
                                             ],
@@ -333,8 +338,8 @@ class _SecurityPageState extends State<SecurityPage> {
                                                 color: hasRedAlert
                                                     ? Colors.black54
                                                     : hasYellowAlert
-                                                        ? Colors.black
-                                                        : Colors.white70,
+                                                    ? Colors.black
+                                                    : Colors.white70,
                                               ),
                                               Positioned(
                                                 top: 0,
@@ -342,8 +347,7 @@ class _SecurityPageState extends State<SecurityPage> {
                                                 child: Container(
                                                   padding: EdgeInsets.all(2),
                                                   decoration: BoxDecoration(
-                                                    color: hasRedAlert ||
-                                                            hasYellowAlert
+                                                    color: hasRedAlert || hasYellowAlert
                                                         ? Colors.red
                                                         : Colors.black54,
                                                     shape: BoxShape.circle,
@@ -378,6 +382,7 @@ class _SecurityPageState extends State<SecurityPage> {
                             },
                           ),
                         ),
+
                       ],
                     ),
                   ],
