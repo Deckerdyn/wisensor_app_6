@@ -37,6 +37,45 @@ class _SecurityPageState extends State<SecurityPage> {
       _isLoading = false;
     });
   }
+  // Método para manejar el cierre de sesión
+  Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("token");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
+
+  Future<void> _confirmLogout() async {
+    bool confirmLogout = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Cerrar Sesión'),
+          content: Text('¿Estás seguro de que deseas cerrar sesión?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmLogout) {
+      await _logout(context);
+    }
+  }
 
   // Método que maneja la acción de retroceso del botón físico o virtual de Android
   Future<bool> _onWillPop() async {
@@ -44,7 +83,7 @@ class _SecurityPageState extends State<SecurityPage> {
     if (Navigator.of(context).canPop()) {
       return true; // Permitir retroceder si hay una página anterior
     } else {
-      // Mostrar un diálogo para confirmar si el usuario desea cerrar sesión
+      // Mostrar un diálogo para confirmar si el usuario desea aplicación
       bool confirmLogout = await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -54,13 +93,13 @@ class _SecurityPageState extends State<SecurityPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(false); // No cerrar sesión
+                  Navigator.of(context).pop(false); // No cerrar aplicación
                 },
                 child: Text('Cancelar'),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(true); // Cerrar sesión
+                  Navigator.of(context).pop(true); // Cerrar aplicación
                 },
                 child: Text('Aceptar'),
               ),
@@ -222,6 +261,14 @@ class _SecurityPageState extends State<SecurityPage> {
         appBar: AppBar(
           title: Text('Alertas de Seguridad', style: TextStyle(fontSize: 20.0)),
           centerTitle: true,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.exit_to_app, color: Colors.white, size: 36),
+              onPressed: () async {
+                await _confirmLogout();
+              },
+            ),
+          ],
         ),
         body: RefreshIndicator(
           onRefresh: _handleRefresh,
@@ -272,9 +319,9 @@ class _SecurityPageState extends State<SecurityPage> {
                                 children: [
                                   Container(
                                     decoration: BoxDecoration(
-                                      gradient: hasRedAlert
+                                      gradient:  hasRedAlert
                                           ? LinearGradient(
-                                        colors: [Colors.red.withOpacity(0.7), Colors.red.withOpacity(0.7)],
+                                        colors: [Colors.red.withOpacity(0.7), Colors.redAccent.withOpacity(0.7)],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       )

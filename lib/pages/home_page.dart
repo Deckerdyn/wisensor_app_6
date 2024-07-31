@@ -249,15 +249,58 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _checkAndRedirect();
     _fetchCentros();
+  }
 
-    // Configure the timer to fetch alerts every msecondsinute
-    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
-      _fetchCentros();
-      _fetchAlertCounts();
-    });
-    // Llama a la función para obtener el token del dispositivo al iniciar la página
-    //init();
+  Future<void> _checkAndRedirect() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+    int? idu = prefs.getInt("idu");
+
+    if (token == null || idu == null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+      return;
+    }
+
+    Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "Authorization": "Bearer $token"
+    };
+
+    http.Response response = await http.get(
+      Uri.parse("http://201.220.112.247:1880/wisensor/api/centros?idu=${widget.idu}"),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      var centros = jsonResponse["data"];
+      bool hasIde8 = centros.any((centro) => centro["ide"] == 8);
+
+      if (hasIde8) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SecurityPage(idu: widget.idu)),
+        );
+      }
+    } else {
+      var errorResponse = jsonDecode(response.body);
+      if (errorResponse.containsKey("message")) {
+        var errorMessage = errorResponse["message"];
+        if (errorMessage == "Unauthenticated.") {
+          prefs.remove("token");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -556,7 +599,7 @@ class _HomePageState extends State<HomePage> {
                               decoration: BoxDecoration(
                                 gradient: hasRedAlert
                                     ? LinearGradient(
-                                  colors: [Colors.red.withOpacity(0.8), Colors.redAccent.withOpacity(0.8)],
+                                  colors: [Colors.red.withOpacity(0.7), Colors.redAccent.withOpacity(0.7)],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 )
