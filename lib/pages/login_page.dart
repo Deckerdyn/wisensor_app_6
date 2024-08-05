@@ -205,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 10.0),
                   const Text(
-                    'Versión 1.3.4',
+                    'Versión 1.3.5',
                     style: TextStyle(
                       fontSize: 14.0,
                       fontWeight: FontWeight.bold,

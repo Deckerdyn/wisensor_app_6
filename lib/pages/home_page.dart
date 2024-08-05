@@ -61,23 +61,23 @@ class _HomePageState extends State<HomePage> {
     if (Navigator.of(context).canPop()) {
       return true; // Permitir retroceder si hay una página anterior
     } else {
-      // Mostrar un diálogo para confirmar si el usuario desea cerrar sesión
+      // Mostrar un diálogo para confirmar si el usuario desea cerrar aplicación
       bool confirmLogout = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Cerrar Aplicación'),
-            content: Text('¿Estás seguro que deseas cerrar la aplicación?'),
+            content: Text('¿Está seguro que desea salir de la aplicación?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(false); // No cerrar sesión
+                  Navigator.of(context).pop(false); // No cerrar aplicación
                 },
                 child: Text('Cancelar'),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(true); // Cerrar sesión
+                  Navigator.of(context).pop(true); // Cerrar aplicación
                 },
                 child: Text('Aceptar'),
               ),
@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
       );
 
       return confirmLogout ==
-          true; // Si confirmLogout es true, permitir cerrar sesión
+          true; // Si confirmLogout es true, permitir cerrar aplicación
     }
   }
 
@@ -536,7 +536,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                 margin: const EdgeInsets.fromLTRB(90, 0, 0, 0),
                 child: const Text(
-                  'V 1.3.4',
+                  'V 1.3.5',
                   style: TextStyle(
                     fontSize: 10.0,
                     fontWeight: FontWeight.bold,
