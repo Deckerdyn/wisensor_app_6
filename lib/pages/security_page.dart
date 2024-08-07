@@ -262,7 +262,13 @@ class _SecurityPageState extends State<SecurityPage> {
       onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Alertas de Seguridad', style: TextStyle(fontSize: 20.0)),
+          title: Text(
+            'Alertas de Seguridad',
+            style: TextStyle(
+              fontSize: 20.0,
+              color: Colors.white,
+            ),
+          ),
           centerTitle: true,
           leading: canPop ? null : IconButton(
             icon: Icon(Icons.settings, color: Colors.white, size: 36),
