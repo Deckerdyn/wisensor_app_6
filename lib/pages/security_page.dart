@@ -121,16 +121,11 @@ class _SecurityPageState extends State<SecurityPage> {
   }
 
   Future<void> _fetchCentros() async {
-    if (!_isMounted) return;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
-    int? idu = prefs.getInt("idu");
 
-    if (token == null || idu == null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
+    if (token == null) {
+      _logout(context); // Mueve el logout aquí para evitar repetición
       return;
     }
 
@@ -155,16 +150,19 @@ class _SecurityPageState extends State<SecurityPage> {
         await _fetchAlertCounts();
       }
     } else {
-      var errorResponse = jsonDecode(response.body);
-      if (errorResponse.containsKey("message")) {
-        var errorMessage = errorResponse["message"];
-        if (errorMessage == "Unauthenticated.") {
-          prefs.remove("token");
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
-          );
-        }
+      await _handleErrorResponse(response);
+    }
+  }
+
+  Future<void> _handleErrorResponse(http.Response response) async {
+    var errorResponse = jsonDecode(response.body);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (errorResponse.containsKey("message")) {
+      var errorMessage = errorResponse["message"];
+      if (errorMessage == "Unauthenticated.") {
+        prefs.remove("token");
+        _logout(context);
       }
     }
   }

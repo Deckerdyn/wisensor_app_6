@@ -1,4 +1,5 @@
 import 'package:Wisensor/pages/railway_home_page.dart';
+import 'package:Wisensor/pages/security_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -117,14 +118,18 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
       String token = jsonResponse["data"]["token"];
-      String db = jsonResponse["data"]["db"]; // Obtener la DB desde la respuesta del servidor
-      String message = jsonResponse["message"];
-      print(message);
+      String db = jsonResponse["data"]["db"];
       int idu = jsonResponse["data"]["idu"];
+      int empresasId = jsonResponse["data"]["empresas_id"];
+      String message = jsonResponse["message"];
+
+      print("empresas_id: $empresasId"); // Para depuración
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("token", token);
       await prefs.setInt("idu", idu);
-      await _saveAuthentication(token, idu, db); // Llamar al método para guardar la DB
+      await prefs.setInt("empresas_id", empresasId); // Agregado
+      await _saveAuthentication(token, idu, db);
 
       if (_rememberMe) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -135,34 +140,41 @@ class _LoginPageState extends State<LoginPage> {
         prefs.remove("email");
         prefs.remove("password");
       }
-      if(message == "wisensor"){
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage(idu: idu)),
-        );
-        timeoutTimer.cancel();
-      }else if(message == "efe"){
+
+      // Lógica de redirección basada en message y empresas_id
+      if (message == "wisensor") {
+        if (empresasId == 2) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage(idu: idu)),
+          );
+          print("id empresa 2");
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SecurityPage(idu: idu)),
+          );
+          print("id empresa no 2");
+        }
+      } else if (message == "efe") {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => RailwayHomePage(idu: idu)),
         );
-        timeoutTimer.cancel();
-      }
-    } else {
-      var errorResponse = jsonDecode(response.body);
-      var errorMessage = "";
-      var message = errorResponse["message"];
-      if (message == "El usuario no existe en nuestro sistema.") {
-        errorMessage = "El usuario no existe en nuestro sistema.";
-      } else if (message == "Las credenciales no son válidas") {
-        errorMessage = "Las credenciales no son válidas";
       }
 
+      timeoutTimer.cancel();
+    } else {
+      var errorResponse = jsonDecode(response.body);
+      var errorMessage = errorResponse["message"];
       setState(() {
-        _errorMessage = errorMessage;
+        _errorMessage = (errorMessage == "El usuario no existe en nuestro sistema.")
+            ? "El usuario no existe en nuestro sistema."
+            : "Las credenciales no son válidas";
       });
     }
   }
+
 
   Future<void> _saveAuthentication(String token, int idu, String db) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
