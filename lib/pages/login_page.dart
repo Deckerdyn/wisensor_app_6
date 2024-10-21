@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -217,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 10.0),
                   const Text(
-                    'Versión 1.3.5',
+                    'Versión 1.3.8',
                     style: TextStyle(
                       fontSize: 14.0,
                       fontWeight: FontWeight.bold,

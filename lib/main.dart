@@ -195,6 +195,9 @@ class AuthenticationHandler extends StatelessWidget {
                       }
                     },
                   );
+                } else if (db == "efe") {
+                  print("Redirigiendo a RailwayHomePage");
+                  return RailwayHomePage(idu: snapshot.data!); // Redirige a RailwayHomePage si la base de datos es 'efe'
                 } else {
                   print("Base de datos desconocida: $db");
                   return LoginPage();
