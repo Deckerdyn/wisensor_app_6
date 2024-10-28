@@ -18,16 +18,35 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
   bool _isLoading = false;
   String _errorMessage = "";
   bool _isTimeout = false;
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
+  bool _isTextFieldFocused = false;
 
   @override
   void initState() {
     super.initState();
     _loadSavedCredentials();
+
+    // Escucha los cambios de foco en los campos de texto
+    _emailFocusNode.addListener(_handleFocusChange);
+    _passwordFocusNode.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    setState(() {
+      _isTextFieldFocused = _emailFocusNode.hasFocus || _passwordFocusNode.hasFocus;
+    });
+  }
+  @override
+  void dispose() {
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
   }
 
   Future<void> _loadSavedCredentials() async {
@@ -186,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -215,15 +234,18 @@ class _LoginPageState extends State<LoginPage> {
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 10.0),
-                  const Text(
-                    'Versión 1.3.8',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  // Solo muestra la versión cuando no hay foco en los campos de texto
+                  if (!_isTextFieldFocused)
+                    const SizedBox(height: 10.0),
+                  if (!_isTextFieldFocused)
+                    const Text(
+                      'Versión 1.3.8',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 20.0),
                   Container(
                     padding: const EdgeInsets.all(16.0),
@@ -234,6 +256,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        /*
                         const Text(
                           'Correo',
                           style: TextStyle(
@@ -242,9 +265,12 @@ class _LoginPageState extends State<LoginPage> {
                             color: Colors.white,
                           ),
                         ),
+
+                         */
                         const SizedBox(height: 4.0),
                         TextField(
                           controller: _emailController,
+                          focusNode: _emailFocusNode, // Asigna el FocusNode
                           onChanged: (value) {
                             setState(() {
                               _errorMessage = !_isEmailValid(value)
@@ -254,13 +280,20 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
-                            hintText: 'Ingrese su correo',
-                            hintStyle: TextStyle(
-                                fontSize: 18.0, color: Colors.grey[400]),
-                            border: const OutlineInputBorder(),
+                            prefixIcon: Icon(
+                              Icons.email,
+                              color: Colors.white,
+                            ),
+                            labelText: 'Correo', // Cambia hintText a labelText
+                            labelStyle: TextStyle(fontSize: 19.0, color: Colors.grey[350]),
+                            floatingLabelBehavior: FloatingLabelBehavior.auto, // Desplaza el label cuando se enfoca
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 10.0),
+                        /*
                         const Text(
                           'Contraseña',
                           style: TextStyle(
@@ -269,15 +302,24 @@ class _LoginPageState extends State<LoginPage> {
                             color: Colors.white,
                           ),
                         ),
+
+                         */
                         const SizedBox(height: 4.0),
                         TextFormField(
                           controller: _passwordController,
+                          focusNode: _passwordFocusNode, // Asigna el FocusNode
                           obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
-                            hintText: 'Ingrese su contraseña',
-                            hintStyle: TextStyle(
-                                fontSize: 18.0, color: Colors.grey[400]),
-                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(
+                              Icons.lock,
+                              color: Colors.white,
+                            ),
+                            labelText: 'Contraseña', // Cambia hintText a labelText
+                            labelStyle: TextStyle(fontSize: 19.0,color: Colors.grey[350]),
+                            floatingLabelBehavior: FloatingLabelBehavior.auto, // Desplaza el label cuando se enfoca
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
                             suffixIcon: GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -285,14 +327,13 @@ class _LoginPageState extends State<LoginPage> {
                                 });
                               },
                               child: Icon(
-                                _isPasswordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.grey,
+                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: Colors.white,
                               ),
                             ),
                           ),
                         ),
+
                         Row(
                           mainAxisAlignment:
                           MainAxisAlignment.start,
@@ -353,29 +394,31 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
             ),
-            Positioned(
-              bottom: 10,
-              left: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: () {
-                  launchUrl(Uri.parse("https://wisensor.cl/politicas"));
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(6.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Políticas de Privacidad',
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.blue,
-                      ),
-                      textAlign: TextAlign.center,
+            // Mostrar políticas solo si no hay foco en los campos de texto
+            if (!_isTextFieldFocused)
+              Positioned(
+                bottom: 10,
+                left: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    launchUrl(Uri.parse("https://wisensor.cl/politicas"));
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(16.0),
                     ),
+                    child: Center(
+                      child: Text(
+                        'Políticas de Privacidad',
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.blue,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                   ),
                 ),
               ),
