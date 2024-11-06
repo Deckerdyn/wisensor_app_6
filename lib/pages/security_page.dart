@@ -32,7 +32,6 @@ class _SecurityPageState extends State<SecurityPage> {
 
   Future<void> _handleRefresh() async {
     // Actualiza los datos aquí
-    await _fetchCentros();
     await _fetchAlertCounts();
     setState(() {
       _isLoading = false;
@@ -125,7 +124,7 @@ class _SecurityPageState extends State<SecurityPage> {
     String? token = prefs.getString("token");
 
     if (token == null) {
-      _logout(context); // Mueve el logout aquí para evitar repetición
+      _logout(context);
       return;
     }
 
@@ -148,11 +147,21 @@ class _SecurityPageState extends State<SecurityPage> {
           _message = jsonResponse["message"];
         });
         await _fetchAlertCounts();
+
+        // Ordenar la lista _centros colocando primero los que tienen alertas
+        _centros.sort((a, b) {
+          bool aHasAlert = markersWithAlerts.contains(a['codigo_centro']) || markersWithAlerts2.contains(a['codigo_centro']);
+          bool bHasAlert = markersWithAlerts.contains(b['codigo_centro']) || markersWithAlerts2.contains(b['codigo_centro']);
+          if (aHasAlert && !bHasAlert) return -1;
+          if (!aHasAlert && bHasAlert) return 1;
+          return 0;
+        });
       }
     } else {
       await _handleErrorResponse(response);
     }
   }
+
 
   Future<void> _handleErrorResponse(http.Response response) async {
     var errorResponse = jsonDecode(response.body);
@@ -177,7 +186,6 @@ class _SecurityPageState extends State<SecurityPage> {
       "Authorization": "Bearer $token"
     };
 
-    List<int> counts = [];
     List<String> updatedMarkersWithAlerts = [];
     List<String> updatedMarkersWithAlerts2 = [];
 
@@ -190,48 +198,42 @@ class _SecurityPageState extends State<SecurityPage> {
         Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas2?emp=$emp&dref=$dref&cce=$cce"),
         headers: headers,
       );
-      // Verificar si ya se ha suscrito al tópico correspondiente
-/*
-      if (!idEmpresas.contains(centro["emp"])) {
-        switch (emp) {
-          case 006:
-            print("CALETABAY...");
-            FirebaseMessaging.instance.subscribeToTopic("CALETABAY");
-            idEmpresas.add(006);
-            break;
-          default:
-          // Manejar otros casos si es necesario
-            print("no suscrito a nada...");
-            break;
-        }
-      }
-      */
+
+      int count = 0;
       if (response2.statusCode == 200) {
         var jsonResponse = jsonDecode(response2.body);
-        int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
-        counts.add(count);
+        count = jsonResponse["data"]?.length ?? 0;
 
         for (var alerta in jsonResponse["data"]) {
           if (alerta["modulo"] != null || alerta["zona"] == "INTERIOR" || alerta["zona"] == "INTERIOR100" || alerta["zona"] == "INTERIOR200") {
             updatedMarkersWithAlerts.add(cce);
-          } else if (alerta["zona"] != null && (alerta["zona"] == "EXTERIOR" || alerta["zona"] == "EXTERIOR100" || alerta["zona"] == "EXTERIOR200")) {
+          } else if (alerta["zona"] == "EXTERIOR" || alerta["zona"] == "EXTERIOR100" || alerta["zona"] == "EXTERIOR200") {
             updatedMarkersWithAlerts2.add(cce);
           }
         }
-      } else {
-        counts.add(0);
       }
+
+      centro["alert_count"] = count;
     }
 
     if (_isMounted) {
       setState(() {
         _isLoading = false;
-        _alertCounts = counts;
         markersWithAlerts = updatedMarkersWithAlerts;
         markersWithAlerts2 = updatedMarkersWithAlerts2;
+
+        // Ordenar centros con alertas primero
+        _centros.sort((a, b) {
+          bool aHasAlert = markersWithAlerts.contains(a['codigo_centro']) || markersWithAlerts2.contains(a['codigo_centro']);
+          bool bHasAlert = markersWithAlerts.contains(b['codigo_centro']) || markersWithAlerts2.contains(b['codigo_centro']);
+          if (aHasAlert && !bHasAlert) return -1;
+          if (!aHasAlert && bHasAlert) return 1;
+          return 0;
+        });
       });
     }
   }
+
 
   @override
   void initState() {
@@ -239,10 +241,11 @@ class _SecurityPageState extends State<SecurityPage> {
     _fetchCentros();
 
     _timer = Timer.periodic(Duration(seconds: 60), (timer) {
-      _fetchCentros();
+      //_fetchCentros();
       _isMounted = true;
       _fetchAlertCounts();
     });
+
   }
 
   @override
@@ -421,13 +424,9 @@ class _SecurityPageState extends State<SecurityPage> {
                                               minHeight: 18,
                                             ),
                                             child: Text(
-                                              _alertCounts.length > index
-                                                  ? '${_alertCounts[index]}'
-                                                  : '0',
+                                              '${_centros[index]["alert_count"] ?? 0}',
                                               style: TextStyle(
-                                                color: hasYellowAlert
-                                                    ? Colors.white
-                                                    : Colors.white,
+                                                color: hasYellowAlert ? Colors.white : Colors.white,
                                                 fontSize: 12,
                                               ),
                                               textAlign: TextAlign.center,
