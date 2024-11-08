@@ -271,6 +271,7 @@ class _SecurityPageState extends State<SecurityPage> {
             ),
           ),
           centerTitle: true,
+/*
           leading: canPop ? null : IconButton(
             icon: Icon(Icons.settings, color: Colors.white, size: 36),
             onPressed: () {
@@ -281,6 +282,8 @@ class _SecurityPageState extends State<SecurityPage> {
               );
             },
           ),
+          */
+          /*
           actions: [
             IconButton(
               icon: Icon(Icons.exit_to_app, color: Colors.white, size: 36),
@@ -289,6 +292,7 @@ class _SecurityPageState extends State<SecurityPage> {
               },
             ),
           ],
+          */
         ),
         body: RefreshIndicator(
           onRefresh: _handleRefresh,
@@ -450,6 +454,31 @@ class _SecurityPageState extends State<SecurityPage> {
             ],
           ),
         ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Configuración',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.exit_to_app),
+              label: 'Cerrar Sesión',
+            ),
+          ],
+          onTap: (index) {
+            if (index == 0) {
+              Navigator.push(
+                context,
+                CustomPageRoute(child: SettingModule()),
+              );
+            } else if (index == 1) {
+              _confirmLogout();
+            }
+          },
+        ),
+
+
+
       ),
     );
   }

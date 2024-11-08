@@ -18,7 +18,7 @@ class _SettingModuleState extends State<SettingModule> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Configuraciones', style: TextStyle(fontSize: 20.0)),
+        title: Text('Configuración', style: TextStyle(fontSize: 20.0)),
         centerTitle: true,
       ),
       body: Stack(
@@ -43,6 +43,7 @@ class _SettingModuleState extends State<SettingModule> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(height: 10.0),
+                /*
                 Text(
                   'Notificaciones de la aplicación',
                   style: TextStyle(
@@ -51,6 +52,7 @@ class _SettingModuleState extends State<SettingModule> {
                     color: Colors.white,
                   ),
                 ),
+                */
                 SizedBox(height: 20.0),
                 ElevatedButton.icon(
                   onPressed: _handleSettingsButtonPress,
