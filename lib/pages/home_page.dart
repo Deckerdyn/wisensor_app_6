@@ -41,15 +41,19 @@ class _HomePageState extends State<HomePage> {
   List<int> markersWithAlerts2 = []; // Cambiado a List<int>
   Timer? _timer;
   bool _isMounted = true; // Add this variable to track widget's mounting status
+  bool _isRefreshing = false;
   // Definir iconos para los diferentes niveles de alerta
   Icon greenIcon = Icon(Icons.traffic, color: Colors.green);
   Icon yellowIcon = Icon(Icons.traffic, color: Colors.yellow);
   Icon redIcon = Icon(Icons.traffic, color: Colors.red);
 
   Future<void> _handleRefresh() async {
-    // Actualiza los datos aquí
+    if (!_isMounted) return; // Evita continuar si el widget no está montado
+
     await _fetchCentros();
     await _fetchAlertCounts();
+
+    if (!_isMounted) return; // Vuelve a verificar antes de actualizar el estado
     setState(() {
       _isLoading = false;
     });
@@ -155,10 +159,8 @@ class _HomePageState extends State<HomePage> {
     };
 
     List<int> counts = [];
-    List<int> updatedMarkersWithAlerts =
-    []; // Nueva lista para IDs de centros con alertas "Rojo"
-    List<int> updatedMarkersWithAlerts2 =
-    []; // Nueva lista para IDs de centros con alertas "Amarillo"
+    List<int> updatedMarkersWithAlerts = []; // Nueva lista para IDs de centros con alertas "Rojo"
+    List<int> updatedMarkersWithAlerts2 = []; // Nueva lista para IDs de centros con alertas "Amarillo"
 
     for (var centro in _centros) {
       int ide = centro["ide"];
@@ -203,15 +205,14 @@ class _HomePageState extends State<HomePage> {
             idEmpresas.add(ide);
             break;
           default:
-          // Manejar otros casos si es necesario
             print("no suscrito a nada");
             break;
         }
       }
+
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
-        int count =
-        jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
+        int count = jsonResponse["data"] != null ? jsonResponse["data"].length : 0;
         counts.add(count);
 
         for (var alerta in jsonResponse["data"]) {
@@ -226,10 +227,24 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
+    // Crear una lista de centros y sus conteos de alertas
+    List<Map<String, dynamic>> centrosWithCounts = [];
+    for (int i = 0; i < _centros.length; i++) {
+      centrosWithCounts.add({
+        'centro': _centros[i],
+        'alertCount': counts[i],
+      });
+    }
+
+    // Ordenar la lista, primero los centros con alertas
+    centrosWithCounts.sort((a, b) => b['alertCount'].compareTo(a['alertCount']));
+
+    // Actualizar _centros y _alertCounts
     if (_isMounted) {
       setState(() {
         _isLoading = false;
-        _alertCounts = counts;
+        _centros = centrosWithCounts.map((e) => e['centro']).toList();
+        _alertCounts = centrosWithCounts.map<int>((e) => e['alertCount'] as int).toList();
         markersWithAlerts = updatedMarkersWithAlerts;
         markersWithAlerts2 = updatedMarkersWithAlerts2;
       });
@@ -536,7 +551,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                 margin: const EdgeInsets.fromLTRB(90, 0, 0, 0),
                 child: const Text(
-                  'V 1.3.9',
+                  'V 1.3.10',
                   style: TextStyle(
                     fontSize: 10.0,
                     fontWeight: FontWeight.bold,

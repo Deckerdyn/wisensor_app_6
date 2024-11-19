@@ -31,11 +31,12 @@ class _SecurityPageState extends State<SecurityPage> {
   bool _isMounted = true;
 
   Future<void> _handleRefresh() async {
-    // Actualiza los datos aquí
     await _fetchAlertCounts();
-    setState(() {
-      _isLoading = false;
-    });
+    if (_isMounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _logout(BuildContext context) async {
@@ -271,7 +272,7 @@ class _SecurityPageState extends State<SecurityPage> {
             ),
           ),
           centerTitle: true,
-/*
+
           leading: canPop ? null : IconButton(
             icon: Icon(Icons.settings, color: Colors.white, size: 36),
             onPressed: () {
@@ -282,8 +283,7 @@ class _SecurityPageState extends State<SecurityPage> {
               );
             },
           ),
-          */
-          /*
+
           actions: [
             IconButton(
               icon: Icon(Icons.exit_to_app, color: Colors.white, size: 36),
@@ -292,7 +292,7 @@ class _SecurityPageState extends State<SecurityPage> {
               },
             ),
           ],
-          */
+
         ),
         body: RefreshIndicator(
           onRefresh: _handleRefresh,
@@ -454,7 +454,10 @@ class _SecurityPageState extends State<SecurityPage> {
             ],
           ),
         ),
+        /*
         bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Colors.grey[400], // Cambia este color según tu preferencia
+          unselectedItemColor: Colors.grey[400], // Color de los íconos no seleccionados
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.settings),
@@ -476,7 +479,7 @@ class _SecurityPageState extends State<SecurityPage> {
             }
           },
         ),
-
+*/
 
 
       ),

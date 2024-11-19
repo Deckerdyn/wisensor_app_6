@@ -239,7 +239,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 10.0),
                   if (!_isTextFieldFocused)
                     const Text(
-                      'Versión 1.3.9',
+                      'Versión 1.3.10',
                       style: TextStyle(
                         fontSize: 14.0,
                         fontWeight: FontWeight.bold,
