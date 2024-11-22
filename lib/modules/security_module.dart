@@ -35,7 +35,7 @@ class _SecurityModuleState extends State<SecurityModule> {
   IconData parseIconData(String clasificacion) {
     switch (clasificacion) {
       case "person":
-        return FontAwesomeIcons.walking;
+        return FontAwesomeIcons.personWalking;
       case "boatMedium":
         return FontAwesomeIcons.ship;
       default:
