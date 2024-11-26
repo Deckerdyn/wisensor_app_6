@@ -337,10 +337,6 @@ class _HomePageState extends State<HomePage> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Alertas de Clima', style: TextStyle(fontSize: 20.0)),
-          centerTitle: true,
-        ),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -565,166 +561,186 @@ class _HomePageState extends State<HomePage> {
         ),
         body: RefreshIndicator(
           onRefresh: _handleRefresh,
-          child: _isLoading
-              ? Center(child: CircularProgressIndicator())
-              : Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/fondo_olas.PNG"),
-                    fit: BoxFit.cover,
-                  ),
+          child: CustomScrollView(
+            slivers: [
+              // SliverAppBar para el AppBar fijo
+              SliverAppBar(
+                pinned: true,
+                expandedHeight: 60.0,
+
+                title: const Text(
+                  'Alertas de Clima',
+                  style: TextStyle(fontSize: 20.0),
                 ),
+                centerTitle: true,
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(0, 0, 0, 0.5),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
+
+              // Sliver para el mensaje centrado
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
                     child: Text(
                       _message,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18.0,
                         color: Colors.white,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                    thickness: 1,
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _centros.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final hasRedAlert = markersWithAlerts.contains(_centros[index]['idc']);
-                        final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['idc']);
+                ),
+              ),
 
-                        return Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: hasRedAlert
-                                    ? LinearGradient(
-                                  colors: [Colors.red.withOpacity(0.7), Colors.redAccent.withOpacity(0.7)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                )
-                                    : hasYellowAlert
-                                    ? LinearGradient(
-                                  colors: [
-                                    Colors.yellow.withOpacity(0.8),
-                                    Colors.amber.withOpacity(0.8)
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                )
-                                    : LinearGradient(
-                                  colors: [Colors.lightGreen.withOpacity(0.8), Colors.green.withOpacity(0.8)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
+              // Divider entre el mensaje y la lista
+              SliverToBoxAdapter(
+                child: Divider(
+                  height: 1,
+                  color: Colors.grey,
+                  thickness: 1,
+                ),
+              ),
 
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 2.0,
+              // SliverList para los elementos de la lista
+              _isLoading
+                  ? SliverFillRemaining(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+                  : SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                    final hasRedAlert =
+                    markersWithAlerts.contains(_centros[index]['idc']);
+                    final hasYellowAlert =
+                    markersWithAlerts2.contains(_centros[index]['idc']);
+
+                    return Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: hasRedAlert
+                                ? LinearGradient(
+                              colors: [
+                                Colors.red.withOpacity(0.7),
+                                Colors.redAccent.withOpacity(0.7),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            )
+                                : hasYellowAlert
+                                ? LinearGradient(
+                              colors: [
+                                Colors.yellow.withOpacity(0.8),
+                                Colors.amber.withOpacity(0.8)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            )
+                                : LinearGradient(
+                              colors: [
+                                Colors.lightGreen
+                                    .withOpacity(0.8),
+                                Colors.green.withOpacity(0.8)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 2.0,
+                            ),
+                          ),
+                          child: ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                CustomPageRoute(
+                                  child: WeatherPage(
+                                    ide: _centros[index]["ide"],
+                                    idu: _centros[index]["idu"],
+                                    idc: _centros[index]["idc"],
+                                    nombreCentro:
+                                    _centros[index]["nombre"],
+                                  ),
                                 ),
-                              ),
-                              child: ListTile(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    CustomPageRoute(
-                                      child: WeatherPage(
-                                        ide: _centros[index]["ide"],
-                                        idu: _centros[index]["idu"],
-                                        idc: _centros[index]["idc"],
-                                        nombreCentro: _centros[index]["nombre"], // Pasar el nombre del centro
+                              );
+                            },
+                            title: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      _centros[index]["nombre"],
+                                      style: TextStyle(
+                                        fontSize: 21.0,
+                                        fontWeight: FontWeight.w500,
+                                        color: hasRedAlert
+                                            ? Colors.grey[200]
+                                            : hasYellowAlert
+                                            ? Colors.black87
+                                            : Colors.grey[200],
                                       ),
                                     ),
-                                  );
-                                },
-                                title: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  ],
+                                ),
+                                Stack(
                                   children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          _centros[index]["nombre"],
-                                          style: TextStyle(
-                                            fontSize: 21.0,
-                                            fontWeight: FontWeight.w500,
-                                            color: hasRedAlert
-                                                ? Colors.grey[200]
-                                                : hasYellowAlert
-                                                ? Colors.black87
-                                                : Colors.grey[200],
-                                          ),
-                                        ),
-                                      ],
+                                    Icon(
+                                      Icons.directions_boat,
+                                      size: 30.0,
+                                      color: hasRedAlert
+                                          ? Colors.black54
+                                          : hasYellowAlert
+                                          ? Colors.black
+                                          : Colors.white70,
                                     ),
-                                    Stack(
-                                      children: [
-                                        Icon(
-                                          Icons.directions_boat,
-                                          size: 30.0,
-                                          color: hasRedAlert
-                                              ? Colors.black54
-                                              : hasYellowAlert
-                                              ? Colors.black
-                                              : Colors.white70,
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Container(
+                                        padding: EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          color: hasRedAlert ||
+                                              hasYellowAlert
+                                              ? Colors.red
+                                              : Colors.black54,
+                                          shape: BoxShape.circle,
                                         ),
-                                        Positioned(
-                                          top: 0,
-                                          right: 0,
-                                          child: Container(
-                                            padding: EdgeInsets.all(2),
-                                            decoration: BoxDecoration(
-                                              color: hasRedAlert || hasYellowAlert
-                                                  ? Colors.red
-                                                  : Colors.black54,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            constraints: BoxConstraints(
-                                              minWidth: 18,
-                                              minHeight: 18,
-                                            ),
-                                            child: Text(
-                                              _alertCounts.length > index
-                                                  ? '${_alertCounts[index]}'
-                                                  : '0',
-                                              style: TextStyle(
-                                                color: hasYellowAlert
-                                                    ? Colors.grey[300]
-                                                    : Colors.grey[300],
-                                                fontSize: 12,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
+                                        constraints: BoxConstraints(
+                                          minWidth: 18,
+                                          minHeight: 18,
+                                        ),
+                                        child: Text(
+                                          _alertCounts.length > index
+                                              ? '${_alertCounts[index]}'
+                                              : '0',
+                                          style: TextStyle(
+                                            color: hasYellowAlert
+                                                ? Colors.grey[300]
+                                                : Colors.grey[300],
+                                            fontSize: 12,
                                           ),
+                                          textAlign: TextAlign.center,
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
+                              ],
                             ),
-                            Divider(height: 1, color: Colors.grey),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-
-                ],
+                          ),
+                        ),
+                        Divider(height: 1, color: Colors.grey),
+                      ],
+                    );
+                  },
+                  childCount: _centros.length,
+                ),
               ),
             ],
           ),
@@ -732,6 +748,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
 /*
   //get device token to use for push notification
   Future getDeviceToken() async {

@@ -179,6 +179,7 @@ class _SecurityPageState extends State<SecurityPage> {
 
   Future<void> _fetchAlertCounts() async {
     if (!_isMounted) return;
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     Map<String, String> headers = {
@@ -187,41 +188,61 @@ class _SecurityPageState extends State<SecurityPage> {
       "Authorization": "Bearer $token"
     };
 
-    List<String> updatedMarkersWithAlerts = [];
-    List<String> updatedMarkersWithAlerts2 = [];
+    List<Future<void>> futures = [];
 
     for (var centro in _centros) {
       String emp = centro["codigo_empresa"];
       String dref = centro["mongodb"];
       String cce = centro["codigo_centro"];
 
-      http.Response response2 = await http.get(
-        Uri.parse("http://201.220.112.247:1880/wisensor/api/centros/alertas2?emp=$emp&dref=$dref&cce=$cce"),
-        headers: headers,
+      futures.add(
+        http
+            .get(
+          Uri.parse(
+              "http://201.220.112.247:1880/wisensor/api/centros/alertas2?emp=$emp&dref=$dref&cce=$cce"),
+          headers: headers,
+        )
+            .then((response2) {
+          if (response2.statusCode == 200) {
+            var jsonResponse = jsonDecode(response2.body);
+            int count = jsonResponse["data"]?.length ?? 0;
+
+            if (_isMounted) {
+              setState(() {
+                centro["alert_count"] = count;
+
+                if (jsonResponse["data"].any((alerta) =>
+                alerta["modulo"] != null ||
+                    alerta["zona"] == "INTERIOR" ||
+                    alerta["zona"] == "INTERIOR100" ||
+                    alerta["zona"] == "INTERIOR200")) {
+                  markersWithAlerts.add(cce);
+                } else if (jsonResponse["data"].any((alerta) =>
+                alerta["zona"] == "EXTERIOR" ||
+                    alerta["zona"] == "EXTERIOR100" ||
+                    alerta["zona"] == "EXTERIOR200")) {
+                  markersWithAlerts2.add(cce);
+                }
+              });
+            }
+          } else {
+            // Manejar errores de estado HTTP
+            print("Error en la solicitud para $cce: ${response2.statusCode}");
+          }
+        }).catchError((e) {
+          // Manejar excepciones de red
+          print("Excepción para $cce: $e");
+        }),
       );
 
-      int count = 0;
-      if (response2.statusCode == 200) {
-        var jsonResponse = jsonDecode(response2.body);
-        count = jsonResponse["data"]?.length ?? 0;
-
-        for (var alerta in jsonResponse["data"]) {
-          if (alerta["modulo"] != null || alerta["zona"] == "INTERIOR" || alerta["zona"] == "INTERIOR100" || alerta["zona"] == "INTERIOR200") {
-            updatedMarkersWithAlerts.add(cce);
-          } else if (alerta["zona"] == "EXTERIOR" || alerta["zona"] == "EXTERIOR100" || alerta["zona"] == "EXTERIOR200") {
-            updatedMarkersWithAlerts2.add(cce);
-          }
-        }
-      }
-
-      centro["alert_count"] = count;
     }
+
+    // Esperar que todas las solicitudes finalicen
+    await Future.wait(futures);
 
     if (_isMounted) {
       setState(() {
         _isLoading = false;
-        markersWithAlerts = updatedMarkersWithAlerts;
-        markersWithAlerts2 = updatedMarkersWithAlerts2;
 
         // Ordenar centros con alertas primero
         _centros.sort((a, b) {
@@ -236,12 +257,13 @@ class _SecurityPageState extends State<SecurityPage> {
   }
 
 
+
   @override
   void initState() {
     super.initState();
     _fetchCentros();
 
-    _timer = Timer.periodic(Duration(seconds: 60), (timer) {
+    _timer = Timer.periodic(Duration(minutes: 2), (timer) {
       //_fetchCentros();
       _isMounted = true;
       _fetchAlertCounts();
@@ -272,18 +294,17 @@ class _SecurityPageState extends State<SecurityPage> {
             ),
           ),
           centerTitle: true,
-
-          leading: canPop ? null : IconButton(
+          leading: canPop
+              ? null
+              : IconButton(
             icon: Icon(Icons.settings, color: Colors.white, size: 36),
             onPressed: () {
-              //Navigator.pop(context);
               Navigator.push(
                 context,
                 CustomPageRoute(child: SettingModule()),
               );
             },
           ),
-
           actions: [
             IconButton(
               icon: Icon(Icons.exit_to_app, color: Colors.white, size: 36),
@@ -292,199 +313,184 @@ class _SecurityPageState extends State<SecurityPage> {
               },
             ),
           ],
-
         ),
         body: RefreshIndicator(
           onRefresh: _handleRefresh,
           child: _isLoading
               ? Center(child: CircularProgressIndicator())
-              : Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/fondo_olas.PNG"),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(0, 0, 0, 0.5),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      _message,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                        color: Colors.white,
+              : CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/fondo_olas.PNG"),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ),
-                  Divider(
-                    height: 1,
-                    color: Colors.grey,
-                    thickness: 1,
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _centros.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final hasRedAlert = markersWithAlerts.contains(_centros[index]['codigo_centro']);
-                        final hasYellowAlert = markersWithAlerts2.contains(_centros[index]['codigo_centro']);
-
-                        return Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient:  hasRedAlert
-                                    ? LinearGradient(
-                                  colors: [Colors.red.withOpacity(0.7), Colors.redAccent.withOpacity(0.7)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                )
-                                    : hasYellowAlert
-                                    ? LinearGradient(
-                                  colors: [
-                                    Colors.yellow.withOpacity(0.8),
-                                    Colors.amber.withOpacity(0.8)
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                )
-                                    : LinearGradient(
-                                  colors: [Colors.lightGreen.withOpacity(0.8), Colors.green.withOpacity(0.8)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 2.0,
-                                ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(0, 0, 0, 0.5),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Center( // Este Center garantiza que el mensaje quede centrado horizontalmente.
+                            child: Text(
+                              _message,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0,
+                                color: Colors.white,
                               ),
-                              child: ListTile(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    CustomPageRoute(
-                                      child: SecurityModule(
-                                        emp: _centros[index]["codigo_empresa"],
-                                        dref: _centros[index]["mongodb"],
-                                        nombreCentro: _centros[index]["nombre"],
-                                        cce: _centros[index]["codigo_centro"],
+                              textAlign: TextAlign.center, // Asegura que el texto alineado dentro del centro.
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                    final hasRedAlert = markersWithAlerts.contains(
+                      _centros[index]['codigo_centro'],
+                    );
+                    final hasYellowAlert = markersWithAlerts2.contains(
+                      _centros[index]['codigo_centro'],
+                    );
+
+                    return Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: hasRedAlert
+                                ? LinearGradient(
+                              colors: [
+                                Colors.red.withOpacity(0.7),
+                                Colors.redAccent.withOpacity(0.7)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            )
+                                : hasYellowAlert
+                                ? LinearGradient(
+                              colors: [
+                                Colors.yellow.withOpacity(0.8),
+                                Colors.amber.withOpacity(0.8)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            )
+                                : LinearGradient(
+                              colors: [
+                                Colors.lightGreen.withOpacity(0.8),
+                                Colors.green.withOpacity(0.8)
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 2.0,
+                            ),
+                          ),
+                          child: ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                CustomPageRoute(
+                                  child: SecurityModule(
+                                    emp: _centros[index]["codigo_empresa"],
+                                    dref: _centros[index]["mongodb"],
+                                    nombreCentro: _centros[index]["nombre"],
+                                    cce: _centros[index]["codigo_centro"],
+                                  ),
+                                ),
+                              );
+                            },
+                            title: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  _centros[index]["nombre"],
+                                  style: TextStyle(
+                                    fontSize: 21.0,
+                                    fontWeight: FontWeight.w500,
+                                    color: hasRedAlert
+                                        ? Colors.grey[200]
+                                        : hasYellowAlert
+                                        ? Colors.black87
+                                        : Colors.grey[200],
+                                  ),
+                                ),
+                                Stack(
+                                  children: [
+                                    Icon(
+                                      Icons.directions_boat,
+                                      size: 30.0,
+                                      color: hasRedAlert
+                                          ? Colors.black54
+                                          : hasYellowAlert
+                                          ? Colors.black
+                                          : Colors.white70,
+                                    ),
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Container(
+                                        padding: EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          color: hasRedAlert ||
+                                              hasYellowAlert
+                                              ? Colors.red
+                                              : Colors.black54,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        constraints: BoxConstraints(
+                                          minWidth: 18,
+                                          minHeight: 18,
+                                        ),
+                                        child: Text(
+                                          '${_centros[index]["alert_count"] ?? 0}',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
                                     ),
-                                  );
-                                },
-                                title: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          _centros[index]["nombre"],
-                                          style: TextStyle(
-                                            fontSize: 21.0,
-                                            fontWeight: FontWeight.w500,
-                                            color: hasRedAlert
-                                                ? Colors.grey[200]
-                                                : hasYellowAlert
-                                                ? Colors.black87
-                                                : Colors.grey[200],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Stack(
-                                      children: [
-                                        Icon(
-                                          Icons.directions_boat,
-                                          size: 30.0,
-                                          color: hasRedAlert
-                                              ? Colors.black54
-                                              : hasYellowAlert
-                                              ? Colors.black
-                                              : Colors.white70,
-                                        ),
-                                        Positioned(
-                                          top: 0,
-                                          right: 0,
-                                          child: Container(
-                                            padding: EdgeInsets.all(2),
-                                            decoration: BoxDecoration(
-                                              color: hasRedAlert || hasYellowAlert
-                                                  ? Colors.red
-                                                  : Colors.black54,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            constraints: BoxConstraints(
-                                              minWidth: 18,
-                                              minHeight: 18,
-                                            ),
-                                            child: Text(
-                                              '${_centros[index]["alert_count"] ?? 0}',
-                                              style: TextStyle(
-                                                color: hasYellowAlert ? Colors.white : Colors.white,
-                                                fontSize: 12,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
                                   ],
                                 ),
-                              ),
+                              ],
                             ),
-                            Divider(height: 1, color: Colors.grey),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                          ),
+                        ),
+                        Divider(height: 1, color: Colors.grey),
+                      ],
+                    );
+                  },
+                  childCount: _centros.length,
+                ),
               ),
             ],
           ),
         ),
-        /*
-        bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: Colors.grey[400], // Cambia este color según tu preferencia
-          unselectedItemColor: Colors.grey[400], // Color de los íconos no seleccionados
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Configuración',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.exit_to_app),
-              label: 'Cerrar Sesión',
-            ),
-          ],
-          onTap: (index) {
-            if (index == 0) {
-              Navigator.push(
-                context,
-                CustomPageRoute(child: SettingModule()),
-              );
-            } else if (index == 1) {
-              _confirmLogout();
-            }
-          },
-        ),
-*/
-
-
       ),
     );
   }
+
 
   Future getDeviceToken() async {
     FirebaseMessaging _firebaseMessage = FirebaseMessaging.instance;
