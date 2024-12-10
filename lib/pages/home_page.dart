@@ -547,7 +547,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                 margin: const EdgeInsets.fromLTRB(90, 0, 0, 0),
                 child: const Text(
-                  'V 1.3.11',
+                  'V 1.3.12',
                   style: TextStyle(
                     fontSize: 10.0,
                     fontWeight: FontWeight.bold,

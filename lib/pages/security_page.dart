@@ -8,6 +8,7 @@ import '../modules/setting_module.dart';
 import 'custom_page_route.dart';
 import 'login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class SecurityPage extends StatefulWidget {
   final int idu;
@@ -318,50 +319,26 @@ class _SecurityPageState extends State<SecurityPage> {
           onRefresh: _handleRefresh,
           child: _isLoading
               ? Center(child: CircularProgressIndicator())
-              : CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage("assets/images/fondo_olas.PNG"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color.fromRGBO(0, 0, 0, 0.5),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          Center( // Este Center garantiza que el mensaje quede centrado horizontalmente.
-                            child: Text(
-                              _message,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18.0,
-                                color: Colors.white,
-                              ),
-                              textAlign: TextAlign.center, // Asegura que el texto alineado dentro del centro.
-                            ),
-                          ),
-
-                        ],
-                      ),
-                    ),
-                  ],
+              : Stack(
+            children: [
+              // Fondo
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/fondo_olas.PNG"),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
+              Container(
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(0, 0, 0, 0.3), // Fondo con menos opacidad
+                ),
+              ),
+              AnimationLimiter(
+                child: ListView.builder(
+                  itemCount: _centros.length,
+                  itemBuilder: (context, index) {
                     final hasRedAlert = markersWithAlerts.contains(
                       _centros[index]['codigo_centro'],
                     );
@@ -369,119 +346,164 @@ class _SecurityPageState extends State<SecurityPage> {
                       _centros[index]['codigo_centro'],
                     );
 
-                    return Column(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: hasRedAlert
-                                ? LinearGradient(
-                              colors: [
-                                Colors.red.withOpacity(0.7),
-                                Colors.redAccent.withOpacity(0.7)
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            )
-                                : hasYellowAlert
-                                ? LinearGradient(
-                              colors: [
-                                Colors.yellow.withOpacity(0.8),
-                                Colors.amber.withOpacity(0.8)
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            )
-                                : LinearGradient(
-                              colors: [
-                                Colors.lightGreen.withOpacity(0.8),
-                                Colors.green.withOpacity(0.8)
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            border: Border.all(
-                              color: Colors.black,
-                              width: 2.0,
-                            ),
-                          ),
-                          child: ListTile(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                CustomPageRoute(
-                                  child: SecurityModule(
-                                    emp: _centros[index]["codigo_empresa"],
-                                    dref: _centros[index]["mongodb"],
-                                    nombreCentro: _centros[index]["nombre"],
-                                    cce: _centros[index]["codigo_centro"],
+                    // Gradiente personalizado
+                    final gradient = hasRedAlert
+                        ? LinearGradient(
+                      colors: [
+                        Colors.red.shade700,
+                        Colors.red.shade400,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                        : hasYellowAlert
+                        ? LinearGradient(
+                      colors: [
+                        Colors.amber.shade700,
+                        Colors.amber.shade400,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                        : LinearGradient(
+                      colors: [
+                        Colors.green.shade700,
+                        Colors.green.shade400,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    );
+
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 500),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                            child: Material(
+                              color: Colors.transparent, // Permite ver el gradiente debajo
+                              child: Ink(
+                                decoration: BoxDecoration(
+                                  gradient: hasRedAlert
+                                      ? LinearGradient(
+                                    colors: [
+                                      Colors.red.withOpacity(0.7),
+                                      Colors.redAccent.withOpacity(0.7)
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  )
+                                      : hasYellowAlert
+                                      ? LinearGradient(
+                                    colors: [
+                                      Colors.yellow.withOpacity(0.8),
+                                      Colors.amber.withOpacity(0.8)
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  )
+                                      : LinearGradient(
+                                    colors: [
+                                      Colors.lightGreen.withOpacity(0.8),
+                                      Colors.green.withOpacity(0.8)
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
                                   ),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  border: Border.all(color: Colors.black, width: 2.0),
                                 ),
-                              );
-                            },
-                            title: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  _centros[index]["nombre"],
-                                  style: TextStyle(
-                                    fontSize: 21.0,
-                                    fontWeight: FontWeight.w500,
-                                    color: hasRedAlert
-                                        ? Colors.grey[200]
-                                        : hasYellowAlert
-                                        ? Colors.black87
-                                        : Colors.grey[200],
-                                  ),
-                                ),
-                                Stack(
-                                  children: [
-                                    Icon(
-                                      Icons.directions_boat,
-                                      size: 30.0,
-                                      color: hasRedAlert
-                                          ? Colors.black54
-                                          : hasYellowAlert
-                                          ? Colors.black
-                                          : Colors.white70,
-                                    ),
-                                    Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: Container(
-                                        padding: EdgeInsets.all(2),
-                                        decoration: BoxDecoration(
-                                          color: hasRedAlert ||
-                                              hasYellowAlert
-                                              ? Colors.red
-                                              : Colors.black54,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        constraints: BoxConstraints(
-                                          minWidth: 18,
-                                          minHeight: 18,
-                                        ),
-                                        child: Text(
-                                          '${_centros[index]["alert_count"] ?? 0}',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12,
-                                          ),
-                                          textAlign: TextAlign.center,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      CustomPageRoute(
+                                        child: SecurityModule(
+                                          emp: _centros[index]["codigo_empresa"],
+                                          dref: _centros[index]["mongodb"],
+                                          nombreCentro: _centros[index]["nombre"],
+                                          cce: _centros[index]["codigo_centro"],
                                         ),
                                       ),
+                                    );
+                                  },
+                                  splashColor: Colors.blue.withOpacity(0.3),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: hasRedAlert
+                                          ? Colors.red
+                                          : hasYellowAlert
+                                          ? Colors.orange
+                                          : Colors.green,
+                                      child: Icon(
+                                        Icons.warning,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  ],
+                                    title: Text(
+                                      _centros[index]["nombre"],
+                                      style: TextStyle(
+                                        fontSize: 21.0,
+                                        fontWeight: FontWeight.w500,
+                                        color: hasRedAlert
+                                            ? Colors.grey[200]
+                                            : hasYellowAlert
+                                            ? Colors.black87
+                                            : Colors.grey[200],
+                                      ),
+                                    ),
+                                    trailing: Stack(
+                                      children: [
+                                        Icon(
+                                          Icons.directions_boat,
+                                          size: 30.0,
+                                          color: hasRedAlert
+                                              ? Colors.black54
+                                              : hasYellowAlert
+                                              ? Colors.black
+                                              : Colors.white70,
+                                        ),
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: Container(
+                                            padding: EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                              color: hasRedAlert || hasYellowAlert
+                                                  ? Colors.red
+                                                  : Colors.black54,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            constraints: BoxConstraints(
+                                              minWidth: 18,
+                                              minHeight: 18,
+                                            ),
+                                            child: Text(
+                                              '${_centros[index]["alert_count"] ?? 0}',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ],
+                              ),
                             ),
+
                           ),
                         ),
-                        Divider(height: 1, color: Colors.grey),
-                      ],
+                      ),
                     );
+
                   },
-                  childCount: _centros.length,
                 ),
               ),
             ],
@@ -490,6 +512,8 @@ class _SecurityPageState extends State<SecurityPage> {
       ),
     );
   }
+
+
 
 
   Future getDeviceToken() async {
